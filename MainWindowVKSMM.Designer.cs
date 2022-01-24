@@ -37,6 +37,7 @@ namespace VKSMM
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.LoadProviderXLSButton = new System.Windows.Forms.Button();
             this.groupBox15 = new System.Windows.Forms.GroupBox();
             this.comboBox5 = new System.Windows.Forms.ComboBox();
             this.comboBox4 = new System.Windows.Forms.ComboBox();
@@ -182,7 +183,6 @@ namespace VKSMM
             this.опубликоватьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eventLog1 = new System.Diagnostics.EventLog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.LoadProviderXLSButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -279,6 +279,16 @@ namespace VKSMM
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Новые товары для поста";
             // 
+            // LoadProviderXLSButton
+            // 
+            this.LoadProviderXLSButton.Location = new System.Drawing.Point(132, 20);
+            this.LoadProviderXLSButton.Name = "LoadProviderXLSButton";
+            this.LoadProviderXLSButton.Size = new System.Drawing.Size(117, 34);
+            this.LoadProviderXLSButton.TabIndex = 6;
+            this.LoadProviderXLSButton.Text = "Загрузить XLS с  поставщиками";
+            this.LoadProviderXLSButton.UseVisualStyleBackColor = true;
+            this.LoadProviderXLSButton.Click += new System.EventHandler(this.LoadProviderXLSButton_Click);
+            // 
             // groupBox15
             // 
             this.groupBox15.Controls.Add(this.comboBox5);
@@ -288,6 +298,7 @@ namespace VKSMM
             this.groupBox15.TabIndex = 5;
             this.groupBox15.TabStop = false;
             this.groupBox15.Text = "Поставщик";
+            this.groupBox15.Visible = false;
             // 
             // comboBox5
             // 
@@ -309,6 +320,7 @@ namespace VKSMM
             this.comboBox4.Size = new System.Drawing.Size(130, 21);
             this.comboBox4.TabIndex = 4;
             this.comboBox4.Text = "ВСЕ";
+            this.comboBox4.Visible = false;
             this.comboBox4.MouseEnter += new System.EventHandler(this.comboBox4_MouseEnter);
             // 
             // label11
@@ -1820,16 +1832,6 @@ namespace VKSMM
             // 
             this.eventLog1.SynchronizingObject = this;
             // 
-            // LoadProviderXLSButton
-            // 
-            this.LoadProviderXLSButton.Location = new System.Drawing.Point(132, 20);
-            this.LoadProviderXLSButton.Name = "LoadProviderXLSButton";
-            this.LoadProviderXLSButton.Size = new System.Drawing.Size(117, 34);
-            this.LoadProviderXLSButton.TabIndex = 6;
-            this.LoadProviderXLSButton.Text = "Загрузить XLS с  поставщиками";
-            this.LoadProviderXLSButton.UseVisualStyleBackColor = true;
-            this.LoadProviderXLSButton.Click += new System.EventHandler(this.LoadProviderXLSButton_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1903,7 +1905,6 @@ namespace VKSMM
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button5;
@@ -1947,7 +1948,6 @@ namespace VKSMM
         private System.Windows.Forms.DataGridView dataGridView8;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
         private System.Windows.Forms.GroupBox groupBox11;
-        private System.Windows.Forms.DataGridView dataGridView7;
         private System.Windows.Forms.ToolStripMenuItem запроситьТоварToolStripMenuItem;
         private System.Diagnostics.EventLog eventLog1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
@@ -1973,7 +1973,6 @@ namespace VKSMM
         private System.Windows.Forms.GroupBox groupBox13;
         private System.Windows.Forms.ListBox listBox2;
         private System.Windows.Forms.GroupBox groupBox14;
-        private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.DataGridView dataGridView3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
@@ -1984,11 +1983,9 @@ namespace VKSMM
         private System.Windows.Forms.ListBox listBox4;
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.ListBox listBox5;
-        private System.Windows.Forms.ListView listView2;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox textBox5;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button19;
@@ -2033,7 +2030,6 @@ namespace VKSMM
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox textBox11;
-        private System.Windows.Forms.Label label15;
         private System.Windows.Forms.ListView listView3;
         private System.Windows.Forms.ImageList imageList2;
         private System.Windows.Forms.Button button30;
@@ -2049,6 +2045,12 @@ namespace VKSMM
         private System.Windows.Forms.TabPage tabPage7;
         private System.Windows.Forms.ListBox listBox7;
         private System.Windows.Forms.Button LoadProviderXLSButton;
+        public System.Windows.Forms.Label label3;
+        public System.Windows.Forms.ListBox listBox1;
+        public System.Windows.Forms.DataGridView dataGridView7;
+        public System.Windows.Forms.Label label15;
+        public System.Windows.Forms.TreeView treeView1;
+        public System.Windows.Forms.ListView listView2;
     }
 }
 

@@ -79,8 +79,11 @@
     <Compile Include="MainWindowVKSMM.Designer.cs">
       <DependentUpon>MainWindowVKSMM.cs</DependentUpon>
     </Compile>
+    <Compile Include="ModelClasses\Model.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StuffClasses\Stuff.cs" />
+    <Compile Include="ThredsCode\Core.cs" />
     <EmbeddedResource Include="MainWindowVKSMM.resx">
       <DependentUpon>MainWindowVKSMM.cs</DependentUpon>
     </EmbeddedResource>
