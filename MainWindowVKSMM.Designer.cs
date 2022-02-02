@@ -1927,7 +1927,6 @@ namespace VKSMM
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.DataGridView dataGridView2;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textBox2;
@@ -1936,7 +1935,6 @@ namespace VKSMM
         private System.Windows.Forms.Button button10;
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.GroupBox groupBox10;
-        private System.Windows.Forms.DataGridView dataGridView4;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.TextBox textBox4;
@@ -1964,7 +1962,6 @@ namespace VKSMM
         private System.Windows.Forms.Button PublicationButton;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.ListBox listBox3;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.NumericUpDown numericUpDown2;
         private System.Windows.Forms.TextBox textBox3;
@@ -1992,7 +1989,6 @@ namespace VKSMM
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Button LoadProductXLSButton;
         private System.Windows.Forms.ComboBox comboBox4;
         private System.Windows.Forms.ListBox listBox6;
@@ -2051,6 +2047,10 @@ namespace VKSMM
         public System.Windows.Forms.Label label15;
         public System.Windows.Forms.TreeView treeView1;
         public System.Windows.Forms.ListView listView2;
+        public System.Windows.Forms.Label label11;
+        public System.Windows.Forms.DataGridView dataGridView2;
+        public System.Windows.Forms.DataGridView dataGridView4;
+        public System.Windows.Forms.ListBox listBox3;
     }
 }
 

@@ -317,6 +317,8 @@ namespace VKSMM.StuffClasses
                 {
 
 
+                    Action S2 = () => mainForm.label11.Text = "Поставщиков обработано " + i.ToString() + " из " + lastRow_1.ToString();
+                    mainForm.label11.Invoke(S2);
 
                     try
                     {
@@ -413,7 +415,6 @@ namespace VKSMM.StuffClasses
             }
             return 0;
         }
-
 
 
 
@@ -652,6 +653,11 @@ namespace VKSMM.StuffClasses
             mainForm.listView2.Items.Clear();
 
         }
+
+
+
+
+
 
     }
 }

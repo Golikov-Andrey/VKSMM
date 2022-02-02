@@ -26,10 +26,9 @@ namespace VKSMM
             InitializeComponent();
         }
 
-
-
-
-
+        //====================================================================================================================================================================
+        //                          Блок объявления переменных
+        //====================================================================================================================================================================
 
         public Thread Thread_Dir_Processing;
         public Thread Thread_Provider_Processing;
@@ -63,56 +62,45 @@ namespace VKSMM
         //public List<ReplaceKeys> Addition_Replace_Keys = new List<ReplaceKeys>();
 
         public List<ColorKeys> Color_Keys = new List<ColorKeys>();
+        public List<string> imageNoExist = new List<string>();
 
-       
+        /// <summary>
+        /// Путь к месту запуска программы
+        /// </summary>
+        public string _path = "";
 
 
+
+
+
+        public int selectedIndexCategory = -1;
+        public int selectedIndexSubCategory = -1;
+        public int selectedIndexReplace = -1;
+        public int selectedIndexColor = -1;
+
+        Regex regex = new Regex(@"туп(\w*)", RegexOptions.IgnoreCase);
+        // Regex.IsMatch(email, pattern, RegexOptions.IgnoreCase)
+
+        public List<string> swownProductInListView = new List<string>();
+
+        // Выбрать путь и имя файла в диалоговом окне
+        public SaveFileDialog ofd = new SaveFileDialog();
+
+
+        //====================================================================================================================================================================
+
+        /// <summary>
+        /// Действия при загрузке программы
+        /// </summary>
         private void MainForm_Load(object sender, EventArgs e)
         {
 
-
+            //Триггер блокератор блокирующий работу программы после 22 года
             if (DateTime.Now.Year > 2021 && DateTime.Now.Month > 11)
             {
                 MessageBox.Show("Ошибка! Обратитесь к разработчику!");
                 this.Close();
             }
-
-
-            ////Сохраняем исходное имя формы
-            ////_IshodFormName = this.Text;
-
-            //CategoryOfProduct c1 = new CategoryOfProduct();
-            //c1.Name = "Женское";
-            //CategoryOfProduct c2 = new CategoryOfProduct();
-            //c2.Name = "Мужское";
-
-            //Key k1 = new Key(); k1.Value = "юбк[аио]";
-            //c1.Keys.Add(k1);
-
-            //Key k2 = new Key(); k2.Value = "женск";
-            //c1.Keys.Add(k2);
-
-            //SubCategoryOfProduct s1 = new SubCategoryOfProduct();
-            //s1.Name = "Сумки";
-
-            //Key sk1 = new Key(); sk1.Value = "сумк";
-            //s1.Keys.Add(sk1);
-
-            //SubCategoryOfProduct s2 = new SubCategoryOfProduct();
-            //s2.Name = "Аксесуары";
-
-            //c1.SubCategoty.Add(s1);
-            //c1.SubCategoty.Add(s2);
-            ////Key sk1 = new Key(); sk1.Value = "\\<сумк";
-            ////s1.Keys.Add(sk1);
-
-
-            //mainCategoryList.Add(c1);
-            //mainCategoryList.Add(c2);
-
-            //listBox1.Items.Add(c1.Name);
-            //listBox1.Items.Add(c2.Name);
-
 
             //XML документ с настройками программы
             XmlDocument conf_supp = new XmlDocument();
@@ -121,12 +109,10 @@ namespace VKSMM
                 //Создаем ссылку на файл настроек
                 FileInfo F = new FileInfo("ConfigTKSadovod.XML");
 
-
+                //Копируем старую конфигурацию в директорию копий конфигурацый
                 DirectoryInfo d = new DirectoryInfo("CopyOfConfig");
                 if (!d.Exists) d.Create();
                 F.CopyTo(d.FullName+"\\"+DateTime.Now.Date.ToShortDateString().Replace(".","")+ DateTime.Now.TimeOfDay.ToString().Replace(":","").Replace(".","")+".xml");
-
-
 
                 //Сохраняем путь к файлу настроек
                 _path = F.FullName;
@@ -134,426 +120,45 @@ namespace VKSMM
                 conf_supp.Load("ConfigTKSadovod.XML");
 
                 //=======================================================================================================
-                XmlNodeList nodeList;//Вспомогательнаяпеременная
                 XmlNode root = conf_supp.DocumentElement;//Получаем доступ к XML файлу настроек
+                XmlNodeList nodeList = root.SelectNodes("REPLACE_KEYS"); ;//Вспомогательнаяпеременная
 
-
+                //Путь к базе с товарами
                 _ProductDBPath = F.FullName.Substring(0, F.FullName.LastIndexOf("\\"));
 
-                try
-                {
-                    nodeList = root.SelectNodes("PRODUCT_DB_DIR");//Считываем настройки ключей замены
+                //Считываем пути к рабочим дирректориям пролграммы
+                ConfigReader.readDirFromConfigFile(this, nodeList, root);
 
-                    _ProductDBPath = nodeList[0].InnerText;
-                }
-                catch
-                {
+                //Считываем ключи замены из конфигурацыы
+                ConfigReader.readReplaceKeyFromConfigFile(this, nodeList, root);
 
-                }
+                //Считываем цветовые ключи из конфигурацыы
+                ConfigReader.readColorKeyFromConfigFile(this, nodeList, root);
 
-                try
-                {
-                    nodeList = root.SelectNodes("PHOTO_DIR");//Считываем настройки ключей замены
+                //Считываем категории товаров из конфигурацыонного файла
+                ConfigReader.readCategoryProductFromConfigFile(this, nodeList, root);
 
-                    _PhotoPath = nodeList[0].InnerText;
-                }
-                catch
-                {
+                //Считываем товары из базы данных обработанных товаров
+                ConfigReader.readProductDB(this);
 
-                }
-                try
-                {
-                    nodeList = root.SelectNodes("INPUT_DIR");//Считываем настройки ключей замены
-
-                    _InputPath = nodeList[0].InnerText;
-                }
-                catch
-                {
-
-                }
-
-                try
-                {
-                    nodeList = root.SelectNodes("PROVIDER_DIR");//Считываем настройки ключей замены
-
-                    _ProviderDir = nodeList[0].InnerText;
-                }
-                catch
-                {
-
-                }
-
-
-                try
-                {
-                    nodeList = root.SelectNodes("REPLACE_KEYS");//Считываем настройки ключей замены
-                    //Пробегаем по всем ключам замены
-                    foreach (XmlNode PL in nodeList[0].ChildNodes)
-                    {
-                        //=========== Конструктор для добавления в датагрид =============
-                        //Строка для добавления на грид
-                        string[] Filtr = new string[5];
-                        //Ключ замены регулярное выражение
-                        Filtr[0] = Encoding.Unicode.GetString(Convert.FromBase64String(PL.ChildNodes[0].InnerText));
-                        //Filtr[0] = PL.ChildNodes[0].InnerText;
-                        //Значение замены
-                        Filtr[1] = PL.ChildNodes[1].InnerText;
-                        //Действие
-                        Filtr[2] = PL.ChildNodes[2].InnerText;
-
-                        Filtr[3] = GUIDReplaceKey.ToString();
-
-                        Filtr[4] = PL.ChildNodes[3].InnerText;
-
-                        GUIDReplaceKey++;
-
-                        //Добавляем правило в ГРИД
-                        dataGridView2.Rows.Add(Filtr);
-
-                        //================================================================
-
-                        //=========== Конструктор для добавления в датагрид =============
-                        //Создаем экземпляр ключа
-                        Key k = new Key();
-                        //Значение ключа
-                        k.Value = Filtr[0].Replace("\r","").Replace("\n","");
-                        //Флаг активности ключа
-                        k.IsActiv = true;
-                        
-                        //Класс замены
-                        ReplaceKeys r = new ReplaceKeys();
-                        //Действие связанное с заменой 3-ка просто замена
-                        r.Action = Stuff.ActionDecoder(Filtr[2]);
-                        //Ключ приыязанный к классу замены
-                        r.RegKey = k;
-                        //Значение замены
-                        r.NewValue = Filtr[1].Replace("\r", "").Replace("\n", "");
-
-                        try
-                        {
-                            r.GroupValue = PL.ChildNodes[3].InnerText;
-                        }
-                        catch { }
-
-                        AddGroup(r);
-
-                        //Добавляем ключ в пул замен
-                        Replace_Keys.Add(r);
-                        //================================================================
-                    }
-                }
-                catch { }
-
-                try
-                {
-                    nodeList = root.SelectNodes("COLOR_KEYS");//Считываем настройки цветовых ключей
-                    //Пробегаем по всем ключам цветовой дифференциации
-                    foreach (XmlNode PL in nodeList[0].ChildNodes)
-                    {
-
-                        //=========== Конструктор для добавления в датагрид =============
-                        //Строка для добавления на грид
-                        string[] Filtr = new string[2];
-                        //Ключ замены регулярное выражение
-                        Filtr[0] = Encoding.Unicode.GetString(Convert.FromBase64String(PL.ChildNodes[0].InnerText));
-                        //Filtr[0] = PL.ChildNodes[0].InnerText;
-                        //Действие
-                        Filtr[1] = PL.ChildNodes[1].InnerText;
-                        //Добавляем правило в ГРИД
-                        dataGridView4.Rows.Add(Filtr);
-                        //Окрашываем строчку
-                        dataGridView4.Rows[dataGridView4.Rows.Count - 1].DefaultCellStyle.BackColor = Color.FromName(PL.ChildNodes[2].InnerText);
-                        //================================================================
-
-                        //=========== Конструктор для добавления в датагрид =============
-                        //Создаем экземпляр ключа
-                        Key k = new Key();
-                        //Значение ключа
-                        k.Value = Filtr[0];
-                        //Флаг активности ключа
-                        k.IsActiv = true;
-
-                        //Класс замены
-                        ColorKeys r = new ColorKeys();
-                        //Действие связанное с заменой 3-ка просто замена
-                        r.Action = Stuff.ActionDecoder(Filtr[1]);
-                        //Ключ приыязанный к классу замены
-                        r.RegKey = k;
-                        //Значение замены
-                        r.color = Color.FromName(PL.ChildNodes[2].InnerText);
-
-                        //Добавляем ключ в пул замен
-                        Color_Keys.Add(r);
-                        //================================================================
-                    }
-                }
-                catch { }
-
-
-
-                //try
-                //{
-                //    nodeList = root.SelectNodes("ADDITION_KEYS");//Считываем настройки ключей замены
-                //    //Пробегаем по всем ключам замены
-                //    foreach (XmlNode PL in nodeList[0].ChildNodes)
-                //    {
-                //        //=========== Конструктор для добавления в датагрид =============
-                //        //Строка для добавления на грид
-                //        string[] Filtr = new string[3];
-                //        //Ключ замены регулярное выражение
-                //        Filtr[0] = Encoding.Unicode.GetString(Convert.FromBase64String(PL.ChildNodes[0].InnerText));
-                //        //Filtr[0] = PL.ChildNodes[0].InnerText;
-                //        //Значение замены
-                //        Filtr[1] = PL.ChildNodes[1].InnerText;
-                //        //Действие
-                //        Filtr[2] = PL.ChildNodes[2].InnerText;
-                //        //Добавляем правило в ГРИД
-                //        dataGridView4.Rows.Add(Filtr);
-                //        //================================================================
-
-                //        //=========== Конструктор для добавления в датагрид =============
-                //        //Создаем экземпляр ключа
-                //        Key k = new Key();
-                //        //Значение ключа
-                //        k.Value = Filtr[0];
-                //        //Флаг активности ключа
-                //        k.IsActiv = true;
-
-                //        //Класс замены
-                //        ReplaceKeys r = new ReplaceKeys();
-                //        //Действие связанное с заменой 3-ка просто замена
-                //        r.Action = ActionDecoder(Filtr[2]);
-                //        //Ключ приыязанный к классу замены
-                //        r.RegKey = k;
-                //        //Значение замены
-                //        r.NewValue = Filtr[1];
-
-                //        //Добавляем ключ в пул замен
-                //        Addition_Replace_Keys.Add(r);
-                //        //================================================================
-                //    }
-                //}
-                //catch { }
-
-
-                try
-                {
-                    nodeList = root.SelectNodes("CATEGORY_PRODUCT");//Считываем категории продуктов
-                    //Пробегаем по всем категориям продуктов
-                    foreach (XmlNode PL in nodeList[0].ChildNodes)
-                    {
-
-                        CategoryOfProduct COFP = new CategoryOfProduct();
-                        COFP.Name = PL.ChildNodes[0].InnerText;
-
-                        try
-                        {
-                            if (PL.ChildNodes[1].ChildNodes.Count > 0)
-                            {
-                                foreach (XmlNode KEYPL in PL.ChildNodes[1].ChildNodes)
-                                {
-                                    //Создаем экземпляр ключа
-                                    Key kmc = new Key();
-                                    //Значение ключа
-                                    kmc.Value = Encoding.Unicode.GetString(Convert.FromBase64String(KEYPL.ChildNodes[0].InnerText));
-                                    //kmc.Value = KEYPL.ChildNodes[0].InnerText;
-                                    //Флаг активности ключа
-                                    kmc.IsActiv = true;
-
-                                    COFP.Keys.Add(kmc);
-                                }
-                            }
-                        }
-                        catch { }
-                        try
-                        {
-                            if (PL.ChildNodes[2].ChildNodes.Count > 0)
-                            {
-                                foreach (XmlNode SUBPL in PL.ChildNodes[2].ChildNodes)
-                                {
-                                    SubCategoryOfProduct SOFC = new SubCategoryOfProduct();
-                                    SOFC.Name = SUBPL.ChildNodes[0].InnerText;
-
-                                    try
-                                    {
-                                        if (SUBPL.ChildNodes[1].ChildNodes.Count > 0)
-                                        {
-                                            foreach (XmlNode KEYPL in SUBPL.ChildNodes[1].ChildNodes)
-                                            {
-                                                //Создаем экземпляр ключа
-                                                Key kmc = new Key();
-                                                //Значение ключа
-                                                kmc.Value = Encoding.Unicode.GetString(Convert.FromBase64String(KEYPL.ChildNodes[0].InnerText));
-                                                //kmc.Value = KEYPL.ChildNodes[0].InnerText;
-                                                //Флаг активности ключа
-                                                kmc.IsActiv = true;
-
-                                                SOFC.Keys.Add(kmc);
-                                            }
-                                        }
-                                    }
-                                    catch { }
-
-                                    COFP.SubCategoty.Add(SOFC);
-                                }
-                            }
-                        }
-                        catch { }
-
-
-                        listBox1.Items.Add(COFP.Name);
-
-                        mainCategoryList.Add(COFP);
-
-                        string[] s = new string[2];
-
-                        s[0] = COFP.Name;
-                        s[1] = COFP.SubCategoty.Count.ToString();
-                        dataGridView7.Rows.Add(s);
-                    }
-
-
-                }
-                catch { }
-
-                //=======================================================================================================
-                //Загружаем товары из базы данных
-                //=======================================================================================================
-
-                FileInfo f = new FileInfo(_ProductDBPath+"\\ProductDB.csv");
-                FileStream fileStream = new FileStream(f.FullName,FileMode.Open);
-                StreamReader sr = new StreamReader(fileStream,Encoding.UTF8);
-
-                string Line = "";
-
-
-                int _it = 0; 
-
-                while (!sr.EndOfStream)
-                {
-                    Line = sr.ReadLine(); try
-                    {
-                        string[] MassLine = Line.Split(new char[] { '\t' });
-
-                        Product PN = new Product();
-
-                        PN.CategoryOfProductName = MassLine[0];
-                        PN.SubCategoryOfProductName = MassLine[1];
-
-                        PN.datePost = Convert.ToDateTime(MassLine[2]);
-                        PN.HandBlock = Convert.ToBoolean(MassLine[3]);
-
-                        PN.IDURL = MassLine[4];
-                        PN.Materials = MassLine[5];
-
-                        PN.Prises = MassLine[6];
-                        PN.Sizes = MassLine[7];
-
-
-                        PN.prise = Stuff.ConvertMassToInt(MassLine[8].Split(new char[] { ',' }));
-
-                        PN.sellerText = Stuff.ConvertMassToList(MassLine[9].Split(new char[] { ',' }));
-
-                        PN.sellerTextCleen = Stuff.ConvertMassToList(MassLine[10].Split(new char[] { ',' }));
-
-                        PN.URLPhoto = Stuff.ConvertMassToList(MassLine[11].Split(new char[] { ',' }));
-
-                        PN.FilePath = Stuff.ConvertMassToList(MassLine[12].Split(new char[] { ',' }));
-
-                        ProductListForPosting.Add(PN);
-
-                        AddToTreeView(PN, _it);
-                        _it++;
-                    }
-                    catch
-                    {
-
-                    }
-                }
-               
-                sr.Close();
-                fileStream.Close();
-
-                //=======================================================================================================
-                
-
-                //=======================================================================================================
-                //Загружаем товары из базы данных
-                //=======================================================================================================
-
-                FileInfo f_UP = new FileInfo(_ProductDBPath + "\\ProductDBUnProcessed.csv");
-                FileStream fileStream_UP = new FileStream(f_UP.FullName, FileMode.Open);
-                StreamReader sr_UP = new StreamReader(fileStream_UP, Encoding.UTF8);
-
-                Line = "";
-
-
-                _it = 0;
-
-                while (!sr_UP.EndOfStream)
-                {
-                    Line = sr_UP.ReadLine(); try
-                    {
-                        string[] MassLine = Line.Split(new char[] { '\t' });
-
-                        Product PN = new Product();
-
-                        PN.CategoryOfProductName = MassLine[0];
-                        PN.SubCategoryOfProductName = MassLine[1];
-
-                        PN.datePost = Convert.ToDateTime(MassLine[2]);
-                        PN.HandBlock = Convert.ToBoolean(MassLine[3]);
-
-                        PN.IDURL = MassLine[4];
-                        PN.Materials = MassLine[5];
-
-                        PN.Prises = MassLine[6];
-                        PN.Sizes = MassLine[7];
-
-
-                        PN.prise = Stuff.ConvertMassToInt(MassLine[8].Split(new char[] { ',' }));
-
-                        PN.sellerText = Stuff.ConvertMassToList(MassLine[9].Split(new char[] { ',' }));
-
-                        PN.sellerTextCleen = Stuff.ConvertMassToList(MassLine[10].Split(new char[] { ',' }));
-
-                        PN.URLPhoto = Stuff.ConvertMassToList(MassLine[11].Split(new char[] { ',' }));
-
-                        PN.FilePath = Stuff.ConvertMassToList(MassLine[12].Split(new char[] { ',' }));
-
-                        ProductListSource.Add(PN);
-
-                        listBox3.Items.Add(PN.IDURL);
-                        _it++;
-                    }
-                    catch
-                    {
-
-                    }
-                }
-
-                sr_UP.Close();
-                fileStream_UP.Close();
-
-                //=======================================================================================================
+                //Считываем товары из базы данных не обработанных товаров
+                ConfigReader.readProductDBUnProcessed(this);
 
             }
             catch//Если при загрузке конфиг файла случился конфуз, сообщаем пользователю и загружаем по умолчанию
             {
-                //MessageBox.Show("При загрузке конфигурационного файла произошла ошибка! Загружены настройки по умолчанию! GUID будет сброшен!");
-                //textBox_InputPath.Text = "Введите входную директорию!";//Значение по умолчанию
-                //textBox_OutputPath.Text = "Введите выходную директорию!";//Значение по умолчанию
-                //ButtonCompression.BackColor = Color.LightGray;//Значение по умолчанию
-                //ButtonDeCompression.BackColor = Color.LightGray;//Значение по умолчанию
             }
 
+            //Обновляем поставщиков
             Stuff.UpdatePostavshikov(this);
-
-
-
-            
+                        
         }
 
+
+
+        /// <summary>
+        /// Действия при закрытии программы
+        /// </summary>
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             try
@@ -569,96 +174,85 @@ namespace VKSMM
                 settings1.Encoding = Encoding.UTF8;
 
                 //Создаем поток записи в XML файл
-                XmlWriter writer1 = XmlWriter.Create(_path, settings1);
+                XmlWriter writerConfigXML = XmlWriter.Create(_path, settings1);
                 //Записываем заглавие документа
-                writer1.WriteStartDocument();
+                writerConfigXML.WriteStartDocument();
                 //Корневой тег
-                writer1.WriteStartElement("CFG");
+                writerConfigXML.WriteStartElement("CFG");
                 //Сохраняем номер копа
-                //writer1.WriteElementString("AUTHENTIFICATION_STATUS", _AUTHENTIFICATION_STATUS.ToString());
+                //writerConfigXML.WriteElementString("AUTHENTIFICATION_STATUS", _AUTHENTIFICATION_STATUS.ToString());
 
 
-
-                //Сохраняем максимальный объем файлов в контейнере
-                writer1.WriteElementString("PRODUCT_DB_DIR", _ProductDBPath);
-
-                //Сохраняем максимальный объем файлов в контейнере
-                writer1.WriteElementString("PHOTO_DIR", _PhotoPath);
-
-                //Сохраняем максимальный объем файлов в контейнере
-                writer1.WriteElementString("INPUT_DIR", _InputPath);
-
-                //Сохраняем максимальный объем файлов в контейнере
-                writer1.WriteElementString("PROVIDER_DIR", _ProviderDir);
+                ConfigWriter.writeDirToConfigFile(this, writerConfigXML);
 
                 //Корневой тег
-                writer1.WriteStartElement("REPLACE_KEYS");
+                writerConfigXML.WriteStartElement("REPLACE_KEYS");
 
                 foreach (ReplaceKeys RK in Replace_Keys)
                 {
                     //Корневой тег
-                    writer1.WriteStartElement("R_KEY");
+                    writerConfigXML.WriteStartElement("R_KEY");
 
                     //Сохраняем максимальный объем файлов в контейнере
-                    writer1.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(RK.RegKey.Value)));
+                    writerConfigXML.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(RK.RegKey.Value)));
                     //Сохраняем максимальный объем файлов в контейнере
-                    writer1.WriteElementString("VALUE", RK.NewValue);
+                    writerConfigXML.WriteElementString("VALUE", RK.NewValue);
                     //Сохраняем максимальный объем файлов в контейнере
-                    writer1.WriteElementString("MODE", Stuff.ActionCoder(RK.Action));
+                    writerConfigXML.WriteElementString("MODE", Stuff.ActionCoder(RK.Action));
                     //Сохраняем максимальный объем файлов в контейнере
                     //Сохраняем максимальный объем файлов в контейнере
-                    writer1.WriteElementString("GROUP", RK.GroupValue);
+                    writerConfigXML.WriteElementString("GROUP", RK.GroupValue);
 
                     //Закрываем корневой тег
-                    writer1.WriteEndElement();
+                    writerConfigXML.WriteEndElement();
                 }
-                writer1.WriteEndElement();
+                writerConfigXML.WriteEndElement();
 
                 //Корневой тег
-                //writer1.WriteStartElement("ADDITION_KEYS");
+                //writerConfigXML.WriteStartElement("ADDITION_KEYS");
 
                 //foreach (ReplaceKeys RK in Addition_Replace_Keys)
                 //{
                 //    //Корневой тег
-                //    writer1.WriteStartElement("R_KEY");
+                //    writerConfigXML.WriteStartElement("R_KEY");
 
                 //    //Сохраняем максимальный объем файлов в контейнере
-                //    writer1.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(RK.RegKey.Value)));
+                //    writerConfigXML.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(RK.RegKey.Value)));
                 //    //Сохраняем максимальный объем файлов в контейнере
-                //    writer1.WriteElementString("VALUE", RK.NewValue);
+                //    writerConfigXML.WriteElementString("VALUE", RK.NewValue);
                 //    //Сохраняем максимальный объем файлов в контейнере
-                //    writer1.WriteElementString("MODE", ActionCoder(RK.Action));
+                //    writerConfigXML.WriteElementString("MODE", ActionCoder(RK.Action));
                 //    //Сохраняем максимальный объем файлов в контейнере
 
                 //    //Закрываем корневой тег
-                //    writer1.WriteEndElement();
+                //    writerConfigXML.WriteEndElement();
                 //}
-                //writer1.WriteEndElement();
+                //writerConfigXML.WriteEndElement();
 
 
 
-                writer1.WriteStartElement("COLOR_KEYS");
+                writerConfigXML.WriteStartElement("COLOR_KEYS");
 
                 foreach (ColorKeys CK in Color_Keys)
                 {
                     //Корневой тег
-                    writer1.WriteStartElement("C_KEY");
+                    writerConfigXML.WriteStartElement("C_KEY");
 
                     //Сохраняем максимальный объем файлов в контейнере
-                    writer1.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(CK.RegKey.Value)));
+                    writerConfigXML.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(CK.RegKey.Value)));
                     //Сохраняем максимальный объем файлов в контейнере
-                    writer1.WriteElementString("MODE", Stuff.ActionCoder(CK.Action));
+                    writerConfigXML.WriteElementString("MODE", Stuff.ActionCoder(CK.Action));
                     //Сохраняем максимальный объем файлов в контейнере
-                    writer1.WriteElementString("COLOR", CK.color.Name);
+                    writerConfigXML.WriteElementString("COLOR", CK.color.Name);
                     //Сохраняем максимальный объем файлов в контейнере
 
                     //Закрываем корневой тег
-                    writer1.WriteEndElement();
+                    writerConfigXML.WriteEndElement();
                 }
 
-                writer1.WriteEndElement();
+                writerConfigXML.WriteEndElement();
 
-                writer1.WriteStartElement("CATEGORY_PRODUCT");
+                writerConfigXML.WriteStartElement("CATEGORY_PRODUCT");
 
                 foreach (CategoryOfProduct CP in mainCategoryList)
                 {
@@ -666,33 +260,33 @@ namespace VKSMM
                     {
 
                         //Корневой тег
-                        writer1.WriteStartElement("CATEG_KEYS");
+                        writerConfigXML.WriteStartElement("CATEG_KEYS");
 
                         //Сохраняем максимальный объем файлов в контейнере
-                        writer1.WriteElementString("NAME", CP.Name);
+                        writerConfigXML.WriteElementString("NAME", CP.Name);
 
-                        writer1.WriteStartElement("KEYS");
+                        writerConfigXML.WriteStartElement("KEYS");
 
                         foreach (Key CP_K in CP.Keys)
                         {
                             if (CP_K.isProvider)
                             {
 
-                                writer1.WriteStartElement("CAT_KEY");
+                                writerConfigXML.WriteStartElement("CAT_KEY");
 
                                 //Сохраняем максимальный объем файлов в контейнере
-                                writer1.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(CP_K.Value)));
+                                writerConfigXML.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(CP_K.Value)));
 
                                 //Закрываем корневой тег
-                                writer1.WriteEndElement();
+                                writerConfigXML.WriteEndElement();
                             }
                         }
 
                         //Закрываем корневой тег
-                        writer1.WriteEndElement();
+                        writerConfigXML.WriteEndElement();
 
 
-                        writer1.WriteStartElement("SUB_KATS");
+                        writerConfigXML.WriteStartElement("SUB_KATS");
 
                         foreach (SubCategoryOfProduct CP_S in CP.SubCategoty)
                         {
@@ -702,48 +296,48 @@ namespace VKSMM
                             else
                             {
 
-                                writer1.WriteStartElement("S_KAT");
+                                writerConfigXML.WriteStartElement("S_KAT");
 
                                 //Сохраняем максимальный объем файлов в контейнере
-                                writer1.WriteElementString("NAME", CP_S.Name);
+                                writerConfigXML.WriteElementString("NAME", CP_S.Name);
 
-                                writer1.WriteStartElement("SUB_KEY");
+                                writerConfigXML.WriteStartElement("SUB_KEY");
 
                                 //Сохраняем максимальный объем файлов в контейнере
                                 foreach (Key CP_K in CP_S.Keys)
                                 {
 
                                     //Сохраняем максимальный объем файлов в контейнере
-                                    writer1.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(CP_K.Value)));
+                                    writerConfigXML.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(CP_K.Value)));
 
                                 }
                                 //Закрываем корневой тег
-                                writer1.WriteEndElement();
+                                writerConfigXML.WriteEndElement();
 
 
                                 //Закрываем корневой тег
-                                writer1.WriteEndElement();
+                                writerConfigXML.WriteEndElement();
                             }
                         }
 
                         //Закрываем корневой тег
-                        writer1.WriteEndElement();
+                        writerConfigXML.WriteEndElement();
 
 
 
                         //Закрываем корневой тег
-                        writer1.WriteEndElement();
+                        writerConfigXML.WriteEndElement();
                     }
                 }
 
-                writer1.WriteEndElement();
+                writerConfigXML.WriteEndElement();
 
 
 
                 //Закрываем корневой тег
-                writer1.WriteEndElement();
+                writerConfigXML.WriteEndElement();
                 //Отпускаем поток записи
-                writer1.Close();
+                writerConfigXML.Close();
 
 
 
@@ -904,6 +498,7 @@ namespace VKSMM
 
         }
 
+        //====================================================================================================================================================================
 
 
         // Импорт данных из Excel-файла (не более 5 столбцов и любое количество строк <= 50.
@@ -1053,7 +648,6 @@ namespace VKSMM
 
 
 
-        public List<string> imageNoExist = new List<string>();
 
         //Действия при выборе товара
         private void listBox3_SelectedIndexChanged(object sender, EventArgs e)
@@ -1438,19 +1032,6 @@ namespace VKSMM
 
 
 
-        /// <summary>
-        /// Путь к месту запуска программы
-        /// </summary>
-        public string _path = "";
-
-
-
-
-
-        public int selectedIndexCategory = -1;
-        public int selectedIndexSubCategory = -1;
-        public int selectedIndexReplace = -1;
-        public int selectedIndexColor = -1;
 
      
 
@@ -1502,8 +1083,6 @@ namespace VKSMM
 
 
 
-        Regex regex = new Regex(@"туп(\w*)", RegexOptions.IgnoreCase);
-       // Regex.IsMatch(email, pattern, RegexOptions.IgnoreCase)
 
         private void dataGridView5_SelectionChanged(object sender, EventArgs e)
         {
@@ -3821,7 +3400,6 @@ namespace VKSMM
 
         }
 
-        public List<string> swownProductInListView = new List<string>();
 
         private void listBox5_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -3930,8 +3508,6 @@ namespace VKSMM
 
         }
 
-        // Выбрать путь и имя файла в диалоговом окне
-        public SaveFileDialog ofd = new SaveFileDialog();
 
 
         private void button6_Click(object sender, EventArgs e)
@@ -5490,78 +5066,78 @@ namespace VKSMM
 
 
 
-            Action S1 = () => button1.Enabled = false;
-            button1.Invoke(S1);
+            //Action S1 = () => button1.Enabled = false;
+            //button1.Invoke(S1);
 
-            DirectoryInfo d = new DirectoryInfo(_InputPath);
+            //DirectoryInfo d = new DirectoryInfo(_InputPath);
 
-            if (!d.Exists)
-            {
-                MessageBox.Show("Директория " + _InputPath + " не существует!");
-            }
-            else
-            {
+            //if (!d.Exists)
+            //{
+            //    MessageBox.Show("Директория " + _InputPath + " не существует!");
+            //}
+            //else
+            //{
 
-                int cf = d.GetFiles().Length;
-                int pf = 0;
+            //    int cf = d.GetFiles().Length;
+            //    int pf = 0;
 
-                imageNoExist.Clear();
-
-
-                foreach (FileInfo f in d.GetFiles())
-                {
-                    try
-                    {
-                        Action S2 = () => label11.Text = "Файлов обработано " + pf.ToString() + " из " + cf.ToString();
-                        label11.Invoke(S2);
+            //    imageNoExist.Clear();
 
 
-
-
-                       Stuff.ExportExcel(f.FullName,this);
+            //    foreach (FileInfo f in d.GetFiles())
+            //    {
+            //        try
+            //        {
+            //            Action S2 = () => label11.Text = "Файлов обработано " + pf.ToString() + " из " + cf.ToString();
+            //            label11.Invoke(S2);
 
 
 
-                        f.Delete();
-                        pf++;
-                    }
-                    catch
-                    { }
-                }
+
+            //           Stuff.ExportExcel(f.FullName,this);
 
 
-                foreach (Product p in ProductListSourceBuffer)
-                {
-                    ProductListSource.Add(p);
-                }
+
+            //            f.Delete();
+            //            pf++;
+            //        }
+            //        catch
+            //        { }
+            //    }
 
 
-                ProductListSourceBuffer.Clear();
+            //    foreach (Product p in ProductListSourceBuffer)
+            //    {
+            //        ProductListSource.Add(p);
+            //    }
 
 
-                string sL = "При загрузке отсутствуют следующие изображения: \r\n";
-                foreach (string L in imageNoExist)
-                {
-                    sL = sL + L + "\r\n";
-                }
+            //    ProductListSourceBuffer.Clear();
 
-                MessageBox.Show(sL);
 
-                listBox3.Items.Clear();
+            //    string sL = "При загрузке отсутствуют следующие изображения: \r\n";
+            //    foreach (string L in imageNoExist)
+            //    {
+            //        sL = sL + L + "\r\n";
+            //    }
 
-                int i = 1;
+            //    MessageBox.Show(sL);
 
-                foreach (Product P in ProductListSource)
-                {
-                    listBox3.Items.Add(i);
-                    i++;
-                }
+            //    listBox3.Items.Clear();
 
-                Stuff.UpdatePostavshikov(this);
+            //    int i = 1;
 
-                Action S3 = () => button1.Enabled = true;
-                button1.Invoke(S3);
-            }
+            //    foreach (Product P in ProductListSource)
+            //    {
+            //        listBox3.Items.Add(i);
+            //        i++;
+            //    }
+
+            //    Stuff.UpdatePostavshikov(this);
+
+            //    Action S3 = () => button1.Enabled = true;
+            //    button1.Invoke(S3);
+            //}
 
         }
 

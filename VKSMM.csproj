@@ -82,6 +82,8 @@
     <Compile Include="ModelClasses\Model.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StuffClasses\ConfigReader.cs" />
+    <Compile Include="StuffClasses\ConfigWriter.cs" />
     <Compile Include="StuffClasses\Stuff.cs" />
     <Compile Include="ThredsCode\Core.cs" />
     <EmbeddedResource Include="MainWindowVKSMM.resx">
