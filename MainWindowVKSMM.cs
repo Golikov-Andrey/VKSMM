@@ -16,6 +16,7 @@ using System.Threading;
 using System.Net;
 using VKSMM.ModelClasses;//Файл с классами моделей данных
 using VKSMM.StuffClasses;//Файл с классами вспомогательных методов
+using VKSMM.ThredsCode;//Файл с классами вспомогательных методов
 
 namespace VKSMM
 {
@@ -29,8 +30,11 @@ namespace VKSMM
         //====================================================================================================================================================================
         //                          Блок объявления переменных
         //====================================================================================================================================================================
-
+        /// <summary>
+        /// Процесс конвертации XML файлов с товаром во внутренний формат программы
+        /// </summary>
         public Thread Thread_Dir_Processing;
+
         public Thread Thread_Provider_Processing;
         public Thread Thread_Create_XLS_Processing; //Create_XLS
 
@@ -50,7 +54,10 @@ namespace VKSMM
 
         public List<CategoryOfProduct> mainCategoryList = new List<CategoryOfProduct>();
 
-        public List<Product> ProductListSource = new List<Product>();
+        /// <summary>
+        /// Список не обработанных товаров. Заполняется при загрузке XLS файлов   
+        /// </summary>
+        public List<Product> productListSource = new List<Product>();
 
         public List<Product> ProductListSourceBuffer = new List<Product>();
         
@@ -126,7 +133,7 @@ namespace VKSMM
                 //Путь к базе с товарами
                 _ProductDBPath = F.FullName.Substring(0, F.FullName.LastIndexOf("\\"));
 
-                //Считываем пути к рабочим дирректориям пролграммы
+                //Считываем пути к рабочим дирректориям программы
                 ConfigReader.readDirFromConfigFile(this, nodeList, root);
 
                 //Считываем ключи замены из конфигурацыы
@@ -154,8 +161,6 @@ namespace VKSMM
                         
         }
 
-
-
         /// <summary>
         /// Действия при закрытии программы
         /// </summary>
@@ -182,156 +187,17 @@ namespace VKSMM
                 //Сохраняем номер копа
                 //writerConfigXML.WriteElementString("AUTHENTIFICATION_STATUS", _AUTHENTIFICATION_STATUS.ToString());
 
-
+                //Сохраняем пути к рабочим дирректориям программы
                 ConfigWriter.writeDirToConfigFile(this, writerConfigXML);
 
-                //Корневой тег
-                writerConfigXML.WriteStartElement("REPLACE_KEYS");
+                //Сохраняем ключи замены из конфигурацыы
+                ConfigWriter.writeReplaceKeyToConfigFile(this, writerConfigXML);
 
-                foreach (ReplaceKeys RK in Replace_Keys)
-                {
-                    //Корневой тег
-                    writerConfigXML.WriteStartElement("R_KEY");
+                //Сохраняем цветовые ключи из конфигурацыы
+                ConfigWriter.writeColorKeyToConfigFile(this, writerConfigXML);
 
-                    //Сохраняем максимальный объем файлов в контейнере
-                    writerConfigXML.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(RK.RegKey.Value)));
-                    //Сохраняем максимальный объем файлов в контейнере
-                    writerConfigXML.WriteElementString("VALUE", RK.NewValue);
-                    //Сохраняем максимальный объем файлов в контейнере
-                    writerConfigXML.WriteElementString("MODE", Stuff.ActionCoder(RK.Action));
-                    //Сохраняем максимальный объем файлов в контейнере
-                    //Сохраняем максимальный объем файлов в контейнере
-                    writerConfigXML.WriteElementString("GROUP", RK.GroupValue);
-
-                    //Закрываем корневой тег
-                    writerConfigXML.WriteEndElement();
-                }
-                writerConfigXML.WriteEndElement();
-
-                //Корневой тег
-                //writerConfigXML.WriteStartElement("ADDITION_KEYS");
-
-                //foreach (ReplaceKeys RK in Addition_Replace_Keys)
-                //{
-                //    //Корневой тег
-                //    writerConfigXML.WriteStartElement("R_KEY");
-
-                //    //Сохраняем максимальный объем файлов в контейнере
-                //    writerConfigXML.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(RK.RegKey.Value)));
-                //    //Сохраняем максимальный объем файлов в контейнере
-                //    writerConfigXML.WriteElementString("VALUE", RK.NewValue);
-                //    //Сохраняем максимальный объем файлов в контейнере
-                //    writerConfigXML.WriteElementString("MODE", ActionCoder(RK.Action));
-                //    //Сохраняем максимальный объем файлов в контейнере
-
-                //    //Закрываем корневой тег
-                //    writerConfigXML.WriteEndElement();
-                //}
-                //writerConfigXML.WriteEndElement();
-
-
-
-                writerConfigXML.WriteStartElement("COLOR_KEYS");
-
-                foreach (ColorKeys CK in Color_Keys)
-                {
-                    //Корневой тег
-                    writerConfigXML.WriteStartElement("C_KEY");
-
-                    //Сохраняем максимальный объем файлов в контейнере
-                    writerConfigXML.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(CK.RegKey.Value)));
-                    //Сохраняем максимальный объем файлов в контейнере
-                    writerConfigXML.WriteElementString("MODE", Stuff.ActionCoder(CK.Action));
-                    //Сохраняем максимальный объем файлов в контейнере
-                    writerConfigXML.WriteElementString("COLOR", CK.color.Name);
-                    //Сохраняем максимальный объем файлов в контейнере
-
-                    //Закрываем корневой тег
-                    writerConfigXML.WriteEndElement();
-                }
-
-                writerConfigXML.WriteEndElement();
-
-                writerConfigXML.WriteStartElement("CATEGORY_PRODUCT");
-
-                foreach (CategoryOfProduct CP in mainCategoryList)
-                {
-                    if (CP.isProvider)
-                    {
-
-                        //Корневой тег
-                        writerConfigXML.WriteStartElement("CATEG_KEYS");
-
-                        //Сохраняем максимальный объем файлов в контейнере
-                        writerConfigXML.WriteElementString("NAME", CP.Name);
-
-                        writerConfigXML.WriteStartElement("KEYS");
-
-                        foreach (Key CP_K in CP.Keys)
-                        {
-                            if (CP_K.isProvider)
-                            {
-
-                                writerConfigXML.WriteStartElement("CAT_KEY");
-
-                                //Сохраняем максимальный объем файлов в контейнере
-                                writerConfigXML.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(CP_K.Value)));
-
-                                //Закрываем корневой тег
-                                writerConfigXML.WriteEndElement();
-                            }
-                        }
-
-                        //Закрываем корневой тег
-                        writerConfigXML.WriteEndElement();
-
-
-                        writerConfigXML.WriteStartElement("SUB_KATS");
-
-                        foreach (SubCategoryOfProduct CP_S in CP.SubCategoty)
-                        {
-                            if (CP_S.Name == "ВСЕ")
-                            {
-                            }
-                            else
-                            {
-
-                                writerConfigXML.WriteStartElement("S_KAT");
-
-                                //Сохраняем максимальный объем файлов в контейнере
-                                writerConfigXML.WriteElementString("NAME", CP_S.Name);
-
-                                writerConfigXML.WriteStartElement("SUB_KEY");
-
-                                //Сохраняем максимальный объем файлов в контейнере
-                                foreach (Key CP_K in CP_S.Keys)
-                                {
-
-                                    //Сохраняем максимальный объем файлов в контейнере
-                                    writerConfigXML.WriteElementString("KEY", Convert.ToBase64String(Encoding.Unicode.GetBytes(CP_K.Value)));
-
-                                }
-                                //Закрываем корневой тег
-                                writerConfigXML.WriteEndElement();
-
-
-                                //Закрываем корневой тег
-                                writerConfigXML.WriteEndElement();
-                            }
-                        }
-
-                        //Закрываем корневой тег
-                        writerConfigXML.WriteEndElement();
-
-
-
-                        //Закрываем корневой тег
-                        writerConfigXML.WriteEndElement();
-                    }
-                }
-
-                writerConfigXML.WriteEndElement();
-
+                //Сохраняем категории товаров из конфигурацыонного файла
+                ConfigWriter.writeCategoryProductToConfigFile(this, writerConfigXML);
 
 
                 //Закрываем корневой тег
@@ -340,154 +206,17 @@ namespace VKSMM
                 writerConfigXML.Close();
 
 
-
-
+                //=======================================================================================================
+                //Загружаем товары из базы данных
+                //=======================================================================================================
+                ConfigWriter.writeProductDB(this);
+                //=======================================================================================================
 
 
                 //=======================================================================================================
                 //Загружаем товары из базы данных
                 //=======================================================================================================
-
-                FileInfo f = new FileInfo(_ProductDBPath + "\\ProductDB.csv");
-                FileStream fileStream = new FileStream(f.FullName, FileMode.Create);
-                StreamWriter sr = new StreamWriter(fileStream, Encoding.UTF8);
-
-                string Line = "";
-
-                try
-                {
-
-                    foreach (Product P in ProductListForPosting)
-                    {
-                        Line = P.CategoryOfProductName + "\t";
-                        Line = Line + P.SubCategoryOfProductName + "\t";
-
-                        Line = Line + P.datePost.ToString() + "\t";
-                        Line = Line + P.HandBlock.ToString() + "\t";
-
-                        Line = Line + P.IDURL + "\t";
-                        Line = Line + P.Materials.Replace('\n', ' ').Replace('\t', ' ').Replace('\r', ' ') + "\t";
-
-                        Line = Line + P.Prises.Replace('\n', ' ').Replace('\t', ' ').Replace('\r', ' ') + "\t";
-                        Line = Line + P.Sizes.Replace('\n', ' ').Replace('\t', ' ').Replace('\r', ' ') + "\t";
-
-
-                        foreach (int intten in P.prise)
-                        {
-                            Line = Line + intten + ",";
-                        }
-                        Line = Line.Substring(0, Line.Length - 1) + "\t";
-
-                        foreach (string intten in P.sellerText)
-                        {
-                            Line = Line + intten.Replace('\n', ' ').Replace('\t', ' ').Replace('\r', ' ') + ",";
-                        }
-                        Line = Line.Substring(0, Line.Length - 1) + "\t";
-
-                        foreach (string intten in P.sellerTextCleen)
-                        {
-                            Line = Line + intten.Replace('\n', ' ').Replace('\t', ' ').Replace('\r', ' ') + ",";
-                        }
-                        Line = Line.Substring(0, Line.Length - 1) + "\t";
-
-                        foreach (string intten in P.URLPhoto)
-                        {
-                            Line = Line + intten + ",";
-                        }
-                        Line = Line.Substring(0, Line.Length - 1) + "\t";
-
-                        foreach (string intten in P.FilePath)
-                        {
-                            Line = Line + intten + ",";
-                        }
-                        Line = Line.Substring(0, Line.Length - 1) + "\t";
-
-
-                        sr.WriteLine(Line);
-                    }
-
-
-                }
-                catch (Exception e1)
-                {
-                    MessageBox.Show("При сохранение товаров возникла ошибка: " + e1.ToString());
-                }
-                sr.Close();
-                fileStream.Close();
-
-                //=======================================================================================================
-
-                //=======================================================================================================
-                //Загружаем товары из базы данных
-                //=======================================================================================================
-
-                FileInfo f_UP = new FileInfo(_ProductDBPath + "\\ProductDBUnProcessed.csv");
-                FileStream fileStream_UP = new FileStream(f_UP.FullName, FileMode.Create);
-                StreamWriter sr_UP = new StreamWriter(fileStream_UP, Encoding.UTF8);
-
-                Line = "";
-
-                try
-                {
-
-                    foreach (Product P in ProductListSource)
-                    {
-                        Line = P.CategoryOfProductName + "\t";
-                        Line = Line + P.SubCategoryOfProductName + "\t";
-
-                        Line = Line + P.datePost.ToString() + "\t";
-                        Line = Line + P.HandBlock.ToString() + "\t";
-
-                        Line = Line + P.IDURL + "\t";
-                        Line = Line + P.Materials.Replace('\n', ' ').Replace('\t', ' ').Replace('\r', ' ') + "\t";
-
-                        Line = Line + P.Prises.Replace('\n', ' ').Replace('\t', ' ').Replace('\r', ' ') + "\t";
-                        Line = Line + P.Sizes.Replace('\n', ' ').Replace('\t', ' ').Replace('\r', ' ') + "\t";
-
-
-                        foreach (int intten in P.prise)
-                        {
-                            Line = Line + intten + ",";
-                        }
-                        Line = Line.Substring(0, Line.Length - 1) + "\t";
-
-                        foreach (string intten in P.sellerText)
-                        {
-                            Line = Line + intten.Replace('\n', ' ').Replace('\t', ' ').Replace('\r', ' ') + ",";
-                        }
-                        Line = Line.Substring(0, Line.Length - 1) + "\t";
-
-                        foreach (string intten in P.sellerTextCleen)
-                        {
-                            Line = Line + intten.Replace('\n', ' ').Replace('\t', ' ').Replace('\r', ' ') + ",";
-                        }
-                        Line = Line.Substring(0, Line.Length - 1) + "\t";
-
-                        foreach (string intten in P.URLPhoto)
-                        {
-                            Line = Line + intten + ",";
-                        }
-                        Line = Line.Substring(0, Line.Length - 1) + "\t";
-
-                        foreach (string intten in P.FilePath)
-                        {
-                            Line = Line + intten + ",";
-                        }
-                        Line = Line.Substring(0, Line.Length - 1) + "\t";
-
-
-                        sr_UP.WriteLine(Line);
-                    }
-
-
-                }
-                catch (Exception e2)
-                {
-                    MessageBox.Show("При сохранение товаров возникла ошибка: " + e2.ToString());
-                }
-                sr_UP.Close();
-                fileStream_UP.Close();
-
+                ConfigWriter.writeProductDBUnProcessed(this);
                 //=======================================================================================================
 
             }
@@ -501,500 +230,62 @@ namespace VKSMM
         //====================================================================================================================================================================
 
 
-        // Импорт данных из Excel-файла (не более 5 столбцов и любое количество строк <= 50.
-        //private int ImporExcel()
-        //{
-        //    // Выбрать путь и имя файла в диалоговом окне
-        //    SaveFileDialog ofd = new SaveFileDialog();
-        //    // Задаем расширение имени файла по умолчанию (открывается папка с программой)
-        //    ofd.DefaultExt = "*.xls;*.xlsx";
-        //    // Задаем строку фильтра имен файлов, которая определяет варианты
-        //    ofd.Filter = "файл Excel (Spisok.xlsx)|*.xlsx";
-        //    // Задаем заголовок диалогового окна
-        //    ofd.Title = "Выберите файл базы данных";
-        //    if (!(ofd.ShowDialog() == DialogResult.OK)) // если файл БД не выбран -> Выход
-        //        return 0;
 
 
-
-
-
-
-
-
-
-        //    Excel.Application ObjWorkExcel = new Excel.Application();
-        //    Excel.Workbook ObjWorkBook = ObjWorkExcel.Workbooks.Open(ofd.FileName);
-
-
-
-        //    Excel.Worksheet ObjWorkSheet_1 = (Excel.Worksheet)ObjWorkBook.Sheets[1]; //получить 1-й лист
-        //    var lastCell_1 = ObjWorkSheet_1.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);//последнюю ячейку
-        //                                                                                            // размеры базы
-        //    int lastColumn_1 = (int)lastCell_1.Column;
-        //    int lastRow_1 = (int)lastCell_1.Row;
-        //    // Перенос в промежуточный массив класса Form1: string[,] list = new string[50, 5]; 
-
-
-
-        //    for (int i = 1; i < lastRow_1; i++) // по всем строкам
-        //    {
-        //        Product prod = new Product();
-
-        //        prod.IDURL = ObjWorkSheet_1.Cells[i + 1, 4].Text.ToString();
-
-
-        //        string lll = ObjWorkSheet_1.Cells[i + 1, 1].Text.ToString();
-        //        lll = "g:\\Job\\Education\\VKSMM\\ТЕСТ\\ФОТО\\" + lll.Substring(lll.IndexOf("\\") + 1);
-        //        prod.FilePath.Add(lll);
-
-
-        //        prod.URLPhoto.Add(ObjWorkSheet_1.Cells[i + 1, 2].Text.ToString());
-        //        prod.datePost = Convert.ToDateTime(ObjWorkSheet_1.Cells[i + 1, 3].Text.ToString());
-
-        //        try
-        //        {
-        //            prod.prise[0] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 5].Text.ToString());
-        //            prod.prise[1] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 6].Text.ToString());
-        //            prod.prise[2] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 7].Text.ToString());
-        //            prod.prise[3] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 8].Text.ToString());
-        //            prod.prise[4] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 9].Text.ToString());
-        //        }
-        //        catch { }
-
-
-        //        try
-        //        {
-        //            string www = ObjWorkSheet_1.Cells[i + 1, 11].Text.ToString();
-        //            while (www.IndexOf("\n") >= 0)
-        //            {
-        //                prod.sellerText.Add(www.Substring(0, www.IndexOf("\n")));
-        //                www = www.Substring(www.IndexOf("\n") + 1);
-        //            }
-        //            prod.sellerText.Add(www);
-        //        }
-        //        catch { }
-
-
-        //        prod.sellerTextCleen.Add(ObjWorkSheet_1.Cells[i + 1, 12].Text.ToString());
-
-        //        bool get = false;
-        //        int iii = 0;
-        //        foreach (Product p in ProductListSource)
-        //        {
-        //            if (p.IDURL == prod.IDURL)
-        //            {
-        //                get = true;
-        //                break;
-        //            }
-        //            iii++;
-        //        }
-        //        if (get)
-        //        {
-        //            ProductListSource[iii].FilePath.Add(prod.FilePath[0]);
-        //            ProductListSource[iii].URLPhoto.Add(prod.URLPhoto[0]);
-        //        }
-        //        else
-        //        {
-        //            ProductListSource.Add(prod);
-        //            //dataGridView5.Rows.Add(prod.IDURL);
-        //            listBox3.Items.Add(prod.IDURL);
-        //        }
-        //    }
-
-
-
-
-
-
-
-
-        //    Excel.Worksheet ObjWorkSheet_2 = (Excel.Worksheet)ObjWorkBook.Sheets[2]; //получить 1-й лист
-        //    var lastCell_2 = ObjWorkSheet_2.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);//последнюю ячейку
-
-
-
-
-        //    // размеры базы
-        //    int lastColumn_2 = (int)lastCell_2.Column;
-        //    int lastRow_2 = (int)lastCell_2.Row;
-        //    // Перенос в промежуточный массив класса Form1: string[,] list = new string[50, 5]; 
-        //    for (int i = 1; i < lastRow_2; i++) // по всем строкам
-        //    {
-        //        string[] LIN = new string[5];
-
-        //        for (int j = 0; j < 5; j++) //по всем колонкам
-        //        {
-        //            LIN[j] = ObjWorkSheet_2.Cells[i + 1, j + 1].Text.ToString(); //считываем данные
-        //        }
-
-        //        dataGridView1.Rows.Add(LIN);
-        //    }
-
-
-
-
-        //    ObjWorkBook.Close(false, Type.Missing, Type.Missing); //закрыть не сохраняя
-        //    ObjWorkExcel.Quit(); // выйти из Excel
-        //    GC.Collect(); // убрать за собой
-        //    return 0;
-        //}
-
-
-        //private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-
-        //}
-
-
-
-
-        //Действия при выборе товара
-        private void listBox3_SelectedIndexChanged(object sender, EventArgs e)
+        /// <summary>
+        /// Действия при выборе не обработанного товара
+        /// </summary>
+        private void productUnProcessedListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //if (listBox1.SelectedIndex >= 0)
-            //{
-            //    ProductListSource[listBox3.SelectedIndex].CategoryOfProductName = listBox1.SelectedItem.ToString();
-            //}
-            //if (listBox2.SelectedIndex >= 0)
-            //{
-            //    ProductListSource[listBox3.SelectedIndex].SubCategoryOfProductName = listBox2.SelectedItem.ToString();
-            //}
 
-
-
-            listBox1.SelectedItems.Clear();
-            listBox2.SelectedItems.Clear();
-
-
-            string Razmer = string.Empty;
-            bool RazmerFind = false;
-
+            //Отчищаем listbox категории и подкатегории
+            catListBox.SelectedItems.Clear();
+            subCatListBox.SelectedItems.Clear();
 
             //Если выбран товар то обрабатываем товар
-            if (listBox3.SelectedItems.Count>0)
+            if (productUnProcessedListBox.SelectedItems.Count>0)
             {
+                //========================== Чистим старые данные ================================================================================
                 //Стираем данные от постовщика от старого товара
-                dataGridView3.Rows.Clear();
+                descriptionSourceDataGridView.Rows.Clear();
 
-
-                ProductListSource[listBox3.SelectedIndex].sellerTextCleen.Clear();
+                //Отчищаем отредактированное описание выбранного товара. 
+                //Оператор мог отредактировать регулярное выражение, по этому
+                //описание будет заполнено заново
+                productListSource[productUnProcessedListBox.SelectedIndex].sellerTextCleen.Clear();
 
                 //Буфер с новым описанием
                 string stringpost = "";
 
-                listBox7.Items.Clear();
+                //Отчищаем лог сработок регулярных выражений
+                logRegexListBox.Items.Clear();
+                //================================================================================================================================
 
-
+                //========================== Обновляем данные о товаре ===========================================================================
                 //Проходим по всем строчкам из описания
-                for(int u = 0;u< ProductListSource[listBox3.SelectedIndex].sellerText.Count;u++)//listBox2.SelectedIndex
+                for (int u = 0;u< productListSource[productUnProcessedListBox.SelectedIndex].sellerText.Count;u++)//listBox2.SelectedIndex
                 {
-                    string s = ProductListSource[listBox3.SelectedIndex].sellerText[u];
-
-                    //В строчке должны быть данные
-                    if (s.Length > 1)
-                    {
-                        //Добавляем строчку описания в грид
-                        dataGridView3.Rows.Add(s);
-                    }
-
-                    if (s.ToLower().IndexOf("размер") >= 0)
-                    {
-                        RazmerFind = true;
-                    }
-
-                    if (RazmerFind)
-                    {
-                        Razmer = Razmer + " " + s;
-                    }
-
-                    if (RazmerFind)
-                    {
-                        if (u < ProductListSource[listBox3.SelectedIndex].sellerText.Count - 1)
-                        {
-                            if ((ProductListSource[listBox3.SelectedIndex].sellerText[u + 1].ToLower().IndexOf("рост") >= 0))
-                            {
-                                s = Razmer + " " + ProductListSource[listBox3.SelectedIndex].sellerText[u + 1];
-
-                                u++;
-
-                                //В строчке должны быть данные
-                                if (ProductListSource[listBox3.SelectedIndex].sellerText[u].Length > 1)
-                                {
-                                    //Добавляем строчку описания в грид
-                                    dataGridView3.Rows.Add(ProductListSource[listBox3.SelectedIndex].sellerText[u]);
-                                }
-
-                                RazmerFind = false;
-                                Razmer = "";
-                            }
-                            else
-                            {
-                                if ((ProductListSource[listBox3.SelectedIndex].sellerText[u + 1].Length > 4))
-                                {
-                                    s = Razmer;
-                                    RazmerFind = false;
-                                    Razmer = "";
-                                }
-                            }
-                        }
-                        else
-                        {
-                            s = Razmer;
-                            RazmerFind = false;
-                            Razmer = "";
-                        }
-                    }
-
-
-
-                    if (!RazmerFind)
-                    {
-
-                        //В строчке должны быть данные
-                        if (s.Length > 1)
-                        {
-                           // //Добавляем строчку описания в грид
-                           // dataGridView3.Rows.Add(s);
-
-                            //Регулярные выражения
-                            Regex regex;// = new Regex(@"туп(\w*)", RegexOptions.IgnoreCase);
-                                        //Буфферная переменная куда поступают данные после коррекции
-                            string resultLine = s;
-
-                            //====================================== Блок замены или стирания ненужной информации ================================================
-                            //Производим замену по ключам
-                            foreach (ReplaceKeys k in Replace_Keys)
-                            {
-                                //Если ключ включен, то его исполняем
-                                if (k.RegKey.IsActiv)
-                                {
-                                    //Регулярное выражение
-                                    regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
-
-                                    if(regex.IsMatch(resultLine))
-                                    {
-                                        listBox7.Items.Add(k.RegKey.Value);
-                                    }
-
-
-                                    //Если режим замены, то заменяем на значение ключа
-                                    if (k.Action == 3)
-                                    {
-                                        //Выполняем замену
-                                        resultLine = regex.Replace(resultLine, k.NewValue);
-                                    }
-                                    //Если режим удаления, то просто вставляем пустое значение
-                                    if (k.Action == 4)
-                                    {
-                                        //Выполняем замену
-                                        resultLine = regex.Replace(resultLine, "");
-                                    }
-
-                                    //Если режим удаления, то просто вставляем пустое значение
-                                    if (k.Action == 5)
-                                    {
-                                        if (regex.IsMatch(resultLine))
-                                        {
-                                            resultLine = "";
-                                        }
-                                        //Выполняем замену
-                                        //resultLine = regex.Replace(resultLine, "");
-                                    }
-
-                                }
-                            }
-
-
-                            //if (resultLine.Length == 0)
-                            //{ resultLine = s; }
-                            bool reg_line = true;
-
-                            //Проверяем цвет и статус строчки
-                            foreach (ColorKeys k in Color_Keys)
-                            {
-                                //Если ключ активен, то выполняем его
-                                if (k.RegKey.IsActiv)
-                                {
-                                    //Регулярное выражение
-                                    regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
-                                    //Проверяем вхождение регулярного выражения
-                                    bool result = regex.IsMatch(s);//resultLine
-                                                                   //Если регулярное выражение сработало
-                                    if (result)
-                                    {
-                                        //Красим строчку в нужный цвет
-                                        dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor = k.color;
-                                        //Если действие регистрация то добавляем в конструктор поста
-                                        if (k.Action == 1)
-                                        {
-                                            reg_line = false;
-                                            //Добавляем к описанию товаров
-                                            //stringpost = stringpost + resultLine + "\r\n";
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if ((reg_line) && (resultLine.Length > 2))
-                            {
-                                ProductListSource[listBox3.SelectedIndex].sellerTextCleen.Add(resultLine);
-                                //Аккамулируем данные для поста
-                                stringpost = stringpost + resultLine + "\r\n";
-                            }
-                            //Красим добавленную строчку 
-                            dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.SelectionBackColor = dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor;
-                        }
-                    }
+                    //Запускаем процедуру обработки описания товара
+                    stringpost += Stuff.descriptionProcessing(this, productListSource[productUnProcessedListBox.SelectedIndex].sellerText[u], u);
                 }
 
                 //Добавляем отредактированный пост на форму
-                textBox3.Text = stringpost;
+                descriptionRegexTextBox.Text = stringpost;
 
-
-
-
-                //Чистим картинки в листбоксе
-                imageList1.Images.Clear();
-                listView1.Items.Clear();
-
-                int ii = 0;
-                foreach (string s in ProductListSource[listBox3.SelectedIndex].FilePath)
-                {
-                    if ((ProductListSource[listBox3.SelectedIndex].FilePath.Count == 1)
-                        && (s == ""))
-                    {
-                       // MessageBox.Show("У данного товара отсутствуют изображения!");
-                    }
-                    else
-                    {
-                        try
-                        {
-                            FileInfo f = new FileInfo(s);
-                            if (f.Exists)
-                            {
-
-                                imageList1.Images.Add(new Bitmap(s));
-                                listView1.Items.Add(new ListViewItem(s, ii));
-                                ii++;
-                            }
-                            else
-                            {
-                                imageNoExist.Add(s);
-                            }
-                        }
-                        catch (Exception ee)
-                        {
-                            MessageBox.Show(ee.ToString());
-                        }
-                    }
-                }
-
-
-
-                
-
-
-                //========================== Блок с автоподбором категорий ====================================================
-                int i = 0;
-                int j = 0;
-                //Регулярное выражение
-                Regex regexCat;
-                //Перебираем категории товара
-                foreach (CategoryOfProduct c in mainCategoryList)
-                {
-                    //Флаг обнаружения категории
-                    bool regincat = false;
-
-                    if (ProductListSource[listBox3.SelectedIndex].CategoryOfProductName == c.Name)
-                    {
-                        listBox1.SelectedIndex = i;
-                        regincat = true;
-                    }
-
-
-
-                    //Перебираем все ключи привязанные к категории товара
-                    foreach (Key k in c.Keys)
-                    {
-                        //Если ключ активен, то проверяем его
-                        if (k.IsActiv)
-                        {
-                            //Проверяем регулярное выражение
-                            regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
-                            //Аккамулируем результаты поиска 
-                            regincat = regexCat.IsMatch(stringpost) || regincat;
-                        }
-                    }
-                    //Если категория выбрана, то выделяем ее на форме
-                    if (regincat)
-                    {
-                        if (ProductListSource[listBox3.SelectedIndex].CategoryOfProductName == "ВСЕ")
-                        {
-                            ProductListSource[listBox3.SelectedIndex].CategoryOfProductName = c.Name;
-                        }
-                        if (!ProductListSource[listBox3.SelectedIndex].HandBlock)
-                        {
-                            //Выделяем категорию
-                            listBox1.SelectedIndex = i;
-                        }
-                        j = 0;
-                        //Перебираем подкатегории выбранной категории
-                        foreach (SubCategoryOfProduct s in c.SubCategoty)
-                        {
-                            //
-                            bool reginsubcat = false;
-
-                            if (ProductListSource[listBox3.SelectedIndex].SubCategoryOfProductName == s.Name)
-                            {
-                                listBox2.SelectedIndex = j;
-                            }
-
-                                foreach (Key k in s.Keys)
-                            {
-                                if (k.IsActiv)
-                                {
-                                    regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
-
-                                    reginsubcat = regexCat.IsMatch(stringpost) || reginsubcat;
-                                }
-                            }
-
-                            if(reginsubcat)
-                            {
-                                if (ProductListSource[listBox3.SelectedIndex].SubCategoryOfProductName == "ВСЕ")
-                                {
-                                    ProductListSource[listBox3.SelectedIndex].SubCategoryOfProductName = s.Name;
-                                }
-
-                                if (!ProductListSource[listBox3.SelectedIndex].HandBlock)
-                                {
-                                    listBox2.SelectedIndex = j;
-                                    break;
-                                }
-                            }                            
-                            j++;
-                        }
-
-                        break;
-                    }
-                    //Индекс ссылка на категорию товара
-                    i++;
-                }
-
-
-
-
-
-
-                numericUpDown2.Value = ProductListSource[listBox3.SelectedIndex].prise[0];
+                //Подтягиваем изображения выделенного товара 
+                Stuff.loadImageInListBox(this);
                 //================================================================================================================================
 
+                //========================== Блок с автоподбором категорий =======================================================================
+                Stuff.categorySelection(this, stringpost);
 
-
+                numericUpDownPrize.Value = productListSource[productUnProcessedListBox.SelectedIndex].prise[0];
+                //================================================================================================================================
             }
+
         }
+
+
 
         private void button9_Click(object sender, EventArgs e)
         {
@@ -1030,10 +321,7 @@ namespace VKSMM
             //if (comboBox3.Text == "Пропускать") dataGridView2.Rows[dataGridView2.Rows.Count - 1].DefaultCellStyle.BackColor = Color.LightGreen;
         }
 
-
-
-
-     
+    
 
         private void dataGridView7_SelectionChanged(object sender, EventArgs e)
         {
@@ -1082,19 +370,17 @@ namespace VKSMM
         }
 
 
-
-
         private void dataGridView5_SelectionChanged(object sender, EventArgs e)
         {
            // if (dataGridView5.SelectedRows.Count > 0)
             {
-                dataGridView3.Rows.Clear();
+                descriptionSourceDataGridView.Rows.Clear();
                 //listBox1.Items.Add(ProductListSource[listBox2.SelectedIndex].sellerText[0]);
                 // string[] ssss = new string[ProductListSource[listBox2.SelectedIndex].sellerText.Count]; 
                 string stringpost = "";
 
                 int i = 0;
-                foreach(Product p in ProductListSource)
+                foreach(Product p in productListSource)
                 {
                   //  if(p.IDURL== dataGridView5.SelectedRows[0].Cells[0].Value.ToString())
                     {
@@ -1105,25 +391,25 @@ namespace VKSMM
 
 
 
-                foreach (string s in ProductListSource[i].sellerText)//listBox2.SelectedIndex
+                foreach (string s in productListSource[i].sellerText)//listBox2.SelectedIndex
                 {
-                    dataGridView3.Rows.Add(s);
+                    descriptionSourceDataGridView.Rows.Add(s);
 
                     
-                    dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor = Color.Red;
+                    descriptionSourceDataGridView.Rows[descriptionSourceDataGridView.Rows.Count - 1].DefaultCellStyle.BackColor = Color.Red;
                     
 
                     foreach (DataGridViewRow r in dataGridView2.Rows)
                     {
                         if (s.IndexOf(r.Cells[0].Value.ToString()) >= 0)
                         {
-                            dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor = r.DefaultCellStyle.BackColor;
+                            descriptionSourceDataGridView.Rows[descriptionSourceDataGridView.Rows.Count - 1].DefaultCellStyle.BackColor = r.DefaultCellStyle.BackColor;
                             break;
                         }
                     }
                     foreach (DataGridViewRow r in dataGridView2.Rows)
                     {
-                        if (dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor == Color.LightGreen)
+                        if (descriptionSourceDataGridView.Rows[descriptionSourceDataGridView.Rows.Count - 1].DefaultCellStyle.BackColor == Color.LightGreen)
                         {
                             stringpost = stringpost + s + "\r\n";
                             break;
@@ -1131,13 +417,13 @@ namespace VKSMM
                     }
 
 
-                    dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.SelectionBackColor = dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor;
+                    descriptionSourceDataGridView.Rows[descriptionSourceDataGridView.Rows.Count - 1].DefaultCellStyle.SelectionBackColor = descriptionSourceDataGridView.Rows[descriptionSourceDataGridView.Rows.Count - 1].DefaultCellStyle.BackColor;
                 }
 
                 textBox7.Text = stringpost;
 
-                imageList1.Images.Clear();
-                listView1.Items.Clear();
+                imageListUnProcessedProduct.Images.Clear();
+                unProcessedProductListView.Items.Clear();
                 //int i = 0;
 
                 //foreach (string s in ProductListSource[listBox2.SelectedIndex].FilePath)
@@ -1240,84 +526,21 @@ namespace VKSMM
 
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-
-            imageNoExist.Clear();
-
-
-            // Выбрать путь и имя файла в диалоговом окне
-            OpenFileDialog ofd = new OpenFileDialog();
-            // Задаем расширение имени файла по умолчанию (открывается папка с программой)
-            ofd.DefaultExt = "*.xls;*.xlsx";
-            // Задаем строку фильтра имен файлов, которая определяет варианты
-            ofd.Filter = "файл Excel (Spisok.xlsx)|*.xlsx";
-            // Задаем заголовок диалогового окна
-            ofd.Title = "Выберите файл базы данных";
-            if ((ofd.ShowDialog() == DialogResult.OK)) // если файл БД не выбран -> Выход
-            {
-
-
-                //// Выбрать путь и имя файла в диалоговом окне
-                //FolderBrowserDialog fbd = new FolderBrowserDialog();
-
-                //if (!(fbd.ShowDialog() == DialogResult.OK)) // если файл БД не выбран -> Выход
-                //    return 0;
-
-
-
-                Stuff.ExportExcel(ofd.FileName,this);
-
-                MessageBox.Show("Данные загружены!");
-
-
-                //t1 = new Thread(_PlayerNAUDIO.PlayBack_Codes);
-                //t1.Priority = ThreadPriority.Lowest;
-                //t1.Start();
-                //t2 = new Thread(_PlayerNAUDIO.PlayBack_Codes);
-                //t2.Priority = ThreadPriority.Lowest;
-                //t2.Start();
-                //t3 = new Thread(_PlayerNAUDIO.PlayBack_Codes);
-                //t3.Priority = ThreadPriority.Lowest;
-                //t3.Start();
-                //t4 = new Thread(_PlayerNAUDIO.PlayBack_Codes);
-                //t4.Priority = ThreadPriority.Lowest;
-                //t4.Start();
-
-
-
-                foreach (Product P in ProductListSource)
-                {
-                    listBox3.Items.Add(P.IDURL);
-                }
-
-
-                string sL = "При загрузке отсутствуют следующие изображения: \r\n";
-                foreach (string L in imageNoExist)
-                {
-                    sL = sL + L + "\r\n";
-                }
-
-                MessageBox.Show(sL);
-            }
-
-            Stuff.UpdatePostavshikov(this);
-        }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            listBox2.Items.Clear();
+            subCatListBox.Items.Clear();
 
-            if ((listBox3.SelectedIndex >= 0)&&(listBox1.SelectedIndex>=0))
+            if ((productUnProcessedListBox.SelectedIndex >= 0)&&(catListBox.SelectedIndex>=0))
             {
-                ProductListSource[listBox3.SelectedIndex].CategoryOfProductName = listBox1.SelectedItem.ToString();
+                productListSource[productUnProcessedListBox.SelectedIndex].CategoryOfProductName = catListBox.SelectedItem.ToString();
             }
             
             try
             {
-                foreach (SubCategoryOfProduct sub in mainCategoryList[listBox1.SelectedIndex].SubCategoty)
+                foreach (SubCategoryOfProduct sub in mainCategoryList[catListBox.SelectedIndex].SubCategoty)
                 {
-                    listBox2.Items.Add(sub.Name);
+                    subCatListBox.Items.Add(sub.Name);
                 }
             }
             catch
@@ -1627,81 +850,25 @@ namespace VKSMM
             List<int> RemovedIndexes = new List<int>();
 
 
-            RemovedIndexes = ProcessingProducts(listBox3.SelectedIndex);
+            RemovedIndexes = Stuff.ProcessingProducts(this, productUnProcessedListBox.SelectedIndex);
 
 
             for (int iq = RemovedIndexes.Count - 1; iq >= 0; iq--)
             {
-                listBox3.Items.RemoveAt(RemovedIndexes[iq]);
-                ProductListSource.RemoveAt(RemovedIndexes[iq]);
+                productUnProcessedListBox.Items.RemoveAt(RemovedIndexes[iq]);
+                productListSource.RemoveAt(RemovedIndexes[iq]);
             }
 
             Stuff.UpdatePostavshikov(this);
 
-            listBox3.SelectedItems.Clear();
+            productUnProcessedListBox.SelectedItems.Clear();
 
-            textBox3.Text = "";
-            listView1.Items.Clear();
-            numericUpDown2.Value = 0;
-            dataGridView3.Rows.Clear();
+            descriptionRegexTextBox.Text = "";
+            unProcessedProductListView.Items.Clear();
+            numericUpDownPrize.Value = 0;
+            descriptionSourceDataGridView.Rows.Clear();
 
-            //try
-            //{
-            //    treeView1.SelectedNode = treeView1.Nodes[0];
-            //}
-            //catch
-            //{ }
-
-
-            //bool goodsProcessed = true;
-
-            //foreach(DataGridViewRow r in dataGridView1.Rows)
-            //{
-            //    if((r.DefaultCellStyle.BackColor==Color.LightBlue)|| (r.DefaultCellStyle.BackColor == Color.LightGreen))
-            //    {
-
-            //    }
-            //    else
-            //    {
-            //        goodsProcessed = false;
-            //    }
-            //}
-
-
-
-            //if (goodsProcessed)
-            //{
-            //    try
-            //    {
-            //        int index = listBox3.SelectedIndex;
-
-            //        ProductListForPosting.Add(ProductListSource[index]);
-
-            //        AddToTreeView(ProductListSource[index], ProductListForPosting.Count - 1);
-
-            //        ProductListSource.RemoveAt(index);
-
-            //        try
-            //        {
-            //            listBox3.Items.Remove(listBox3.SelectedItem);
-            //        }
-            //        catch
-            //        { }
-
-            //        textBox3.Text = "";
-            //        listView1.Items.Clear();
-            //        numericUpDown2.Value = 0;
-
-            //    }
-            //    catch (Exception we)
-            //    {
-            //        MessageBox.Show("Выберите товар!");
-            //    }
-            //}
-            //else
-            //{
-            //    MessageBox.Show("Не все строчки описания товара обработаны!");
-            //}
+           
         }
 
         public void AddToTreeView(Product P, int index)
@@ -1808,24 +975,24 @@ namespace VKSMM
 
 
 
-            listBox3.SelectedItems.Clear();
+            productUnProcessedListBox.SelectedItems.Clear();
 
-            textBox3.Text = "";
-            listView1.Items.Clear();
-            numericUpDown2.Value = 0;
-            dataGridView3.Rows.Clear();
+            descriptionRegexTextBox.Text = "";
+            unProcessedProductListView.Items.Clear();
+            numericUpDownPrize.Value = 0;
+            descriptionSourceDataGridView.Rows.Clear();
 
 
             List<int> RemovedIndexes = new List<int>();
 
 
-            RemovedIndexes = ProcessingProductsAll();
+            RemovedIndexes = Stuff.ProcessingProductsAll(this);
 
 
             for (int iq = RemovedIndexes.Count-1; iq>=0;iq-- )
             {
-                listBox3.Items.RemoveAt(RemovedIndexes[iq]);
-                ProductListSource.RemoveAt(RemovedIndexes[iq]);
+                productUnProcessedListBox.Items.RemoveAt(RemovedIndexes[iq]);
+                productListSource.RemoveAt(RemovedIndexes[iq]);
             }
 
             Stuff.UpdatePostavshikov(this);
@@ -1860,1209 +1027,6 @@ namespace VKSMM
         //}
 
 
-        public List<int> ProcessingProductsAll()
-        {
-            int index = 0;
-            //int indexTV = 0;
-            int indexTV = ProductListForPosting.Count;
-
-            List<int> RemovedIndexes = new List<int>();
-
-            foreach (Product P in ProductListSource)
-            {
-                if (((P.IDURL.IndexOf(comboBox5.Text) >= 0) || (comboBox5.Text == "ВСЕ"))
-                    &&((P.CategoryOfProductName== comboBox4.Text) ||(comboBox4.Text == "ВСЕ")))
-                {
-
-
-
-                    P.sellerTextCleen.Clear();
-
-
-
-                    bool isCat = false;
-                    bool isSub = false;
-                    bool isStop = true;
-
-
-                    //Буфер с новым описанием
-                    string stringpost = "";
-
-
-                    bool goodsProcessed = true;
-
-                    string Razmer = string.Empty;
-                    bool RazmerFind = false;
-
-
-
-                    ////Проходим по всем строчкам из описания
-                    //foreach (string s in P.sellerText)//listBox2.SelectedIndex
-                    //{
-                    //    //В строчке должны быть данные
-                    //    if (s.Length > 1)
-                    //    {
-                    //        //Регулярные выражения
-                    //        Regex regex;// = new Regex(@"туп(\w*)", RegexOptions.IgnoreCase);
-                    //                    //Буфферная переменная куда поступают данные после коррекции
-                    //        string resultLine = s;
-
-
-
-                    //        //====================================== Блок замены или стирания ненужной информации ================================================
-                    //        //Производим замену по ключам
-                    //        foreach (ReplaceKeys k in Replace_Keys)
-                    //        {
-                    //            //Если ключ включен, то его исполняем
-                    //            if (k.RegKey.IsActiv)
-                    //            {
-                    //                //Регулярное выражение
-                    //                regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
-                    //                //Если режим замены, то заменяем на значение ключа
-                    //                if (k.Action == 3)
-                    //                {
-                    //                    //Выполняем замену
-                    //                    resultLine = regex.Replace(resultLine, k.NewValue);
-                    //                }
-                    //                //Если режим удаления, то просто вставляем пустое значение
-                    //                if (k.Action == 4)
-                    //                {
-                    //                    //Выполняем замену
-                    //                    resultLine = regex.Replace(resultLine, "");
-                    //                }
-
-                    //                if (k.Action == 5)
-                    //                {
-                    //                    if (regex.IsMatch(resultLine))
-                    //                    {
-                    //                        resultLine = "";
-                    //                    }
-                    //                }
-
-                    //            }
-                    //        }
-
-
-
-
-
-
-                    //        bool reg_line_Green = false;
-                    //        bool reg_line_Blue = true;
-
-                    //        //Проверяем цвет и статус строчки
-                    //        foreach (ColorKeys k in Color_Keys)
-                    //        {
-                    //            //Если ключ активен, то выполняем его
-                    //            if (k.RegKey.IsActiv)
-                    //            {
-                    //                //Регулярное выражение
-                    //                regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
-                    //                //Проверяем вхождение регулярного выражения
-                    //                bool result = regex.IsMatch(s);//resultLine
-                    //                                               //Если регулярное выражение сработало
-                    //                if (result)
-                    //                {
-                    //                    //Красим строчку в нужный цвет
-                    //                    // dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor = k.color;
-                    //                    //Если действие регистрация то добавляем в конструктор поста
-                    //                    //if (k.Action == 0)
-                    //                    //{
-                    //                    //    isStop = false;
-                    //                    //}
-
-                    //                    if ((k.Action == 2))
-                    //                    {
-                    //                        reg_line_Green = true;
-                    //                    }
-
-                    //                    if ((k.Action == 1))
-                    //                    {
-                    //                        reg_line_Blue = false;
-                    //                        //Добавляем к описанию товаров
-                    //                        //stringpost = stringpost + resultLine + "\r\n";
-                    //                        //P.sellerTextCleen.Add(resultLine);
-
-                    //                        ////Добавляем к описанию товаров
-                    //                        //stringpost = stringpost + resultLine + "\r\n";
-                    //                    }
-                    //                    break;
-                    //                }
-                    //            }
-                    //        }
-
-
-
-
-                    //        if ((!reg_line_Green && reg_line_Blue) && (resultLine.Length > 2))
-                    //        {
-                    //            goodsProcessed = false;
-                    //        }
-
-
-
-
-
-
-                    //        if ((true) && (resultLine.Length > 2))//reg_line_Green
-                    //        {
-                    //            P.sellerTextCleen.Add(resultLine);
-                    //            //ProductListSource[listBox3.SelectedIndex].sellerTextCleen.Add(resultLine);
-                    //            //Аккамулируем данные для поста
-                    //            stringpost = stringpost + resultLine + "\r\n";
-                    //        }
-
-
-                    //        ////Аккамулируем данные для поста
-                    //        //stringpost = stringpost + resultLine + "\r\n";
-                    //        ////Красим добавленную строчку 
-                    //        //dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.SelectionBackColor = dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor;
-                    //    }
-                    //}
-
-                    //Проходим по всем строчкам из описания
-                    for (int u = 0; u < P.sellerText.Count; u++)//listBox2.SelectedIndex
-                    {
-                        string s = P.sellerText[u];
-
-                        ////В строчке должны быть данные
-                        //if (s.Length > 1)
-                        //{
-                        //    //Добавляем строчку описания в грид
-                        //    dataGridView3.Rows.Add(s);
-                        //}
-
-                        if ((s.ToLower().IndexOf("размер") >= 0)||(s.ToLower().IndexOf("разм.") >= 0) || (s.ToLower().IndexOf("рост") >= 0) || (s.ToLower().IndexOf("opct") >= 0))
-                        {
-                            RazmerFind = true;
-                        }
-
-                        if (RazmerFind)
-                        {
-                            Razmer = Razmer + " " + s;
-                        }
-
-                        if (RazmerFind)
-                        {
-                            if (u < P.sellerText.Count - 1)
-                            {
-                                if ((P.sellerText[u + 1].ToLower().IndexOf("рост") >= 0))
-                                {
-                                    s = Razmer + " " + P.sellerText[u + 1];
-
-                                    u++;
-
-                                    ////В строчке должны быть данные
-                                    //if (P.sellerText[u].Length > 1)
-                                    //{
-                                    //    //Добавляем строчку описания в грид
-                                    //    dataGridView3.Rows.Add(P.sellerText[u]);
-                                    //}
-
-                                    RazmerFind = false;
-                                    Razmer = "";
-                                }
-                                else
-                                {
-                                    if ((P.sellerText[u + 1].Length > 4))
-                                    {
-                                        s = Razmer;
-                                        RazmerFind = false;
-                                        Razmer = "";
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                s = Razmer;
-                                RazmerFind = false;
-                                Razmer = "";
-                            }
-                        }
-
-
-
-                        if (!RazmerFind)
-                        {
-
-                            //В строчке должны быть данные
-                            if (s.Length > 1)
-                            {
-                                // //Добавляем строчку описания в грид
-                                // dataGridView3.Rows.Add(s);
-
-                                //Регулярные выражения
-                                Regex regex;// = new Regex(@"туп(\w*)", RegexOptions.IgnoreCase);
-                                            //Буфферная переменная куда поступают данные после коррекции
-                                string resultLine = s;
-
-                                //====================================== Блок замены или стирания ненужной информации ================================================
-                                //Производим замену по ключам
-                                foreach (ReplaceKeys k in Replace_Keys)
-                                {
-                                    //Если ключ включен, то его исполняем
-                                    if (k.RegKey.IsActiv)
-                                    {
-                                        //Регулярное выражение
-                                        regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
-
-                                        if(regex.IsMatch(resultLine))
-                                        {
-                                            P.logRegularExpression.Add(k.RegKey.Value);
-                                        }
-
-
-                                        //Если режим замены, то заменяем на значение ключа
-                                        if (k.Action == 3)
-                                        {
-                                            //Выполняем замену
-                                            resultLine = regex.Replace(resultLine, k.NewValue);
-                                        }
-                                        //Если режим удаления, то просто вставляем пустое значение
-                                        if (k.Action == 4)
-                                        {
-                                            //Выполняем замену
-                                            resultLine = regex.Replace(resultLine, "");
-                                        }
-
-                                        //Если режим удаления, то просто вставляем пустое значение
-                                        if (k.Action == 5)
-                                        {
-                                            if (regex.IsMatch(resultLine))
-                                            {
-                                                resultLine = "";
-                                            }
-                                            //Выполняем замену
-                                            //resultLine = regex.Replace(resultLine, "");
-                                        }
-
-                                    }
-                                }
-
-
-                                //if (resultLine.Length == 0)
-                                //{ resultLine = s; }
-                                bool reg_line = true;
-
-                                //Проверяем цвет и статус строчки
-                                foreach (ColorKeys k in Color_Keys)
-                                {
-                                    //Если ключ активен, то выполняем его
-                                    if (k.RegKey.IsActiv)
-                                    {
-                                        //Регулярное выражение
-                                        regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
-                                        //Проверяем вхождение регулярного выражения
-                                        bool result = regex.IsMatch(s);//resultLine
-                                                                       //Если регулярное выражение сработало
-                                        if (result)
-                                        {
-                                            //Красим строчку в нужный цвет
-                                            //dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor = k.color;
-                                            //Если действие регистрация то добавляем в конструктор поста
-                                            if (k.Action == 1)
-                                            {
-                                                reg_line = false;
-                                                //Добавляем к описанию товаров
-                                                //stringpost = stringpost + resultLine + "\r\n";
-                                            }
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                if ((reg_line) && (resultLine.Length > 2))
-                                {
-                                    P.sellerTextCleen.Add(resultLine);
-                                    //Аккамулируем данные для поста
-                                    //P.sellerTextCleen.Add(resultLine);
-
-                                    stringpost = stringpost + resultLine + "\r\n";
-                                }
-                                //Красим добавленную строчку 
-                                //dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.SelectionBackColor = dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor;
-                            }
-                        }
-
-                    }
-
-
-
-                    string sumPrise = "";
-                    string sumSize = "";
-                    string sumMaterial = "";
-
-                    string[] RegPrise = new string[5] { "[0-9]{2,7}[ ]?(руб|р|₽)", "ййй", "йййй", "йййй", "йййй" };
-                    string[] RegSize = new string[5] { "размер", "ййййй", "йййййй", "ййй", "ййййй" };
-                    string[] RegMaterial = new string[5] { "материал", "ййй", "йййй", "ййййй", "йййййй" };
-
-                    int ig = 0;
-
-                    foreach (string Line in P.sellerText)
-                    {
-
-                        foreach (string RegEx in RegPrise)
-                        {
-                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
-                            {
-                                string price = match.Value;
-                                foreach (Match match1 in Regex.Matches(price, "[0-9]{2,7}", RegexOptions.IgnoreCase))
-                                {
-                                    price = match1.Value;
-                                    sumPrise = sumPrise + price + "\r\n";
-                                }
-                            }
-                        }
-
-                        foreach (string RegEx in RegSize)
-                        {
-                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
-                            {
-                                string size = Line;// match.Value;
-                                sumSize = sumSize + size + "\r\n";
-                            }
-                        }
-
-                        foreach (string RegEx in RegMaterial)
-                        {
-                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
-                            {
-                                string material = Line;//match.Value;
-                                sumMaterial = sumMaterial + material + "\r\n";
-                            }
-                        }
-                    }
-
-                    P.Prises = sumPrise;
-                    P.Sizes = sumSize;
-                    P.Materials = sumMaterial;
-
-                    //foreach (Match match in Regex.Matches(text, @"(\d[.\d]*\d)"))
-                    //{
-                    //    string price = match.Value;
-                    //    int dots = price.Count(i => i.Equals('.'));
-                    //    if (dots > 1) price = price.Replace(".", "").Insert(price.LastIndexOf(".") - 1, ".");
-                    //    sum += double.Parse(price, new NumberFormatInfo() { NumberDecimalSeparator = "." });
-                    //}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    ////========================== Блок с автоподбором категорий ====================================================
-                    //int i = 0;
-                    //int j = 0;
-                    ////Регулярное выражение
-                    //Regex regexCat;
-                    ////Перебираем категории товара
-                    //foreach (CategoryOfProduct c in mainCategoryList)
-                    //{
-                    //    if ((comboBox4.Text == c.Name) || (comboBox4.Text == "ВСЕ"))
-                    //    {
-
-
-                    //        //Флаг обнаружения категории
-                    //        bool regincat = false;
-                    //        //Перебираем все ключи привязанные к категории товара
-                    //        foreach (Key k in c.Keys)
-                    //        {
-                    //            //Если ключ активен, то проверяем его
-                    //            if (k.IsActiv)
-                    //            {
-                    //                //Проверяем регулярное выражение
-                    //                regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
-                    //                //Аккамулируем результаты поиска 
-                    //                regincat = regexCat.IsMatch(stringpost) || regexCat.IsMatch(P.IDURL) || regincat;
-                    //            }
-                    //        }
-                    //        //Если категория выбрана, то выделяем ее на форме
-                    //        if (regincat)
-                    //        {
-                    //            isCat = true;
-
-                    //            if (P.CategoryOfProductName == "ВСЕ")
-                    //            {
-                    //                P.CategoryOfProductName = c.Name;
-                    //            }
-
-
-                    //            j = 0;
-                    //            //Перебираем подкатегории выбранной категории
-                    //            foreach (SubCategoryOfProduct s in c.SubCategoty)
-                    //            {
-                    //                //
-                    //                bool reginsubcat = false;
-                    //                foreach (Key k in s.Keys)
-                    //                {
-                    //                    if (k.IsActiv)
-                    //                    {
-                    //                        regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
-
-                    //                        reginsubcat = regexCat.IsMatch(stringpost) || regexCat.IsMatch(P.IDURL) || reginsubcat;
-                    //                    }
-                    //                }
-
-                    //                if (reginsubcat)
-                    //                {
-                    //                    isSub = true;
-
-                    //                    if (P.SubCategoryOfProductName == "ВСЕ")
-                    //                    {
-                    //                        P.SubCategoryOfProductName = s.Name;
-                    //                    }
-
-                    //                    break;
-                    //                }
-                    //                j++;
-                    //            }
-                    //            break;
-                    //        }
-                    //        //Индекс ссылка на категорию товара
-                    //        i++;
-
-                    //    }
-                    //}
-
-                    //if (i == 0)
-                    //{ //MessageBox.Show("Внимание такой категории не существует!");
-                    //  //break;
-                    //}
-                    ////============================================================= временное решение ===============================================================================
-                    //========================== Блок с автоподбором категорий ====================================================
-                    int i = 0;
-                    int j = 0;
-                    //Регулярное выражение
-                    Regex regexCat;
-                    //Перебираем категории товара
-                    foreach (CategoryOfProduct c in mainCategoryList)
-                    {
-                        //Флаг обнаружения категории
-                        bool regincat = false;
-
-                        if (P.CategoryOfProductName == c.Name)
-                        {
-                            //listBox1.SelectedIndex = i;
-                            regincat = true;
-                        }
-
-
-
-                        //Перебираем все ключи привязанные к категории товара
-                        foreach (Key k in c.Keys)
-                        {
-                            //Если ключ активен, то проверяем его
-                            if (k.IsActiv)
-                            {
-                                //Проверяем регулярное выражение
-                                regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
-                                //Аккамулируем результаты поиска 
-                                regincat = regexCat.IsMatch(stringpost) || regincat;
-                            }
-                        }
-                        //Если категория выбрана, то выделяем ее на форме
-                        if (regincat)
-                        {
-                            if (P.CategoryOfProductName == "ВСЕ")
-                            {
-                                P.CategoryOfProductName = c.Name;
-                            }
-                            //if (!P.HandBlock)
-                            //{
-                            //    //Выделяем категорию
-                            //    listBox1.SelectedIndex = i;
-                            //}
-                            j = 0;
-                            //Перебираем подкатегории выбранной категории
-                            foreach (SubCategoryOfProduct s in c.SubCategoty)
-                            {
-                                //
-                                bool reginsubcat = false;
-
-                                //if (P.SubCategoryOfProductName == s.Name)
-                                //{
-                                //    listBox2.SelectedIndex = j;
-                                //}
-
-                                foreach (Key k in s.Keys)
-                                {
-                                    if (k.IsActiv)
-                                    {
-                                        regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
-
-                                        reginsubcat = regexCat.IsMatch(stringpost) || reginsubcat;
-                                    }
-                                }
-
-                                if (reginsubcat)
-                                {
-                                    if (P.SubCategoryOfProductName == "ВСЕ")
-                                    {
-                                        P.SubCategoryOfProductName = s.Name;
-                                    }
-
-                                    if (!P.HandBlock)
-                                    {
-                                        // listBox2.SelectedIndex = j;
-                                        break;
-                                    }
-                                }
-                                j++;
-                            }
-
-                            break;
-                        }
-                        //Индекс ссылка на категорию товара
-                        i++;
-                    }
-
-
-
-                    //if (isCat)
-                    //{
-                    //    isSub = true;
-                    //    if (P.SubCategoryOfProductName == "ВСЕ")
-                    //    {
-                    //        P.SubCategoryOfProductName = "ВСЕ";
-                    //    }
-                    //}
-
-                    //===============================================================================================================================================================
-
-
-
-                    //if (isCat && isSub && isStop)//&& goodsProcessed
-                    {
-
-                        ProductListForPosting.Add(P);
-
-                        AddToTreeView(P, indexTV);
-
-                        RemovedIndexes.Add(index);
-
-                        indexTV++;
-                        // ProductListSource.RemoveAt(index);
-                        //listBox3.Items.RemoveAt(index);
-                    }
-
-
-                }
-
-                index++;
-            }
-
-
-            return RemovedIndexes;
-        }
-
-        public List<int> ProcessingProducts(int indx)
-        {
-            int index = 0;
-            //int indexTV = 0;
-            int indexTV = ProductListForPosting.Count;
-
-            List<int> RemovedIndexes = new List<int>();
-
-            Product P = ProductListSource[indx];
-            {
-                if ((P.IDURL.IndexOf(comboBox5.Text) >= 0) || (comboBox5.Text == "ВСЕ"))
-                {
-
-
-
-                    P.sellerTextCleen.Clear();
-
-
-
-                    bool isCat = false;
-                    bool isSub = false;
-                    bool isStop = true;
-
-
-                    //Буфер с новым описанием
-                    string stringpost = "";
-
-
-                    bool goodsProcessed = true;
-
-                    string Razmer = string.Empty;
-                    bool RazmerFind = false;
-
-
-
-                    ////Проходим по всем строчкам из описания
-                    //foreach (string s in P.sellerText)//listBox2.SelectedIndex
-                    //{
-                    //    //В строчке должны быть данные
-                    //    if (s.Length > 1)
-                    //    {
-                    //        //Регулярные выражения
-                    //        Regex regex;// = new Regex(@"туп(\w*)", RegexOptions.IgnoreCase);
-                    //                    //Буфферная переменная куда поступают данные после коррекции
-                    //        string resultLine = s;
-
-
-
-                    //        //====================================== Блок замены или стирания ненужной информации ================================================
-                    //        //Производим замену по ключам
-                    //        foreach (ReplaceKeys k in Replace_Keys)
-                    //        {
-                    //            //Если ключ включен, то его исполняем
-                    //            if (k.RegKey.IsActiv)
-                    //            {
-                    //                //Регулярное выражение
-                    //                regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
-                    //                //Если режим замены, то заменяем на значение ключа
-                    //                if (k.Action == 3)
-                    //                {
-                    //                    //Выполняем замену
-                    //                    resultLine = regex.Replace(resultLine, k.NewValue);
-                    //                }
-                    //                //Если режим удаления, то просто вставляем пустое значение
-                    //                if (k.Action == 4)
-                    //                {
-                    //                    //Выполняем замену
-                    //                    resultLine = regex.Replace(resultLine, "");
-                    //                }
-
-                    //                if (k.Action == 5)
-                    //                {
-                    //                    if (regex.IsMatch(resultLine))
-                    //                    {
-                    //                        resultLine = "";
-                    //                    }
-                    //                }
-
-                    //            }
-                    //        }
-
-
-
-
-
-
-                    //        bool reg_line_Green = false;
-                    //        bool reg_line_Blue = true;
-
-                    //        //Проверяем цвет и статус строчки
-                    //        foreach (ColorKeys k in Color_Keys)
-                    //        {
-                    //            //Если ключ активен, то выполняем его
-                    //            if (k.RegKey.IsActiv)
-                    //            {
-                    //                //Регулярное выражение
-                    //                regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
-                    //                //Проверяем вхождение регулярного выражения
-                    //                bool result = regex.IsMatch(s);//resultLine
-                    //                                               //Если регулярное выражение сработало
-                    //                if (result)
-                    //                {
-                    //                    //Красим строчку в нужный цвет
-                    //                    // dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor = k.color;
-                    //                    //Если действие регистрация то добавляем в конструктор поста
-                    //                    //if (k.Action == 0)
-                    //                    //{
-                    //                    //    isStop = false;
-                    //                    //}
-
-                    //                    if ((k.Action == 2))
-                    //                    {
-                    //                        reg_line_Green = true;
-                    //                    }
-
-                    //                    if ((k.Action == 1))
-                    //                    {
-                    //                        reg_line_Blue = false;
-                    //                        //Добавляем к описанию товаров
-                    //                        //stringpost = stringpost + resultLine + "\r\n";
-                    //                        //P.sellerTextCleen.Add(resultLine);
-
-                    //                        ////Добавляем к описанию товаров
-                    //                        //stringpost = stringpost + resultLine + "\r\n";
-                    //                    }
-                    //                    break;
-                    //                }
-                    //            }
-                    //        }
-
-
-
-
-                    //        if ((!reg_line_Green && reg_line_Blue) && (resultLine.Length > 2))
-                    //        {
-                    //            goodsProcessed = false;
-                    //        }
-
-
-
-
-
-
-                    //        if ((true) && (resultLine.Length > 2))//reg_line_Green
-                    //        {
-                    //            P.sellerTextCleen.Add(resultLine);
-                    //            //ProductListSource[listBox3.SelectedIndex].sellerTextCleen.Add(resultLine);
-                    //            //Аккамулируем данные для поста
-                    //            stringpost = stringpost + resultLine + "\r\n";
-                    //        }
-
-
-                    //        ////Аккамулируем данные для поста
-                    //        //stringpost = stringpost + resultLine + "\r\n";
-                    //        ////Красим добавленную строчку 
-                    //        //dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.SelectionBackColor = dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor;
-                    //    }
-                    //}
-
-                    //Проходим по всем строчкам из описания
-                    for (int u = 0; u < P.sellerText.Count; u++)//listBox2.SelectedIndex
-                    {
-                        string s = P.sellerText[u];
-
-                        ////В строчке должны быть данные
-                        //if (s.Length > 1)
-                        //{
-                        //    //Добавляем строчку описания в грид
-                        //    dataGridView3.Rows.Add(s);
-                        //}
-
-                        if (s.ToLower().IndexOf("размер") >= 0)
-                        {
-                            RazmerFind = true;
-                        }
-
-                        if (RazmerFind)
-                        {
-                            Razmer = Razmer + " " + s;
-                        }
-
-                        if (RazmerFind)
-                        {
-                            if (u < P.sellerText.Count - 1)
-                            {
-                                if ((P.sellerText[u + 1].ToLower().IndexOf("рост") >= 0))
-                                {
-                                    s = Razmer + " " + P.sellerText[u + 1];
-
-                                    u++;
-
-                                    ////В строчке должны быть данные
-                                    //if (P.sellerText[u].Length > 1)
-                                    //{
-                                    //    //Добавляем строчку описания в грид
-                                    //    dataGridView3.Rows.Add(P.sellerText[u]);
-                                    //}
-
-                                    RazmerFind = false;
-                                    Razmer = "";
-                                }
-                                else
-                                {
-                                    if ((P.sellerText[u + 1].Length > 4))
-                                    {
-                                        s = Razmer;
-                                        RazmerFind = false;
-                                        Razmer = "";
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                s = Razmer;
-                                RazmerFind = false;
-                                Razmer = "";
-                            }
-                        }
-
-
-
-                        if (!RazmerFind)
-                        {
-
-                            //В строчке должны быть данные
-                            if (s.Length > 1)
-                            {
-                                // //Добавляем строчку описания в грид
-                                // dataGridView3.Rows.Add(s);
-
-                                //Регулярные выражения
-                                Regex regex;// = new Regex(@"туп(\w*)", RegexOptions.IgnoreCase);
-                                            //Буфферная переменная куда поступают данные после коррекции
-                                string resultLine = s;
-
-                                //====================================== Блок замены или стирания ненужной информации ================================================
-                                //Производим замену по ключам
-                                foreach (ReplaceKeys k in Replace_Keys)
-                                {
-                                    //Если ключ включен, то его исполняем
-                                    if (k.RegKey.IsActiv)
-                                    {
-                                        //Регулярное выражение
-                                        regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
-                                        //Если режим замены, то заменяем на значение ключа
-                                        if (k.Action == 3)
-                                        {
-                                            //Выполняем замену
-                                            resultLine = regex.Replace(resultLine, k.NewValue);
-                                        }
-                                        //Если режим удаления, то просто вставляем пустое значение
-                                        if (k.Action == 4)
-                                        {
-                                            //Выполняем замену
-                                            resultLine = regex.Replace(resultLine, "");
-                                        }
-
-                                        //Если режим удаления, то просто вставляем пустое значение
-                                        if (k.Action == 5)
-                                        {
-                                            if (regex.IsMatch(resultLine))
-                                            {
-                                                resultLine = "";
-                                            }
-                                            //Выполняем замену
-                                            //resultLine = regex.Replace(resultLine, "");
-                                        }
-
-                                    }
-                                }
-
-
-                                //if (resultLine.Length == 0)
-                                //{ resultLine = s; }
-                                bool reg_line = true;
-
-                                //Проверяем цвет и статус строчки
-                                foreach (ColorKeys k in Color_Keys)
-                                {
-                                    //Если ключ активен, то выполняем его
-                                    if (k.RegKey.IsActiv)
-                                    {
-                                        //Регулярное выражение
-                                        regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
-                                        //Проверяем вхождение регулярного выражения
-                                        bool result = regex.IsMatch(s);//resultLine
-                                                                       //Если регулярное выражение сработало
-                                        if (result)
-                                        {
-                                            //Красим строчку в нужный цвет
-                                            //dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor = k.color;
-                                            //Если действие регистрация то добавляем в конструктор поста
-                                            if (k.Action == 1)
-                                            {
-                                                reg_line = false;
-                                                //Добавляем к описанию товаров
-                                                //stringpost = stringpost + resultLine + "\r\n";
-                                            }
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                if ((reg_line) && (resultLine.Length > 2))
-                                {
-                                    P.sellerTextCleen.Add(resultLine);
-                                    //Аккамулируем данные для поста
-                                    //P.sellerTextCleen.Add(resultLine);
-
-                                    stringpost = stringpost + resultLine + "\r\n";
-                                }
-                                //Красим добавленную строчку 
-                                //dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.SelectionBackColor = dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor;
-                            }
-                        }
-
-                    }
-
-
-
-                    string sumPrise = "";
-                    string sumSize = "";
-                    string sumMaterial = "";
-
-                    string[] RegPrise = new string[5] { "[0-9]{2,7}[ ]?(руб|р|₽)", "ййй", "йййй", "йййй", "йййй" };
-                    string[] RegSize = new string[5] { "размер", "ййййй", "йййййй", "ййй", "ййййй" };
-                    string[] RegMaterial = new string[5] { "материал", "ййй", "йййй", "ййййй", "йййййй" };
-
-                    int ig = 0;
-
-                    foreach (string Line in P.sellerText)
-                    {
-
-                        foreach (string RegEx in RegPrise)
-                        {
-                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
-                            {
-                                string price = match.Value;
-                                foreach (Match match1 in Regex.Matches(price, "[0-9]{2,7}", RegexOptions.IgnoreCase))
-                                {
-                                    price = match1.Value;
-                                    sumPrise = sumPrise + price + "\r\n";
-                                }
-                            }
-                        }
-
-                        foreach (string RegEx in RegSize)
-                        {
-                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
-                            {
-                                string size = Line;// match.Value;
-                                sumSize = sumSize + size + "\r\n";
-                            }
-                        }
-
-                        foreach (string RegEx in RegMaterial)
-                        {
-                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
-                            {
-                                string material = Line;//match.Value;
-                                sumMaterial = sumMaterial + material + "\r\n";
-                            }
-                        }
-                    }
-
-                    P.Prises = sumPrise;
-                    P.Sizes = sumSize;
-                    P.Materials = sumMaterial;
-
-                    //foreach (Match match in Regex.Matches(text, @"(\d[.\d]*\d)"))
-                    //{
-                    //    string price = match.Value;
-                    //    int dots = price.Count(i => i.Equals('.'));
-                    //    if (dots > 1) price = price.Replace(".", "").Insert(price.LastIndexOf(".") - 1, ".");
-                    //    sum += double.Parse(price, new NumberFormatInfo() { NumberDecimalSeparator = "." });
-                    //}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    ////========================== Блок с автоподбором категорий ====================================================
-                    //int i = 0;
-                    //int j = 0;
-                    ////Регулярное выражение
-                    //Regex regexCat;
-                    ////Перебираем категории товара
-                    //foreach (CategoryOfProduct c in mainCategoryList)
-                    //{
-                    //    if ((comboBox4.Text == c.Name) || (comboBox4.Text == "ВСЕ"))
-                    //    {
-
-
-                    //        //Флаг обнаружения категории
-                    //        bool regincat = false;
-                    //        //Перебираем все ключи привязанные к категории товара
-                    //        foreach (Key k in c.Keys)
-                    //        {
-                    //            //Если ключ активен, то проверяем его
-                    //            if (k.IsActiv)
-                    //            {
-                    //                //Проверяем регулярное выражение
-                    //                regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
-                    //                //Аккамулируем результаты поиска 
-                    //                regincat = regexCat.IsMatch(stringpost) || regexCat.IsMatch(P.IDURL) || regincat;
-                    //            }
-                    //        }
-                    //        //Если категория выбрана, то выделяем ее на форме
-                    //        if (regincat)
-                    //        {
-                    //            isCat = true;
-
-                    //            if (P.CategoryOfProductName == "ВСЕ")
-                    //            {
-                    //                P.CategoryOfProductName = c.Name;
-                    //            }
-
-
-                    //            j = 0;
-                    //            //Перебираем подкатегории выбранной категории
-                    //            foreach (SubCategoryOfProduct s in c.SubCategoty)
-                    //            {
-                    //                //
-                    //                bool reginsubcat = false;
-                    //                foreach (Key k in s.Keys)
-                    //                {
-                    //                    if (k.IsActiv)
-                    //                    {
-                    //                        regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
-
-                    //                        reginsubcat = regexCat.IsMatch(stringpost) || regexCat.IsMatch(P.IDURL) || reginsubcat;
-                    //                    }
-                    //                }
-
-                    //                if (reginsubcat)
-                    //                {
-                    //                    isSub = true;
-
-                    //                    if (P.SubCategoryOfProductName == "ВСЕ")
-                    //                    {
-                    //                        P.SubCategoryOfProductName = s.Name;
-                    //                    }
-
-                    //                    break;
-                    //                }
-                    //                j++;
-                    //            }
-                    //            break;
-                    //        }
-                    //        //Индекс ссылка на категорию товара
-                    //        i++;
-
-                    //    }
-                    //}
-
-                    //if (i == 0)
-                    //{ //MessageBox.Show("Внимание такой категории не существует!");
-                    //  //break;
-                    //}
-                    ////============================================================= временное решение ===============================================================================
-                    //========================== Блок с автоподбором категорий ====================================================
-                    int i = 0;
-                    int j = 0;
-                    //Регулярное выражение
-                    Regex regexCat;
-                    //Перебираем категории товара
-                    foreach (CategoryOfProduct c in mainCategoryList)
-                    {
-                        //Флаг обнаружения категории
-                        bool regincat = false;
-
-                        if (P.CategoryOfProductName == c.Name)
-                        {
-                            //listBox1.SelectedIndex = i;
-                            regincat = true;
-                        }
-
-
-
-                        //Перебираем все ключи привязанные к категории товара
-                        foreach (Key k in c.Keys)
-                        {
-                            //Если ключ активен, то проверяем его
-                            if (k.IsActiv)
-                            {
-                                //Проверяем регулярное выражение
-                                regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
-                                //Аккамулируем результаты поиска 
-                                regincat = regexCat.IsMatch(stringpost) || regincat;
-                            }
-                        }
-                        //Если категория выбрана, то выделяем ее на форме
-                        if (regincat)
-                        {
-                            if (P.CategoryOfProductName == "ВСЕ")
-                            {
-                                P.CategoryOfProductName = c.Name;
-                            }
-                            //if (!P.HandBlock)
-                            //{
-                            //    //Выделяем категорию
-                            //    listBox1.SelectedIndex = i;
-                            //}
-                            j = 0;
-                            //Перебираем подкатегории выбранной категории
-                            foreach (SubCategoryOfProduct s in c.SubCategoty)
-                            {
-                                //
-                                bool reginsubcat = false;
-
-                                //if (P.SubCategoryOfProductName == s.Name)
-                                //{
-                                //    listBox2.SelectedIndex = j;
-                                //}
-
-                                foreach (Key k in s.Keys)
-                                {
-                                    if (k.IsActiv)
-                                    {
-                                        regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
-
-                                        reginsubcat = regexCat.IsMatch(stringpost) || reginsubcat;
-                                    }
-                                }
-
-                                if (reginsubcat)
-                                {
-                                    if (P.SubCategoryOfProductName == "ВСЕ")
-                                    {
-                                        P.SubCategoryOfProductName = s.Name;
-                                    }
-
-                                    if (!P.HandBlock)
-                                    {
-                                        // listBox2.SelectedIndex = j;
-                                        break;
-                                    }
-                                }
-                                j++;
-                            }
-
-                            break;
-                        }
-                        //Индекс ссылка на категорию товара
-                        i++;
-                    }
-
-
-
-                    //if (isCat)
-                    //{
-                    //    isSub = true;
-                    //    if (P.SubCategoryOfProductName == "ВСЕ")
-                    //    {
-                    //        P.SubCategoryOfProductName = "ВСЕ";
-                    //    }
-                    //}
-
-                    //===============================================================================================================================================================
-
-
-
-                   // if (isCat && isSub && isStop)//&& goodsProcessed
-                    {
-
-                        ProductListForPosting.Add(P);
-
-                        AddToTreeView(P, indexTV);
-
-                        RemovedIndexes.Add(index);
-
-                        indexTV++;
-                        // ProductListSource.RemoveAt(index);
-                        //listBox3.Items.RemoveAt(index);
-                    }
-
-
-                }
-
-                index++;
-            }
-
-
-            return RemovedIndexes;
-        }
 
 
         private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
@@ -3127,7 +1091,7 @@ namespace VKSMM
 
 
                 //Чистим картинки в листбоксе
-                imageList1.Images.Clear();
+                imageListUnProcessedProduct.Images.Clear();
                 listView2.Items.Clear();
 
                 int ii = 0;
@@ -3137,7 +1101,7 @@ namespace VKSMM
                     {
                         if (s.Length > 3)
                         {
-                            imageList1.Images.Add(new Bitmap(s));
+                            imageListUnProcessedProduct.Images.Add(new Bitmap(s));
                             listView2.Items.Add(new ListViewItem(s, ii));
                             ii++;
                         }
@@ -3224,7 +1188,7 @@ namespace VKSMM
 
 
                 //Чистим картинки в листбоксе
-                imageList1.Images.Clear();
+                imageListUnProcessedProduct.Images.Clear();
                 listView2.Items.Clear();
 
                 int ii = 0;
@@ -3245,7 +1209,7 @@ namespace VKSMM
 
                                 if (ii < 100)
                                 {
-                                    imageList1.Images.Add(new Bitmap(s));
+                                    imageListUnProcessedProduct.Images.Add(new Bitmap(s));
                                     listView2.Items.Add(new ListViewItem(s, ii));
                                 }
 
@@ -3346,7 +1310,7 @@ namespace VKSMM
 
 
                 //Чистим картинки в листбоксе
-                imageList1.Images.Clear();
+                imageListUnProcessedProduct.Images.Clear();
                 listView2.Items.Clear();
                 int ii = 0;
 
@@ -3365,7 +1329,7 @@ namespace VKSMM
 
                                 if (ii < 100)
                                 {
-                                    imageList1.Images.Add(new Bitmap(ProductListForPosting[indexOfProduct].FilePath[0]));
+                                    imageListUnProcessedProduct.Images.Add(new Bitmap(ProductListForPosting[indexOfProduct].FilePath[0]));
                                     listView2.Items.Add(new ListViewItem(ProductListForPosting[indexOfProduct].FilePath[0], ii));
                                 }
                                 
@@ -3739,13 +1703,13 @@ namespace VKSMM
 
         private void listBox2_MouseUp(object sender, MouseEventArgs e)
         {
-            if ((listBox3.SelectedIndex >= 0) && (listBox2.SelectedIndex >= 0))
+            if ((productUnProcessedListBox.SelectedIndex >= 0) && (subCatListBox.SelectedIndex >= 0))
             {
                 // ProductListSource[listBox3.SelectedIndex].CategoryOfProductName = listBox1.SelectedItem.ToString();
 
-                ProductListSource[listBox3.SelectedIndex].SubCategoryOfProductName = listBox2.SelectedItem.ToString();
+                productListSource[productUnProcessedListBox.SelectedIndex].SubCategoryOfProductName = subCatListBox.SelectedItem.ToString();
 
-                ProductListSource[listBox3.SelectedIndex].HandBlock = true;
+                productListSource[productUnProcessedListBox.SelectedIndex].HandBlock = true;
             }
 
         }
@@ -3962,92 +1926,18 @@ namespace VKSMM
             }
         }
 
-        private void button15_Click(object sender, EventArgs e)
+
+        /// <summary>
+        /// Действия при нажатии кнопки обработки XML с товаром
+        /// </summary>
+        private void LoadProductXLSButton_Click(object sender, EventArgs e)
         {
-            Thread_Dir_Processing = new Thread(Thread_Dir_Processing_Code);
-            Thread_Dir_Processing.Start();
+            //Запускаем процесс конвертации XML файлов с товарами
+            Thread_Dir_Processing = new Thread(Core.Thread_Dir_Processing_Code);
+            Thread_Dir_Processing.Start(this);
         }
 
-        public void Thread_Dir_Processing_Code()
-        {
-            Action S1 = () => button1.Enabled = false;
-            button1.Invoke(S1);
-
-            DirectoryInfo d = new DirectoryInfo(_InputPath);
-
-            if (!d.Exists)
-            {
-                MessageBox.Show("Директория " + _InputPath + " не существует!");
-            }
-            else
-            {
-
-                int cf = d.GetFiles().Length;
-                int pf = 0;
-
-                imageNoExist.Clear();
-
-
-                foreach (FileInfo f in d.GetFiles())
-                {
-                    try
-                    {
-                        Action S2 = () => label11.Text = "Файлов обработано " + pf.ToString() + " из " + cf.ToString();
-                        label11.Invoke(S2);
-
-
-
-                        Stuff.ExportExcel(f.FullName, this);
-
-                        //ExportExcel(f.FullName);
-
-
-
-                        f.Delete();
-                        pf++;
-                    }
-                    catch
-                    { }
-                }
-
-
-                foreach (Product p in ProductListSourceBuffer)
-                {
-                    ProductListSource.Add(p);
-                }
-
-
-                ProductListSourceBuffer.Clear();
-
-
-                string sL = "При загрузке отсутствуют следующие изображения: \r\n";
-                foreach (string L in imageNoExist)
-                {
-                    sL = sL + L + "\r\n";
-                }
-
-                MessageBox.Show(sL);
-
-                listBox3.Items.Clear();
-
-                int i = 1;
-
-                foreach (Product P in ProductListSource)
-                {
-                    listBox3.Items.Add(i);
-                    i++;
-                }
-
-                Stuff.UpdatePostavshikov(this);
-
-                Action S3 = () => button1.Enabled = true;
-                button1.Invoke(S3);
-            }
-
-        }
-
-
-        
+               
 
 
 
@@ -4243,7 +2133,7 @@ namespace VKSMM
 
                     dataGridView7.Rows.Add(new string[] { newCategory.Name, "0" });
                     mainCategoryList.Add(newCategory);
-                    listBox1.Items.Add(newCategory.Name);
+                    catListBox.Items.Add(newCategory.Name);
                 }
             }
             else
@@ -4259,7 +2149,7 @@ namespace VKSMM
 
             dataGridView7.Rows.RemoveAt(u);
             mainCategoryList.RemoveAt(u);
-            listBox1.Items.RemoveAt(u);
+            catListBox.Items.RemoveAt(u);
         }
         //Вносим изменения в категорию товара
         private void button18_Click(object sender, EventArgs e)
@@ -4283,7 +2173,7 @@ namespace VKSMM
             {
                 dataGridView7.Rows[u].Cells[0].Value = textBox6.Text;
                 mainCategoryList[u].Name = textBox6.Text;
-                listBox1.Items[u] = textBox6.Text;
+                catListBox.Items[u] = textBox6.Text;
 
             }
         }
@@ -4407,9 +2297,9 @@ namespace VKSMM
                     mainCategoryList[u].SubCategoty.Add(newSubCP);
                     dataGridView8.Rows.Add(new string[] { newSubCP.Name, "0" });
 
-                    if (listBox1.SelectedIndex == u)
+                    if (catListBox.SelectedIndex == u)
                     {
-                        listBox2.Items.Add(newSubCP.Name);
+                        subCatListBox.Items.Add(newSubCP.Name);
                     }
                 }
 
@@ -4436,9 +2326,9 @@ namespace VKSMM
             dataGridView8.Rows.RemoveAt(w);
             mainCategoryList[u].SubCategoty.RemoveAt(w);
 
-            if (listBox1.SelectedIndex == u)
+            if (catListBox.SelectedIndex == u)
             {
-                listBox2.Items.RemoveAt(w);
+                subCatListBox.Items.RemoveAt(w);
             }
         }
 
@@ -4467,9 +2357,9 @@ namespace VKSMM
                 dataGridView8.Rows[w].Cells[0].Value = textBox9.Text;
                 mainCategoryList[u].SubCategoty[w].Name = textBox9.Text;
 
-                if (listBox1.SelectedIndex == u)
+                if (catListBox.SelectedIndex == u)
                 {
-                    listBox2.Items[w] = textBox9.Text;
+                    subCatListBox.Items[w] = textBox9.Text;
                 }
 
                 //try
@@ -4831,11 +2721,11 @@ namespace VKSMM
 
         public void UpdateMainCategoryList()
         {
-            listBox1.Items.Clear();
-            listBox2.Items.Clear();
+            catListBox.Items.Clear();
+            subCatListBox.Items.Clear();
             foreach (CategoryOfProduct c in mainCategoryList)
             {
-                listBox1.Items.Add(c.Name);
+                catListBox.Items.Add(c.Name);
             }
         }
 

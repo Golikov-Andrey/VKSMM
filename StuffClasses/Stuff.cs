@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VKSMM.ModelClasses;//Файл с классами моделей данных
@@ -69,7 +70,7 @@ namespace VKSMM.StuffClasses
             //mainForm.comboBox5.Items.Add("ВСЕ");
             //mainForm.comboBox5.Text = "ВСЕ";
 
-            foreach (Product P in mainForm.ProductListSource)
+            foreach (Product P in mainForm.productListSource)
             {
                 bool gift = true;
 
@@ -122,8 +123,8 @@ namespace VKSMM.StuffClasses
 
             for (int i = 1; i < lastRow_1; i++) // по всем строкам
             {
-                Action S1 = () => mainForm.label3.Text = "Загружено " + i + " из " + lastRow_1;
-                mainForm.label3.Invoke(S1);
+                Action S1 = () => mainForm.providerLoadLabel.Text = "Загружено " + i + " из " + lastRow_1;
+                mainForm.providerLoadLabel.Invoke(S1);
 
 
 
@@ -248,8 +249,8 @@ namespace VKSMM.StuffClasses
 
 
 
-            Action S2 = () => mainForm.label3.Text = "Загружено " + lastRow_1 + " из " + lastRow_1 + " " + (DateTime.Now - dateTime).ToString();
-            mainForm.label3.Invoke(S2);
+            Action S2 = () => mainForm.providerLoadLabel.Text = "Загружено " + lastRow_1 + " из " + lastRow_1 + " " + (DateTime.Now - dateTime).ToString();
+            mainForm.providerLoadLabel.Invoke(S2);
 
 
 
@@ -317,8 +318,8 @@ namespace VKSMM.StuffClasses
                 {
 
 
-                    Action S2 = () => mainForm.label11.Text = "Поставщиков обработано " + i.ToString() + " из " + lastRow_1.ToString();
-                    mainForm.label11.Invoke(S2);
+                    Action S2 = () => mainForm.XMLLoadLabel.Text = "Поставщиков обработано " + i.ToString() + " из " + lastRow_1.ToString();
+                    mainForm.XMLLoadLabel.Invoke(S2);
 
                     try
                     {
@@ -363,7 +364,7 @@ namespace VKSMM.StuffClasses
 
 
 
-                                mainForm.listBox1.Items.Add(COFP.Name);
+                                mainForm.catListBox.Items.Add(COFP.Name);
 
                                 mainForm.mainCategoryList.Add(COFP);
 
@@ -415,7 +416,6 @@ namespace VKSMM.StuffClasses
             }
             return 0;
         }
-
 
 
         public static void CreateExcel(MainForm mainForm, SaveFileDialog ofd)
@@ -655,7 +655,1306 @@ namespace VKSMM.StuffClasses
         }
 
 
+        public static List<int> ProcessingProductsAll(MainForm mainForm)
+        {
+            int index = 0;
+            //int indexTV = 0;
+            int indexTV = mainForm.ProductListForPosting.Count;
 
+            List<int> RemovedIndexes = new List<int>();
+
+            foreach (Product P in mainForm.productListSource)
+            {
+                if (((P.IDURL.IndexOf(mainForm.comboBox5.Text) >= 0) || (mainForm.comboBox5.Text == "ВСЕ"))
+                    && ((P.CategoryOfProductName == mainForm.comboBox4.Text) || (mainForm.comboBox4.Text == "ВСЕ")))
+                {
+
+
+
+                    P.sellerTextCleen.Clear();
+
+
+
+                    bool isCat = false;
+                    bool isSub = false;
+                    bool isStop = true;
+
+
+                    //Буфер с новым описанием
+                    string stringpost = "";
+
+
+                    bool goodsProcessed = true;
+
+                    string Razmer = string.Empty;
+                    bool RazmerFind = false;
+
+
+
+
+                    //Проходим по всем строчкам из описания
+                    for (int u = 0; u < P.sellerText.Count; u++)//listBox2.SelectedIndex
+                    {
+                        string s = P.sellerText[u];
+
+                        ////В строчке должны быть данные
+                        //if (s.Length > 1)
+                        //{
+                        //    //Добавляем строчку описания в грид
+                        //    dataGridView3.Rows.Add(s);
+                        //}
+
+                        if ((s.ToLower().IndexOf("размер") >= 0) || (s.ToLower().IndexOf("разм.") >= 0) || (s.ToLower().IndexOf("рост") >= 0) || (s.ToLower().IndexOf("opct") >= 0))
+                        {
+                            RazmerFind = true;
+                        }
+
+                        if (RazmerFind)
+                        {
+                            Razmer = Razmer + " " + s;
+                        }
+
+                        if (RazmerFind)
+                        {
+                            if (u < P.sellerText.Count - 1)
+                            {
+                                if ((P.sellerText[u + 1].ToLower().IndexOf("рост") >= 0))
+                                {
+                                    s = Razmer + " " + P.sellerText[u + 1];
+
+                                    u++;
+
+                                    ////В строчке должны быть данные
+                                    //if (P.sellerText[u].Length > 1)
+                                    //{
+                                    //    //Добавляем строчку описания в грид
+                                    //    dataGridView3.Rows.Add(P.sellerText[u]);
+                                    //}
+
+                                    RazmerFind = false;
+                                    Razmer = "";
+                                }
+                                else
+                                {
+                                    if ((P.sellerText[u + 1].Length > 4))
+                                    {
+                                        s = Razmer;
+                                        RazmerFind = false;
+                                        Razmer = "";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                s = Razmer;
+                                RazmerFind = false;
+                                Razmer = "";
+                            }
+                        }
+
+
+
+                        if (!RazmerFind)
+                        {
+
+                            //В строчке должны быть данные
+                            if (s.Length > 1)
+                            {
+                                // //Добавляем строчку описания в грид
+                                // dataGridView3.Rows.Add(s);
+
+                                //Регулярные выражения
+                                Regex regex;// = new Regex(@"туп(\w*)", RegexOptions.IgnoreCase);
+                                            //Буфферная переменная куда поступают данные после коррекции
+                                string resultLine = s;
+
+                                //====================================== Блок замены или стирания ненужной информации ================================================
+                                //Производим замену по ключам
+                                foreach (ReplaceKeys k in mainForm.Replace_Keys)
+                                {
+                                    //Если ключ включен, то его исполняем
+                                    if (k.RegKey.IsActiv)
+                                    {
+                                        //Регулярное выражение
+                                        regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
+
+                                        if (regex.IsMatch(resultLine))
+                                        {
+                                            P.logRegularExpression.Add(k.RegKey.Value);
+                                        }
+
+
+                                        //Если режим замены, то заменяем на значение ключа
+                                        if (k.Action == 3)
+                                        {
+                                            //Выполняем замену
+                                            resultLine = regex.Replace(resultLine, k.NewValue);
+                                        }
+                                        //Если режим удаления, то просто вставляем пустое значение
+                                        if (k.Action == 4)
+                                        {
+                                            //Выполняем замену
+                                            resultLine = regex.Replace(resultLine, "");
+                                        }
+
+                                        //Если режим удаления, то просто вставляем пустое значение
+                                        if (k.Action == 5)
+                                        {
+                                            if (regex.IsMatch(resultLine))
+                                            {
+                                                resultLine = "";
+                                            }
+                                            //Выполняем замену
+                                            //resultLine = regex.Replace(resultLine, "");
+                                        }
+
+                                    }
+                                }
+
+
+                                //if (resultLine.Length == 0)
+                                //{ resultLine = s; }
+                                bool reg_line = true;
+
+                                //Проверяем цвет и статус строчки
+                                foreach (ColorKeys k in mainForm.Color_Keys)
+                                {
+                                    //Если ключ активен, то выполняем его
+                                    if (k.RegKey.IsActiv)
+                                    {
+                                        //Регулярное выражение
+                                        regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
+                                        //Проверяем вхождение регулярного выражения
+                                        bool result = regex.IsMatch(s);//resultLine
+                                                                       //Если регулярное выражение сработало
+                                        if (result)
+                                        {
+                                            //Красим строчку в нужный цвет
+                                            //dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor = k.color;
+                                            //Если действие регистрация то добавляем в конструктор поста
+                                            if (k.Action == 1)
+                                            {
+                                                reg_line = false;
+                                                //Добавляем к описанию товаров
+                                                //stringpost = stringpost + resultLine + "\r\n";
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if ((reg_line) && (resultLine.Length > 2))
+                                {
+                                    P.sellerTextCleen.Add(resultLine);
+                                    //Аккамулируем данные для поста
+                                    //P.sellerTextCleen.Add(resultLine);
+
+                                    stringpost = stringpost + resultLine + "\r\n";
+                                }
+                                //Красим добавленную строчку 
+                                //dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.SelectionBackColor = dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor;
+                            }
+                        }
+
+                    }
+
+
+
+                    string sumPrise = "";
+                    string sumSize = "";
+                    string sumMaterial = "";
+
+                    string[] RegPrise = new string[5] { "[0-9]{2,7}[ ]?(руб|р|₽)", "ййй", "йййй", "йййй", "йййй" };
+                    string[] RegSize = new string[5] { "размер", "ййййй", "йййййй", "ййй", "ййййй" };
+                    string[] RegMaterial = new string[5] { "материал", "ййй", "йййй", "ййййй", "йййййй" };
+
+                    int ig = 0;
+
+                    foreach (string Line in P.sellerText)
+                    {
+
+                        foreach (string RegEx in RegPrise)
+                        {
+                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
+                            {
+                                string price = match.Value;
+                                foreach (Match match1 in Regex.Matches(price, "[0-9]{2,7}", RegexOptions.IgnoreCase))
+                                {
+                                    price = match1.Value;
+                                    sumPrise = sumPrise + price + "\r\n";
+                                }
+                            }
+                        }
+
+                        foreach (string RegEx in RegSize)
+                        {
+                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
+                            {
+                                string size = Line;// match.Value;
+                                sumSize = sumSize + size + "\r\n";
+                            }
+                        }
+
+                        foreach (string RegEx in RegMaterial)
+                        {
+                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
+                            {
+                                string material = Line;//match.Value;
+                                sumMaterial = sumMaterial + material + "\r\n";
+                            }
+                        }
+                    }
+
+                    P.Prises = sumPrise;
+                    P.Sizes = sumSize;
+                    P.Materials = sumMaterial;
+
+
+                    //if (i == 0)
+                    //{ //MessageBox.Show("Внимание такой категории не существует!");
+                    //  //break;
+                    //}
+                    ////============================================================= временное решение ===============================================================================
+                    //========================== Блок с автоподбором категорий ====================================================
+                    int i = 0;
+                    int j = 0;
+                    //Регулярное выражение
+                    Regex regexCat;
+                    //Перебираем категории товара
+                    foreach (CategoryOfProduct c in mainForm.mainCategoryList)
+                    {
+                        //Флаг обнаружения категории
+                        bool regincat = false;
+
+                        if (P.CategoryOfProductName == c.Name)
+                        {
+                            //listBox1.SelectedIndex = i;
+                            regincat = true;
+                        }
+
+
+
+                        //Перебираем все ключи привязанные к категории товара
+                        foreach (Key k in c.Keys)
+                        {
+                            //Если ключ активен, то проверяем его
+                            if (k.IsActiv)
+                            {
+                                //Проверяем регулярное выражение
+                                regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
+                                //Аккамулируем результаты поиска 
+                                regincat = regexCat.IsMatch(stringpost) || regincat;
+                            }
+                        }
+                        //Если категория выбрана, то выделяем ее на форме
+                        if (regincat)
+                        {
+                            if (P.CategoryOfProductName == "ВСЕ")
+                            {
+                                P.CategoryOfProductName = c.Name;
+                            }
+                            //if (!P.HandBlock)
+                            //{
+                            //    //Выделяем категорию
+                            //    listBox1.SelectedIndex = i;
+                            //}
+                            j = 0;
+                            //Перебираем подкатегории выбранной категории
+                            foreach (SubCategoryOfProduct s in c.SubCategoty)
+                            {
+                                //
+                                bool reginsubcat = false;
+
+                                //if (P.SubCategoryOfProductName == s.Name)
+                                //{
+                                //    listBox2.SelectedIndex = j;
+                                //}
+
+                                foreach (Key k in s.Keys)
+                                {
+                                    if (k.IsActiv)
+                                    {
+                                        regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
+
+                                        reginsubcat = regexCat.IsMatch(stringpost) || reginsubcat;
+                                    }
+                                }
+
+                                if (reginsubcat)
+                                {
+                                    if (P.SubCategoryOfProductName == "ВСЕ")
+                                    {
+                                        P.SubCategoryOfProductName = s.Name;
+                                    }
+
+                                    if (!P.HandBlock)
+                                    {
+                                        // listBox2.SelectedIndex = j;
+                                        break;
+                                    }
+                                }
+                                j++;
+                            }
+
+                            break;
+                        }
+                        //Индекс ссылка на категорию товара
+                        i++;
+                    }
+
+
+
+                    //if (isCat)
+                    //{
+                    //    isSub = true;
+                    //    if (P.SubCategoryOfProductName == "ВСЕ")
+                    //    {
+                    //        P.SubCategoryOfProductName = "ВСЕ";
+                    //    }
+                    //}
+
+                    //===============================================================================================================================================================
+
+
+
+                    //if (isCat && isSub && isStop)//&& goodsProcessed
+                    {
+
+                        mainForm.ProductListForPosting.Add(P);
+
+                        mainForm.AddToTreeView(P, indexTV);
+
+                        RemovedIndexes.Add(index);
+
+                        indexTV++;
+                        // ProductListSource.RemoveAt(index);
+                        //listBox3.Items.RemoveAt(index);
+                    }
+
+
+                }
+
+                index++;
+            }
+
+
+            return RemovedIndexes;
+        }
+
+
+        #region //Старые блоки с кодом применения регулярных выражений
+
+        ////Проходим по всем строчкам из описания
+        //foreach (string s in P.sellerText)//listBox2.SelectedIndex
+        //{
+        //    //В строчке должны быть данные
+        //    if (s.Length > 1)
+        //    {
+        //        //Регулярные выражения
+        //        Regex regex;// = new Regex(@"туп(\w*)", RegexOptions.IgnoreCase);
+        //                    //Буфферная переменная куда поступают данные после коррекции
+        //        string resultLine = s;
+
+
+
+        //        //====================================== Блок замены или стирания ненужной информации ================================================
+        //        //Производим замену по ключам
+        //        foreach (ReplaceKeys k in Replace_Keys)
+        //        {
+        //            //Если ключ включен, то его исполняем
+        //            if (k.RegKey.IsActiv)
+        //            {
+        //                //Регулярное выражение
+        //                regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
+        //                //Если режим замены, то заменяем на значение ключа
+        //                if (k.Action == 3)
+        //                {
+        //                    //Выполняем замену
+        //                    resultLine = regex.Replace(resultLine, k.NewValue);
+        //                }
+        //                //Если режим удаления, то просто вставляем пустое значение
+        //                if (k.Action == 4)
+        //                {
+        //                    //Выполняем замену
+        //                    resultLine = regex.Replace(resultLine, "");
+        //                }
+
+        //                if (k.Action == 5)
+        //                {
+        //                    if (regex.IsMatch(resultLine))
+        //                    {
+        //                        resultLine = "";
+        //                    }
+        //                }
+
+        //            }
+        //        }
+
+
+
+
+
+
+        //        bool reg_line_Green = false;
+        //        bool reg_line_Blue = true;
+
+        //        //Проверяем цвет и статус строчки
+        //        foreach (ColorKeys k in Color_Keys)
+        //        {
+        //            //Если ключ активен, то выполняем его
+        //            if (k.RegKey.IsActiv)
+        //            {
+        //                //Регулярное выражение
+        //                regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
+        //                //Проверяем вхождение регулярного выражения
+        //                bool result = regex.IsMatch(s);//resultLine
+        //                                               //Если регулярное выражение сработало
+        //                if (result)
+        //                {
+        //                    //Красим строчку в нужный цвет
+        //                    // dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor = k.color;
+        //                    //Если действие регистрация то добавляем в конструктор поста
+        //                    //if (k.Action == 0)
+        //                    //{
+        //                    //    isStop = false;
+        //                    //}
+
+        //                    if ((k.Action == 2))
+        //                    {
+        //                        reg_line_Green = true;
+        //                    }
+
+        //                    if ((k.Action == 1))
+        //                    {
+        //                        reg_line_Blue = false;
+        //                        //Добавляем к описанию товаров
+        //                        //stringpost = stringpost + resultLine + "\r\n";
+        //                        //P.sellerTextCleen.Add(resultLine);
+
+        //                        ////Добавляем к описанию товаров
+        //                        //stringpost = stringpost + resultLine + "\r\n";
+        //                    }
+        //                    break;
+        //                }
+        //            }
+        //        }
+
+
+
+
+        //        if ((!reg_line_Green && reg_line_Blue) && (resultLine.Length > 2))
+        //        {
+        //            goodsProcessed = false;
+        //        }
+
+
+
+
+
+
+        //        if ((true) && (resultLine.Length > 2))//reg_line_Green
+        //        {
+        //            P.sellerTextCleen.Add(resultLine);
+        //            //ProductListSource[listBox3.SelectedIndex].sellerTextCleen.Add(resultLine);
+        //            //Аккамулируем данные для поста
+        //            stringpost = stringpost + resultLine + "\r\n";
+        //        }
+
+
+        //        ////Аккамулируем данные для поста
+        //        //stringpost = stringpost + resultLine + "\r\n";
+        //        ////Красим добавленную строчку 
+        //        //dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.SelectionBackColor = dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor;
+        //    }
+        //}
+
+        //foreach (Match match in Regex.Matches(text, @"(\d[.\d]*\d)"))
+        //{
+        //    string price = match.Value;
+        //    int dots = price.Count(i => i.Equals('.'));
+        //    if (dots > 1) price = price.Replace(".", "").Insert(price.LastIndexOf(".") - 1, ".");
+        //    sum += double.Parse(price, new NumberFormatInfo() { NumberDecimalSeparator = "." });
+        //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        ////========================== Блок с автоподбором категорий ====================================================
+        //int i = 0;
+        //int j = 0;
+        ////Регулярное выражение
+        //Regex regexCat;
+        ////Перебираем категории товара
+        //foreach (CategoryOfProduct c in mainCategoryList)
+        //{
+        //    if ((comboBox4.Text == c.Name) || (comboBox4.Text == "ВСЕ"))
+        //    {
+
+
+        //        //Флаг обнаружения категории
+        //        bool regincat = false;
+        //        //Перебираем все ключи привязанные к категории товара
+        //        foreach (Key k in c.Keys)
+        //        {
+        //            //Если ключ активен, то проверяем его
+        //            if (k.IsActiv)
+        //            {
+        //                //Проверяем регулярное выражение
+        //                regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
+        //                //Аккамулируем результаты поиска 
+        //                regincat = regexCat.IsMatch(stringpost) || regexCat.IsMatch(P.IDURL) || regincat;
+        //            }
+        //        }
+        //        //Если категория выбрана, то выделяем ее на форме
+        //        if (regincat)
+        //        {
+        //            isCat = true;
+
+        //            if (P.CategoryOfProductName == "ВСЕ")
+        //            {
+        //                P.CategoryOfProductName = c.Name;
+        //            }
+
+
+        //            j = 0;
+        //            //Перебираем подкатегории выбранной категории
+        //            foreach (SubCategoryOfProduct s in c.SubCategoty)
+        //            {
+        //                //
+        //                bool reginsubcat = false;
+        //                foreach (Key k in s.Keys)
+        //                {
+        //                    if (k.IsActiv)
+        //                    {
+        //                        regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
+
+        //                        reginsubcat = regexCat.IsMatch(stringpost) || regexCat.IsMatch(P.IDURL) || reginsubcat;
+        //                    }
+        //                }
+
+        //                if (reginsubcat)
+        //                {
+        //                    isSub = true;
+
+        //                    if (P.SubCategoryOfProductName == "ВСЕ")
+        //                    {
+        //                        P.SubCategoryOfProductName = s.Name;
+        //                    }
+
+        //                    break;
+        //                }
+        //                j++;
+        //            }
+        //            break;
+        //        }
+        //        //Индекс ссылка на категорию товара
+        //        i++;
+
+        //    }
+        //}
+
+
+        #endregion 
+
+
+        public static List<int> ProcessingProducts(MainForm mainForm, int indx)
+        {
+            int index = 0;
+            //int indexTV = 0;
+            int indexTV = mainForm.ProductListForPosting.Count;
+
+            List<int> RemovedIndexes = new List<int>();
+
+            Product P = mainForm.productListSource[indx];
+            {
+                if ((P.IDURL.IndexOf(mainForm.comboBox5.Text) >= 0) || (mainForm.comboBox5.Text == "ВСЕ"))
+                {
+
+
+
+                    P.sellerTextCleen.Clear();
+
+
+
+                    bool isCat = false;
+                    bool isSub = false;
+                    bool isStop = true;
+
+
+                    //Буфер с новым описанием
+                    string stringpost = "";
+
+
+                    bool goodsProcessed = true;
+
+                    string Razmer = string.Empty;
+                    bool RazmerFind = false;
+
+
+
+
+                    //Проходим по всем строчкам из описания
+                    for (int u = 0; u < P.sellerText.Count; u++)//listBox2.SelectedIndex
+                    {
+                        string s = P.sellerText[u];
+
+                        ////В строчке должны быть данные
+                        //if (s.Length > 1)
+                        //{
+                        //    //Добавляем строчку описания в грид
+                        //    dataGridView3.Rows.Add(s);
+                        //}
+
+                        if (s.ToLower().IndexOf("размер") >= 0)
+                        {
+                            RazmerFind = true;
+                        }
+
+                        if (RazmerFind)
+                        {
+                            Razmer = Razmer + " " + s;
+                        }
+
+                        if (RazmerFind)
+                        {
+                            if (u < P.sellerText.Count - 1)
+                            {
+                                if ((P.sellerText[u + 1].ToLower().IndexOf("рост") >= 0))
+                                {
+                                    s = Razmer + " " + P.sellerText[u + 1];
+
+                                    u++;
+
+                                    ////В строчке должны быть данные
+                                    //if (P.sellerText[u].Length > 1)
+                                    //{
+                                    //    //Добавляем строчку описания в грид
+                                    //    dataGridView3.Rows.Add(P.sellerText[u]);
+                                    //}
+
+                                    RazmerFind = false;
+                                    Razmer = "";
+                                }
+                                else
+                                {
+                                    if ((P.sellerText[u + 1].Length > 4))
+                                    {
+                                        s = Razmer;
+                                        RazmerFind = false;
+                                        Razmer = "";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                s = Razmer;
+                                RazmerFind = false;
+                                Razmer = "";
+                            }
+                        }
+
+
+
+                        if (!RazmerFind)
+                        {
+
+                            //В строчке должны быть данные
+                            if (s.Length > 1)
+                            {
+                                // //Добавляем строчку описания в грид
+                                // dataGridView3.Rows.Add(s);
+
+                                //Регулярные выражения
+                                Regex regex;// = new Regex(@"туп(\w*)", RegexOptions.IgnoreCase);
+                                            //Буфферная переменная куда поступают данные после коррекции
+                                string resultLine = s;
+
+                                //====================================== Блок замены или стирания ненужной информации ================================================
+                                //Производим замену по ключам
+                                foreach (ReplaceKeys k in mainForm.Replace_Keys)
+                                {
+                                    //Если ключ включен, то его исполняем
+                                    if (k.RegKey.IsActiv)
+                                    {
+                                        //Регулярное выражение
+                                        regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
+                                        //Если режим замены, то заменяем на значение ключа
+                                        if (k.Action == 3)
+                                        {
+                                            //Выполняем замену
+                                            resultLine = regex.Replace(resultLine, k.NewValue);
+                                        }
+                                        //Если режим удаления, то просто вставляем пустое значение
+                                        if (k.Action == 4)
+                                        {
+                                            //Выполняем замену
+                                            resultLine = regex.Replace(resultLine, "");
+                                        }
+
+                                        //Если режим удаления, то просто вставляем пустое значение
+                                        if (k.Action == 5)
+                                        {
+                                            if (regex.IsMatch(resultLine))
+                                            {
+                                                resultLine = "";
+                                            }
+                                            //Выполняем замену
+                                            //resultLine = regex.Replace(resultLine, "");
+                                        }
+
+                                    }
+                                }
+
+
+                                //if (resultLine.Length == 0)
+                                //{ resultLine = s; }
+                                bool reg_line = true;
+
+                                //Проверяем цвет и статус строчки
+                                foreach (ColorKeys k in mainForm.Color_Keys)
+                                {
+                                    //Если ключ активен, то выполняем его
+                                    if (k.RegKey.IsActiv)
+                                    {
+                                        //Регулярное выражение
+                                        regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
+                                        //Проверяем вхождение регулярного выражения
+                                        bool result = regex.IsMatch(s);//resultLine
+                                                                       //Если регулярное выражение сработало
+                                        if (result)
+                                        {
+                                            //Красим строчку в нужный цвет
+                                            //dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor = k.color;
+                                            //Если действие регистрация то добавляем в конструктор поста
+                                            if (k.Action == 1)
+                                            {
+                                                reg_line = false;
+                                                //Добавляем к описанию товаров
+                                                //stringpost = stringpost + resultLine + "\r\n";
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if ((reg_line) && (resultLine.Length > 2))
+                                {
+                                    P.sellerTextCleen.Add(resultLine);
+                                    //Аккамулируем данные для поста
+                                    //P.sellerTextCleen.Add(resultLine);
+
+                                    stringpost = stringpost + resultLine + "\r\n";
+                                }
+                                //Красим добавленную строчку 
+                                //dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.SelectionBackColor = dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor;
+                            }
+                        }
+
+                    }
+
+
+
+                    string sumPrise = "";
+                    string sumSize = "";
+                    string sumMaterial = "";
+
+                    string[] RegPrise = new string[5] { "[0-9]{2,7}[ ]?(руб|р|₽)", "ййй", "йййй", "йййй", "йййй" };
+                    string[] RegSize = new string[5] { "размер", "ййййй", "йййййй", "ййй", "ййййй" };
+                    string[] RegMaterial = new string[5] { "материал", "ййй", "йййй", "ййййй", "йййййй" };
+
+                    int ig = 0;
+
+                    foreach (string Line in P.sellerText)
+                    {
+
+                        foreach (string RegEx in RegPrise)
+                        {
+                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
+                            {
+                                string price = match.Value;
+                                foreach (Match match1 in Regex.Matches(price, "[0-9]{2,7}", RegexOptions.IgnoreCase))
+                                {
+                                    price = match1.Value;
+                                    sumPrise = sumPrise + price + "\r\n";
+                                }
+                            }
+                        }
+
+                        foreach (string RegEx in RegSize)
+                        {
+                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
+                            {
+                                string size = Line;// match.Value;
+                                sumSize = sumSize + size + "\r\n";
+                            }
+                        }
+
+                        foreach (string RegEx in RegMaterial)
+                        {
+                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
+                            {
+                                string material = Line;//match.Value;
+                                sumMaterial = sumMaterial + material + "\r\n";
+                            }
+                        }
+                    }
+
+                    P.Prises = sumPrise;
+                    P.Sizes = sumSize;
+                    P.Materials = sumMaterial;
+
+                    
+                    ////============================================================= временное решение ===============================================================================
+                    //========================== Блок с автоподбором категорий ====================================================
+                    int i = 0;
+                    int j = 0;
+                    //Регулярное выражение
+                    Regex regexCat;
+                    //Перебираем категории товара
+                    foreach (CategoryOfProduct c in mainForm.mainCategoryList)
+                    {
+                        //Флаг обнаружения категории
+                        bool regincat = false;
+
+                        if (P.CategoryOfProductName == c.Name)
+                        {
+                            //listBox1.SelectedIndex = i;
+                            regincat = true;
+                        }
+
+
+
+                        //Перебираем все ключи привязанные к категории товара
+                        foreach (Key k in c.Keys)
+                        {
+                            //Если ключ активен, то проверяем его
+                            if (k.IsActiv)
+                            {
+                                //Проверяем регулярное выражение
+                                regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
+                                //Аккамулируем результаты поиска 
+                                regincat = regexCat.IsMatch(stringpost) || regincat;
+                            }
+                        }
+                        //Если категория выбрана, то выделяем ее на форме
+                        if (regincat)
+                        {
+                            if (P.CategoryOfProductName == "ВСЕ")
+                            {
+                                P.CategoryOfProductName = c.Name;
+                            }
+                            //if (!P.HandBlock)
+                            //{
+                            //    //Выделяем категорию
+                            //    listBox1.SelectedIndex = i;
+                            //}
+                            j = 0;
+                            //Перебираем подкатегории выбранной категории
+                            foreach (SubCategoryOfProduct s in c.SubCategoty)
+                            {
+                                //
+                                bool reginsubcat = false;
+
+                                //if (P.SubCategoryOfProductName == s.Name)
+                                //{
+                                //    listBox2.SelectedIndex = j;
+                                //}
+
+                                foreach (Key k in s.Keys)
+                                {
+                                    if (k.IsActiv)
+                                    {
+                                        regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
+
+                                        reginsubcat = regexCat.IsMatch(stringpost) || reginsubcat;
+                                    }
+                                }
+
+                                if (reginsubcat)
+                                {
+                                    if (P.SubCategoryOfProductName == "ВСЕ")
+                                    {
+                                        P.SubCategoryOfProductName = s.Name;
+                                    }
+
+                                    if (!P.HandBlock)
+                                    {
+                                        // listBox2.SelectedIndex = j;
+                                        break;
+                                    }
+                                }
+                                j++;
+                            }
+
+                            break;
+                        }
+                        //Индекс ссылка на категорию товара
+                        i++;
+                    }
+
+
+
+         
+
+                    //===============================================================================================================================================================
+
+
+
+                    // if (isCat && isSub && isStop)//&& goodsProcessed
+                    {
+
+                        mainForm.ProductListForPosting.Add(P);
+
+                        mainForm.AddToTreeView(P, indexTV);
+
+                        RemovedIndexes.Add(index);
+
+                        indexTV++;
+                        // ProductListSource.RemoveAt(index);
+                        //listBox3.Items.RemoveAt(index);
+                    }
+
+
+                }
+
+                index++;
+            }
+
+
+            return RemovedIndexes;
+        }
+
+
+        public static string descriptionProcessing(MainForm mainForm, string s, int u)
+        {
+            mainForm.logRegexListBox.Items.Add("Строчка - "+ u );
+            mainForm.logRegexListBox.Items.Add("--------------------------------------------------------------------------------------------------------------------------------------------");
+
+
+            //Вспомогательные переменные
+            string Razmer = string.Empty;
+            bool RazmerFind = false;
+
+            //В строчке должны быть данные
+            if (s.Length > 1)
+            {
+                //Добавляем строчку описания в грид
+                mainForm.descriptionSourceDataGridView.Rows.Add(s);
+            }
+
+            if (s.ToLower().IndexOf("размер") >= 0)
+            {
+                RazmerFind = true;
+            }
+
+            if (RazmerFind)
+            {
+                Razmer = Razmer + " " + s;
+            }
+
+            if (RazmerFind)
+            {
+                if (u < mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].sellerText.Count - 1)
+                {
+                    if ((mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].sellerText[u + 1].ToLower().IndexOf("рост") >= 0))
+                    {
+                        s = Razmer + " " + mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].sellerText[u + 1];
+
+                        u++;
+
+                        //В строчке должны быть данные
+                        if (mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].sellerText[u].Length > 1)
+                        {
+                            //Добавляем строчку описания в грид
+                            mainForm.descriptionSourceDataGridView.Rows.Add(mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].sellerText[u]);
+                        }
+
+                        RazmerFind = false;
+                        Razmer = "";
+                    }
+                    else
+                    {
+                        if ((mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].sellerText[u + 1].Length > 4))
+                        {
+                            s = Razmer;
+                            RazmerFind = false;
+                            Razmer = "";
+                        }
+                    }
+                }
+                else
+                {
+                    s = Razmer;
+                    RazmerFind = false;
+                    Razmer = "";
+                }
+            }
+
+
+
+            if (!RazmerFind)
+            {
+
+                //В строчке должны быть данные
+                if (s.Length > 1)
+                {
+                    // //Добавляем строчку описания в грид
+                    // dataGridView3.Rows.Add(s);
+
+                    //Регулярные выражения
+                    Regex regex;// = new Regex(@"туп(\w*)", RegexOptions.IgnoreCase);
+                                //Буфферная переменная куда поступают данные после коррекции
+                    string resultLine = s;
+
+                    int i = 0;
+
+                    //====================================== Блок замены или стирания ненужной информации ================================================
+                    //Производим замену по ключам
+                    foreach (ReplaceKeys k in mainForm.Replace_Keys)
+                    {
+                        i++;
+
+                        //Если ключ включен, то его исполняем
+                        if (k.RegKey.IsActiv)
+                        {
+                            //Регулярное выражение
+                            regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
+
+                            Match M = regex.Match(resultLine);
+                            if (regex.IsMatch(resultLine))
+                            {
+                                //Если режим замены, то заменяем на значение ключа
+                                if (k.Action == 3)
+                                {
+                                    //Выполняем замену
+                                    resultLine = regex.Replace(resultLine, k.NewValue);
+                                    mainForm.logRegexListBox.Items.Add("# найдено:" + M.Value + " Рег.№:" + i + " замена:" + k.RegKey.Value);
+
+                                }
+                                //Если режим удаления, то просто вставляем пустое значение
+                                if (k.Action == 4)
+                                {
+                                    //Выполняем замену
+                                    resultLine = regex.Replace(resultLine, "");
+                                    mainForm.logRegexListBox.Items.Add("# найдено:" + M.Value + " Рег.№:" + i + " удалена подстрока ");
+
+                                }
+
+                                //Если режим удаления, то просто вставляем пустое значение
+                                if (k.Action == 5)
+                                {
+                                    mainForm.logRegexListBox.Items.Add("# найдено:" + M.Value + " Рег.№:" + i + " строчка заблокирована ");
+
+
+                                    if (regex.IsMatch(resultLine))
+                                    {
+                                        resultLine = "";
+                                    }
+                                    //Выполняем замену
+                                    //resultLine = regex.Replace(resultLine, "");
+                                }
+                            }
+
+                        }
+                    }
+
+
+                    //if (resultLine.Length == 0)
+                    //{ resultLine = s; }
+                    bool reg_line = true;
+
+                    //Проверяем цвет и статус строчки
+                    foreach (ColorKeys k in mainForm.Color_Keys)
+                    {
+                        //Если ключ активен, то выполняем его
+                        if (k.RegKey.IsActiv)
+                        {
+                            //Регулярное выражение
+                            regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
+                            //Проверяем вхождение регулярного выражения
+                            bool result = regex.IsMatch(s);//resultLine
+                                                           //Если регулярное выражение сработало
+                            if (result)
+                            {
+                                //Красим строчку в нужный цвет
+                                mainForm.descriptionSourceDataGridView.Rows[mainForm.descriptionSourceDataGridView.Rows.Count - 1].DefaultCellStyle.BackColor = k.color;
+                                //Если действие регистрация то добавляем в конструктор поста
+                                if (k.Action == 1)
+                                {
+                                    reg_line = false;
+                                    //Добавляем к описанию товаров
+                                    //stringpost = stringpost + resultLine + "\r\n";
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    if ((reg_line) && (resultLine.Length > 2))
+                    {
+                        mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].sellerTextCleen.Add(resultLine);
+
+                        //Аккамулируем данные для поста
+                        return resultLine + "\r\n";
+
+                        //mainForm.stringpost = mainForm.stringpost + resultLine + "\r\n";
+                    }
+                    //Красим добавленную строчку 
+                    mainForm.descriptionSourceDataGridView.Rows[mainForm.descriptionSourceDataGridView.Rows.Count - 1].DefaultCellStyle.SelectionBackColor = mainForm.descriptionSourceDataGridView.Rows[mainForm.descriptionSourceDataGridView.Rows.Count - 1].DefaultCellStyle.BackColor;
+                }
+            }
+
+            return "\r\n";
+
+        }
+
+        public static void loadImageInListBox(MainForm mainForm)
+        {
+            //Чистим картинки в листбоксе
+            mainForm.imageListUnProcessedProduct.Images.Clear();
+            mainForm.unProcessedProductListView.Items.Clear();
+
+            int ii = 0;
+            foreach (string s in mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].FilePath)
+            {
+                if ((mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].FilePath.Count == 1)
+                    && (s == ""))
+                {
+                    // MessageBox.Show("У данного товара отсутствуют изображения!");
+                }
+                else
+                {
+                    try
+                    {
+                        FileInfo f = new FileInfo(s);
+                        if (f.Exists)
+                        {
+
+                            mainForm.imageListUnProcessedProduct.Images.Add(new Bitmap(s));
+                            mainForm.unProcessedProductListView.Items.Add(new ListViewItem(s, ii));
+                            ii++;
+                        }
+                        else
+                        {
+                            mainForm.imageNoExist.Add(s);
+                        }
+                    }
+                    catch (Exception ee)
+                    {
+                        MessageBox.Show(ee.ToString());
+                    }
+                }
+            }
+
+        }
+
+        public static void categorySelection(MainForm mainForm, string stringpost)
+        {
+            int i = 0;
+            int j = 0;
+            //Регулярное выражение
+            Regex regexCat;
+            //Перебираем категории товара
+            foreach (CategoryOfProduct c in mainForm.mainCategoryList)
+            {
+
+
+
+
+                //Флаг обнаружения категории
+                bool regincat = false;
+
+                if (mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].CategoryOfProductName == c.Name)
+                {
+                    mainForm.catListBox.SelectedIndex = i;
+                    regincat = true;
+                }
+
+
+
+                //Перебираем все ключи привязанные к категории товара
+                foreach (Key k in c.Keys)
+                {
+                    //Если ключ активен, то проверяем его
+                    if (k.IsActiv)
+                    {
+                        //Проверяем регулярное выражение
+                        regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
+                        //Аккамулируем результаты поиска 
+                        regincat = regexCat.IsMatch(stringpost) || regincat;
+                    }
+                }
+                //Если категория выбрана, то выделяем ее на форме
+                if (regincat)
+                {
+                    if (mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].CategoryOfProductName == "ВСЕ")
+                    {
+                        mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].CategoryOfProductName = c.Name;
+                    }
+                    if (!mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].HandBlock)
+                    {
+                        //Выделяем категорию
+                        mainForm.catListBox.SelectedIndex = i;
+                    }
+                    j = 0;
+                    //Перебираем подкатегории выбранной категории
+                    foreach (SubCategoryOfProduct s in c.SubCategoty)
+                    {
+                        //
+                        bool reginsubcat = false;
+
+                        if (mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].SubCategoryOfProductName == s.Name)
+                        {
+                            mainForm.subCatListBox.SelectedIndex = j;
+                        }
+
+                        foreach (Key k in s.Keys)
+                        {
+                            if (k.IsActiv)
+                            {
+                                regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
+
+                                reginsubcat = regexCat.IsMatch(stringpost) || reginsubcat;
+                            }
+                        }
+
+                        if (reginsubcat)
+                        {
+                            if (mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].SubCategoryOfProductName == "ВСЕ")
+                            {
+                                mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].SubCategoryOfProductName = s.Name;
+                            }
+
+                            if (!mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].HandBlock)
+                            {
+                                mainForm.subCatListBox.SelectedIndex = j;
+                                break;
+                            }
+                        }
+                        j++;
+                    }
+
+                    break;
+                }
+                //Индекс ссылка на категорию товара
+                i++;
+            }
+
+
+        }
 
 
 

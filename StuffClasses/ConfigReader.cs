@@ -240,7 +240,7 @@ namespace VKSMM.StuffClasses
                     catch { }
 
 
-                    mainForm.listBox1.Items.Add(COFP.Name);
+                    mainForm.catListBox.Items.Add(COFP.Name);
 
                     mainForm.mainCategoryList.Add(COFP);
 
@@ -369,9 +369,9 @@ namespace VKSMM.StuffClasses
 
                     PN.FilePath = Stuff.ConvertMassToList(MassLine[12].Split(new char[] { ',' }));
 
-                    mainForm.ProductListSource.Add(PN);
+                    mainForm.productListSource.Add(PN);
 
-                    mainForm.listBox3.Items.Add(PN.IDURL);
+                    mainForm.productUnProcessedListBox.Items.Add(PN.IDURL);
                     _it++;
                 }
                 catch
