@@ -36,7 +36,12 @@ namespace VKSMM
         /// </summary>
         public Thread Thread_Dir_Processing;
 
+        /// <summary>
+        /// Процесс конвертации XML файлов с поставщиками и привязанными к ним категориями во внутренний формат программы
+        /// </summary>
         public Thread Thread_Provider_Processing;
+
+
         public Thread Thread_Create_XLS_Processing; //Create_XLS
 
         public Thread t1;
@@ -102,7 +107,12 @@ namespace VKSMM
         // Выбрать путь и имя файла в диалоговом окне
         public SaveFileDialog ofd = new SaveFileDialog();
 
+        //====================================================================================================================================================================
 
+
+
+        //====================================================================================================================================================================
+        //                              Блок/загрузка выгрузка приложения
         //====================================================================================================================================================================
 
         /// <summary>
@@ -166,9 +176,8 @@ namespace VKSMM
             }
 
             //Обновляем поставщиков
-            Stuff.UpdatePostavshikov(this);
-
-           
+            //Stuff.UpdatePostavshikov(this);
+       
                         
         }
 
@@ -242,6 +251,9 @@ namespace VKSMM
 
 
 
+        //====================================================================================================================================================================
+        //                              Окно с не обработанным товаром
+        //====================================================================================================================================================================
 
         /// <summary>
         /// Действия при выборе не обработанного товара
@@ -296,7 +308,206 @@ namespace VKSMM
 
         }
 
+        /// <summary>
+        /// Метод загрузки данных из XML файла с поставщиками
+        /// </summary>
+        private void LoadProviderXLSButton_Click(object sender, EventArgs e)
+        {
+            //Запускаем поток конвертации файла с постовщиками во внутренний формат
+            Thread_Provider_Processing = new Thread(Core.Thread_Provider_Excel_Code);
+            Thread_Provider_Processing.Start();
+        }
 
+        /// <summary>
+        /// Действия при нажатии кнопки обработки XML с товаром
+        /// </summary>
+        private void LoadProductXLSButton_Click(object sender, EventArgs e)
+        {
+            //Запускаем процесс конвертации XML файлов с товарами
+            Thread_Dir_Processing = new Thread(Core.Thread_Dir_Processing_Code);
+            Thread_Dir_Processing.Start(this);
+        }
+
+        /// <summary>
+        /// Действия при выборе категории товара
+        /// </summary>
+        private void catListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //Отчищаем окно с подкатегориями
+            subCatListBox.Items.Clear();
+
+            //Проверяем выделены ли товар или категория товара
+            if ((productUnProcessedListBox.SelectedIndex >= 0) && (catListBox.SelectedIndex >= 0))
+            {
+                //Устанавливаем принудительно категорию для выделенного товара
+                productListSource[productUnProcessedListBox.SelectedIndex].CategoryOfProductName = catListBox.SelectedItem.ToString();
+            }
+
+            try
+            {
+                //Пробегаем все подкатегории товара и отображаем их в листе
+                foreach (SubCategoryOfProduct sub in mainCategoryList[catListBox.SelectedIndex].SubCategoty)
+                {
+                    //Подкатегория
+                    subCatListBox.Items.Add(sub.Name);
+                }
+            }
+            catch
+            { }
+        }
+
+        /// <summary>
+        /// Действия при выборе подкатегорию товара
+        /// </summary>
+        private void subCatListBox_MouseUp(object sender, MouseEventArgs e)
+        {
+            //Проверяем, чтобы были выделены товар и категория
+            if ((productUnProcessedListBox.SelectedIndex >= 0) && (subCatListBox.SelectedIndex >= 0))
+            {
+                //Устанавливаем подкатегорию товара принудительно
+                productListSource[productUnProcessedListBox.SelectedIndex].SubCategoryOfProductName = subCatListBox.SelectedItem.ToString();
+                //Поднимаем флаг ручной установки категории и подкатегории товара, для того, чтобы не установить их автоматически
+                productListSource[productUnProcessedListBox.SelectedIndex].HandBlock = true;
+            }
+        }
+
+        /// <summary>
+        /// Действия обработка одного выделенного товара
+        /// </summary>
+        private void PublicationButton_Click(object sender, EventArgs e)
+        {
+
+            try
+            {
+                //Снимаем выделение товара в ТРИВЬЮ
+                treeViewProductForPostBox.SelectedNode = treeViewProductForPostBox.Nodes[0];
+            }
+            catch
+            { }
+
+            //Список обрабатываемого товара
+            List<int> RemovedIndexes = new List<int>();
+
+            //Обрабатываем выделенный товар
+            RemovedIndexes = Stuff.ProcessingProducts(this, productUnProcessedListBox.SelectedIndex);
+
+            //Пробегаем по всем удаляемым товарам
+            for (int iq = RemovedIndexes.Count - 1; iq >= 0; iq--)
+            {
+                productUnProcessedListBox.Items.RemoveAt(RemovedIndexes[iq]);
+                productListSource.RemoveAt(RemovedIndexes[iq]);
+            }
+
+            //Stuff.UpdatePostavshikov(this);
+
+            //Чистим окошки с описанием товара
+            productUnProcessedListBox.SelectedItems.Clear();
+            descriptionRegexTextBox.Text = "";
+            unProcessedProductListView.Items.Clear();
+            numericUpDownPrize.Value = 0;
+            descriptionSourceDataGridView.Rows.Clear();
+
+
+        }
+
+        /// <summary>
+        /// Действия обработка ВСЕХ товаров
+        /// </summary>
+        private void processedAllProductButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                //Чистим выделение в окне постинга
+                treeViewProductForPostBox.SelectedNode = treeViewProductForPostBox.Nodes[0];
+            }
+            catch
+            { }
+
+
+            //Чистим все окна в окне не обработанного товара
+            productUnProcessedListBox.SelectedItems.Clear();
+            descriptionRegexTextBox.Text = "";
+            unProcessedProductListView.Items.Clear();
+            numericUpDownPrize.Value = 0;
+            descriptionSourceDataGridView.Rows.Clear();
+            logRegexListBox.Items.Clear();
+
+            //Создаем индексы удаляемых товаров
+            List<int> RemovedIndexes = new List<int>();
+
+            //Обрабатываем все товары
+            RemovedIndexes = Stuff.ProcessingProductsAll(this);
+
+            //Удвляем все товары из входного массива и ЛИСТБОКСА с товарами 
+            for (int iq = RemovedIndexes.Count - 1; iq >= 0; iq--)
+            {
+                productUnProcessedListBox.Items.RemoveAt(RemovedIndexes[iq]);
+                productListSource.RemoveAt(RemovedIndexes[iq]);
+            }
+
+            //Stuff.UpdatePostavshikov(this);
+        }
+
+        //====================================================================================================================================================================
+
+
+
+        //====================================================================================================================================================================
+        //                              Окно с товарами для постинга
+        //====================================================================================================================================================================
+
+        /// <summary>
+        /// Действие при выделении товара в TREEVIEW в окне постинга товаров
+        /// </summary>
+        private void treeViewProductForPostBox_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            //Действия при выделении одного товара
+            if (treeViewProductForPostBox.SelectedNode.Level == 2)
+            {
+                //Получаем индекс товара в массиве
+                int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
+                //Вызываем процедуру выделения одного товара
+                selectProductTreeView(indexOfProduct, true);
+            }
+
+            //Действия при выделении подкатегории товара
+            if (treeViewProductForPostBox.SelectedNode.Level == 1)
+            {
+                //Вызываем процедуру выделения всех товаров одной подкатегории
+                selectSubCategoryTreeView(0, 0, true);
+            }
+
+            //Действия при выделении категории товара
+            if (treeViewProductForPostBox.SelectedNode.Level == 0)
+            {
+                //Вызываем процедуру выделения всех товаров одной категории
+                selectAllCategoryTreeView(0, 0, true);
+            }
+        }
+
+        /// <summary>
+        /// Действие при выделении категории товара в окне постинга товаров
+        /// </summary>
+        private void listBoxMainCategoryPostBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //Отчищаем ЛИСТБОКС с подкатегориями товара
+            listBoxSubCategoryPostBox.Items.Clear();
+
+            try
+            {
+                //Добавляем все подкатегории товара в ЛИСТБОКС подкатегорий товара
+                foreach (SubCategoryOfProduct sub in mainCategoryList[listBoxMainCategoryPostBox.SelectedIndex].SubCategoty)
+                {
+                    //Добавляем подкатегорию
+                    listBoxSubCategoryPostBox.Items.Add(sub.Name);
+                }
+            }
+            catch
+            { }
+
+        }
+
+        //====================================================================================================================================================================
 
         private void button9_Click(object sender, EventArgs e)
         {
@@ -331,8 +542,7 @@ namespace VKSMM
             //if (comboBox3.Text == "Дописывать") dataGridView2.Rows[dataGridView2.Rows.Count - 1].DefaultCellStyle.BackColor = Color.Yellow;
             //if (comboBox3.Text == "Пропускать") dataGridView2.Rows[dataGridView2.Rows.Count - 1].DefaultCellStyle.BackColor = Color.LightGreen;
         }
-
-    
+            
 
         private void dataGridView7_SelectionChanged(object sender, EventArgs e)
         {
@@ -538,25 +748,6 @@ namespace VKSMM
         }
 
 
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            subCatListBox.Items.Clear();
-
-            if ((productUnProcessedListBox.SelectedIndex >= 0)&&(catListBox.SelectedIndex>=0))
-            {
-                productListSource[productUnProcessedListBox.SelectedIndex].CategoryOfProductName = catListBox.SelectedItem.ToString();
-            }
-            
-            try
-            {
-                foreach (SubCategoryOfProduct sub in mainCategoryList[catListBox.SelectedIndex].SubCategoty)
-                {
-                    subCatListBox.Items.Add(sub.Name);
-                }
-            }
-            catch
-            { }
-        }
 
         //Выбор цвета для диференциации
         private void button13_Click(object sender, EventArgs e)
@@ -843,44 +1034,6 @@ namespace VKSMM
 
         }
 
-        private void PublicationButton_Click(object sender, EventArgs e)
-        {
-
-            try
-            {
-                treeViewProductForPostBox.SelectedNode = treeViewProductForPostBox.Nodes[0];
-            }
-            catch
-            { }
-
-
-
-
-
-
-            List<int> RemovedIndexes = new List<int>();
-
-
-            RemovedIndexes = Stuff.ProcessingProducts(this, productUnProcessedListBox.SelectedIndex);
-
-
-            for (int iq = RemovedIndexes.Count - 1; iq >= 0; iq--)
-            {
-                productUnProcessedListBox.Items.RemoveAt(RemovedIndexes[iq]);
-                productListSource.RemoveAt(RemovedIndexes[iq]);
-            }
-
-            Stuff.UpdatePostavshikov(this);
-
-            productUnProcessedListBox.SelectedItems.Clear();
-
-            descriptionRegexTextBox.Text = "";
-            unProcessedProductListView.Items.Clear();
-            numericUpDownPrize.Value = 0;
-            descriptionSourceDataGridView.Rows.Clear();
-
-           
-        }
 
 
 
@@ -901,41 +1054,6 @@ namespace VKSMM
             }
         }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                treeViewProductForPostBox.SelectedNode = treeViewProductForPostBox.Nodes[0];
-            }
-            catch
-            { }
-
-
-
-
-            productUnProcessedListBox.SelectedItems.Clear();
-
-            descriptionRegexTextBox.Text = "";
-            unProcessedProductListView.Items.Clear();
-            numericUpDownPrize.Value = 0;
-            descriptionSourceDataGridView.Rows.Clear();
-            logRegexListBox.Items.Clear();
-
-
-            List<int> RemovedIndexes = new List<int>();
-
-
-            RemovedIndexes = Stuff.ProcessingProductsAll(this);
-
-
-            for (int iq = RemovedIndexes.Count-1; iq>=0;iq-- )
-            {
-                productUnProcessedListBox.Items.RemoveAt(RemovedIndexes[iq]);
-                productListSource.RemoveAt(RemovedIndexes[iq]);
-            }
-
-            Stuff.UpdatePostavshikov(this);
-        }
 
 
 
@@ -966,31 +1084,6 @@ namespace VKSMM
         //}
 
 
-        /// <summary>
-        /// Действие при выделении товара в TREEVIEW в окне постинга товара
-        /// </summary>
-        private void treeViewProductForPostBox_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            if(treeViewProductForPostBox.SelectedNode.Level == 2)
-            {
-                int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
-
-                selectProductTreeView(indexOfProduct,true);
-            }
-
-
-            if (treeViewProductForPostBox.SelectedNode.Level == 1)
-            {
-                selectSubCategoryTreeView(0,0,true);
-            }
-
-
-            if (treeViewProductForPostBox.SelectedNode.Level == 0)
-            {
-               selectAllCategoryTreeView(0, 0, true);
-            }
-
-        }
 
         private int showProductLowBorder = 0;
         private int showProductTopBorder = 0;
@@ -1425,59 +1518,6 @@ namespace VKSMM
 
 
 
-        private void listBoxMainCategoryPostBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            listBoxSubCategoryPostBox.Items.Clear();
-
-            //if ((listBox3.SelectedIndex >= 0) && (listBox1.SelectedIndex >= 0))
-            //{
-            //    ProductListSource[listBox3.SelectedIndex].CategoryOfProductName = listBox1.SelectedItem.ToString();
-            //}
-
-            try
-            {
-                foreach (SubCategoryOfProduct sub in mainCategoryList[listBoxMainCategoryPostBox.SelectedIndex].SubCategoty)
-                {
-                    listBoxSubCategoryPostBox.Items.Add(sub.Name);
-                }
-            }
-            catch
-            { }
-
-
-
-            //listBox4.Items.Clear();
-
-            //if ((listBox3.SelectedIndex >= 0) && (listBox1.SelectedIndex >= 0))
-            //{
-            //    ProductListSource[listBox3.SelectedIndex].CategoryOfProductName = listBox1.SelectedItem.ToString();
-            //}
-
-            //try
-            //{
-            //    foreach (SubCategoryOfProduct sub in mainCategoryList[listBox1.SelectedIndex].SubCategoty)
-            //    {
-            //        listBox2.Items.Add(sub.Name);
-            //    }
-            //}
-            //catch
-            //{ }
-
-
-
-
-
-
-            //if (treeView1.SelectedNode.Level == 2)
-            //{
-
-            //    int indexOfProduct = Convert.ToInt32(treeView1.SelectedNode.Text);
-
-
-            //    ProductListForPosting[indexOfProduct].CategoryOfProductName = listBox5.SelectedItem.ToString();
-            //}
-
-        }
 
 
         private void button5_Click(object sender, EventArgs e)
@@ -1778,18 +1818,6 @@ namespace VKSMM
 
         }
 
-        private void listBox2_MouseUp(object sender, MouseEventArgs e)
-        {
-            if ((productUnProcessedListBox.SelectedIndex >= 0) && (subCatListBox.SelectedIndex >= 0))
-            {
-                // ProductListSource[listBox3.SelectedIndex].CategoryOfProductName = listBox1.SelectedItem.ToString();
-
-                productListSource[productUnProcessedListBox.SelectedIndex].SubCategoryOfProductName = subCatListBox.SelectedItem.ToString();
-
-                productListSource[productUnProcessedListBox.SelectedIndex].HandBlock = true;
-            }
-
-        }
 
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
@@ -2004,15 +2032,6 @@ namespace VKSMM
         }
 
 
-        /// <summary>
-        /// Действия при нажатии кнопки обработки XML с товаром
-        /// </summary>
-        private void LoadProductXLSButton_Click(object sender, EventArgs e)
-        {
-            //Запускаем процесс конвертации XML файлов с товарами
-            Thread_Dir_Processing = new Thread(Core.Thread_Dir_Processing_Code);
-            Thread_Dir_Processing.Start(this);
-        }
 
                
 
@@ -3032,102 +3051,7 @@ namespace VKSMM
         }
 
 
-        /// <summary>
-        /// Метод загрузки данных из XML файла с поставщиками
-        /// </summary>
-        private void LoadProviderXLSButton_Click(object sender, EventArgs e)
-        {
-            //Запускаем поток конвертации файла с постовщиками во внутренний формат
-            Thread_Provider_Processing = new Thread(Thread_Provider_Processing_Code);
-            Thread_Provider_Processing.Start();
-        }
 
-        public void Thread_Provider_Processing_Code()
-        {
-
-            //Stuff.ExportProviderExcel(this);
-
-
-
-
-
-
-
-
-            //Action S1 = () => button1.Enabled = false;
-            //button1.Invoke(S1);
-
-            //DirectoryInfo d = new DirectoryInfo(_InputPath);
-
-            //if (!d.Exists)
-            //{
-            //    MessageBox.Show("Директория " + _InputPath + " не существует!");
-            //}
-            //else
-            //{
-
-            //    int cf = d.GetFiles().Length;
-            //    int pf = 0;
-
-            //    imageNoExist.Clear();
-
-
-            //    foreach (FileInfo f in d.GetFiles())
-            //    {
-            //        try
-            //        {
-            //            Action S2 = () => label11.Text = "Файлов обработано " + pf.ToString() + " из " + cf.ToString();
-            //            label11.Invoke(S2);
-
-
-
-
-            //           Stuff.ExportExcel(f.FullName,this);
-
-
-
-            //            f.Delete();
-            //            pf++;
-            //        }
-            //        catch
-            //        { }
-            //    }
-
-
-            //    foreach (Product p in ProductListSourceBuffer)
-            //    {
-            //        ProductListSource.Add(p);
-            //    }
-
-
-            //    ProductListSourceBuffer.Clear();
-
-
-            //    string sL = "При загрузке отсутствуют следующие изображения: \r\n";
-            //    foreach (string L in imageNoExist)
-            //    {
-            //        sL = sL + L + "\r\n";
-            //    }
-
-            //    MessageBox.Show(sL);
-
-            //    listBox3.Items.Clear();
-
-            //    int i = 1;
-
-            //    foreach (Product P in ProductListSource)
-            //    {
-            //        listBox3.Items.Add(i);
-            //        i++;
-            //    }
-
-            //    Stuff.UpdatePostavshikov(this);
-
-            //    Action S3 = () => button1.Enabled = true;
-            //    button1.Invoke(S3);
-            //}
-
-        }
 
         /// <summary>
         /// Действие при первом отображениии формы
@@ -3197,6 +3121,7 @@ namespace VKSMM
             }
 
         }
+
     }
 }
 

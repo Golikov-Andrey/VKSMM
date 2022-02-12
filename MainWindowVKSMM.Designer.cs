@@ -334,7 +334,7 @@ namespace VKSMM
             this.processedAllProductButton.TabIndex = 2;
             this.processedAllProductButton.Text = "Обработать \r\nВСЕ товары";
             this.processedAllProductButton.UseVisualStyleBackColor = true;
-            this.processedAllProductButton.Click += new System.EventHandler(this.button3_Click);
+            this.processedAllProductButton.Click += new System.EventHandler(this.processedAllProductButton_Click);
             // 
             // processedOneProductButton
             // 
@@ -475,7 +475,7 @@ namespace VKSMM
             this.subCatListBox.Name = "subCatListBox";
             this.subCatListBox.Size = new System.Drawing.Size(125, 534);
             this.subCatListBox.TabIndex = 0;
-            this.subCatListBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listBox2_MouseUp);
+            this.subCatListBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.subCatListBox_MouseUp);
             // 
             // logRegexListBox
             // 
@@ -519,7 +519,7 @@ namespace VKSMM
             this.catListBox.Name = "catListBox";
             this.catListBox.Size = new System.Drawing.Size(125, 534);
             this.catListBox.TabIndex = 0;
-            this.catListBox.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.catListBox.SelectedIndexChanged += new System.EventHandler(this.catListBox_SelectedIndexChanged);
             // 
             // descriptionRegexTextBox
             // 
@@ -681,7 +681,6 @@ namespace VKSMM
             this.listBoxSubCategoryPostBox.Size = new System.Drawing.Size(114, 267);
             this.listBoxSubCategoryPostBox.TabIndex = 0;
             this.listBoxSubCategoryPostBox.Click += new System.EventHandler(this.listBoxSubCategoryPostBox_Click);
-           // this.listBoxSubCategoryPostBox.SelectedIndexChanged += new System.EventHandler(this.listBox4_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -1948,7 +1947,12 @@ namespace VKSMM
         public System.Windows.Forms.ListBox logRegexListBox;
         public System.Windows.Forms.ImageList imageListProduct;
         public System.Windows.Forms.ListView unProcessedProductListView;
+
+        /// <summary>
+        /// ListBox с подкатегориями во вкладке с не обработанным товаром 
+        /// </summary>
         public System.Windows.Forms.ListBox subCatListBox;
+
         public System.Windows.Forms.DataGridView providerDataGrid;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;

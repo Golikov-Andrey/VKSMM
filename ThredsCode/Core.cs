@@ -102,7 +102,7 @@ namespace VKSMM.ThredsCode
                     i++;
                 }
 
-                Stuff.UpdatePostavshikov(mainForm);
+                //Stuff.UpdatePostavshikov(mainForm);
 
                 //Action S3 = () => button1.Enabled = true;
                 //button1.Invoke(S3);
@@ -375,6 +375,162 @@ namespace VKSMM.ThredsCode
 
             Action S10 = () => outForm.Close();
             outForm.Invoke(S10);
+
+        }
+
+        /// <summary>
+        /// Тело процесса конвертации XML файла провайдеров
+        /// </summary>
+        public static void Thread_Provider_Excel_Code(object parametr)
+        {
+            VKSMM.LoadForm loadForm = (VKSMM.LoadForm)parametr;
+
+            try
+            {
+
+                //int countf = 888000;
+
+                Microsoft.Office.Interop.Excel.Application ObjWorkExcel = new Microsoft.Office.Interop.Excel.Application();
+                Microsoft.Office.Interop.Excel.Workbook ObjWorkBook = ObjWorkExcel.Workbooks.Open(loadForm.mainForm._ProviderDir);//ofd.FileName_PhotoPath
+
+
+
+                Microsoft.Office.Interop.Excel.Worksheet ObjWorkSheet_1 = (Microsoft.Office.Interop.Excel.Worksheet)ObjWorkBook.Sheets[1]; //получить 1-й лист
+                var lastCell_1 = ObjWorkSheet_1.Cells.SpecialCells(Microsoft.Office.Interop.Excel.XlCellType.xlCellTypeLastCell);//последнюю ячейку
+                                                                                                        // размеры базы
+                int lastColumn_1 = (int)lastCell_1.Column;
+                int lastRow_1 = (int)lastCell_1.Row;
+                // Перенос в промежуточный массив класса Form1: string[,] list = new string[50, 5]; 
+
+
+                //MessageBox.Show("Данные из XLS получены!");
+
+
+                DateTime dateTime = DateTime.Now;
+
+
+                Action S1 = () => loadForm.progressBarLoadForm.Maximum = lastRow_1;
+                loadForm.progressBarLoadForm.Invoke(S1);
+
+
+                for (int i = 1; i < lastRow_1; i++) // по всем строкам
+                {
+
+                    string[] line = new string[4];
+                    line[0] = ObjWorkSheet_1.Cells[i + 1, 1].Text.ToString();
+                    line[1] = ObjWorkSheet_1.Cells[i + 1, 2].Text.ToString();
+                    line[2] = ObjWorkSheet_1.Cells[i + 1, 3].Text.ToString();
+                    line[3] = ObjWorkSheet_1.Cells[i + 1, 4].Text.ToString();
+                    loadForm.mainForm.providerDataGrid.Rows.Add(line);
+
+
+
+
+                    Action S2 = () => loadForm.labelLoadForm.Text = "Поставщиков обработано " + i.ToString() + " из " + lastRow_1.ToString();
+                    loadForm.labelLoadForm.Invoke(S2);
+
+                    Action S3 = () => loadForm.progressBarLoadForm.Value = i;
+                    loadForm.progressBarLoadForm.Invoke(S3);
+
+
+
+                    try
+                    {
+
+                        CategoryOfProduct COFP = new CategoryOfProduct();
+                        COFP.Name = ObjWorkSheet_1.Cells[i + 1, 2].Text.ToString();
+
+                        bool Reg = true;
+                        int indexCat = -1;
+                        int IOd = 0;
+                        foreach (CategoryOfProduct C in loadForm.mainForm.providerCategoryList)
+                        {
+                            if (C.Name == COFP.Name)
+                            {
+                                Reg = false;
+                                indexCat = IOd;
+                                break;
+                            }
+                            IOd++;
+                        }
+
+
+
+                        if (COFP.Name.Length > 0)
+                        {
+                            if (Reg)
+                            {
+                                //Создаем экземпляр ключа
+                                Key kmc = new Key();
+                                //Значение ключа
+                                kmc.Value = ObjWorkSheet_1.Cells[i + 1, 3].Text.ToString();
+                                //kmc.Value = KEYPL.ChildNodes[0].InnerText;
+                                //Флаг активности ключа
+                                kmc.IsActiv = true;
+
+                                COFP.Keys.Add(kmc);
+
+
+                                COFP.isProvider = false;
+
+
+
+
+
+                                //mainForm.catListBox.Items.Add(COFP.Name);
+
+                                loadForm.mainForm.providerCategoryList.Add(COFP);
+
+                                //string[] s = new string[2];
+
+                                //s[0] = COFP.Name;
+                                //s[1] = COFP.SubCategoty.Count.ToString();
+                                //mainForm.dataGridView7.Rows.Add(s);
+                            }
+                            else
+                            {
+
+                                //Создаем экземпляр ключа
+                                Key kmc = new Key();
+                                //Значение ключа
+                                kmc.Value = ObjWorkSheet_1.Cells[i + 1, 3].Text.ToString();
+                                //kmc.Value = KEYPL.ChildNodes[0].InnerText;
+                                //Флаг активности ключа
+                                kmc.IsActiv = true;
+
+                                kmc.isProvider = false;
+
+                                //COFP.Keys.Add(kmc);
+
+                                loadForm.mainForm.providerCategoryList[indexCat].Keys.Add(kmc);
+
+                            }
+                        }
+
+
+
+                    }
+                    catch { }
+
+
+                }
+
+
+
+
+
+                ObjWorkBook.Close(false, Type.Missing, Type.Missing); //закрыть не сохраняя
+                ObjWorkExcel.Quit(); // выйти из Excel
+                GC.Collect(); // убрать за собой
+            }
+            catch
+            {
+
+            }
+            //return 0;
+
+            Action S4 = () => loadForm.Close();
+            loadForm.Invoke(S4);
 
         }
 

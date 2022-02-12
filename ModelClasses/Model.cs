@@ -42,6 +42,9 @@ namespace VKSMM.ModelClasses
         public List<Key> Keys = new List<Key>();
     }
 
+    /// <summary>
+    /// Класс подкатегории товара
+    /// </summary>
     public class SubCategoryOfProduct
     {
         public string Name = "ВСЕ";

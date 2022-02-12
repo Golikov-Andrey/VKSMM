@@ -63,36 +63,36 @@ namespace VKSMM.StuffClasses
             return OutLine;
         }
 
-        public static void UpdatePostavshikov(MainForm mainForm)
-        {
-            //mainForm.comboBox5.Items.Clear();
+        //public static void UpdatePostavshikov(MainForm mainForm)
+        //{
+        //    //mainForm.comboBox5.Items.Clear();
 
-            //mainForm.comboBox5.Items.Add("ВСЕ");
-            //mainForm.comboBox5.Text = "ВСЕ";
+        //    //mainForm.comboBox5.Items.Add("ВСЕ");
+        //    //mainForm.comboBox5.Text = "ВСЕ";
 
-            foreach (Product P in mainForm.productListSource)
-            {
-                bool gift = true;
+        //    foreach (Product P in mainForm.productListSource)
+        //    {
+        //        bool gift = true;
 
-                string L = P.IDURL.Substring(P.IDURL.IndexOf("/id") + 1);
+        //        string L = P.IDURL.Substring(P.IDURL.IndexOf("/id") + 1);
 
-                L = L.Substring(0, L.IndexOf("?"));
+        //        L = L.Substring(0, L.IndexOf("?"));
 
 
-                //foreach (object c in mainForm.comboBox5.Items)
-                //{
-                //    if (c.ToString() == L)
-                //    {
-                //        gift = false;
-                //    }
-                //}
+        //        //foreach (object c in mainForm.comboBox5.Items)
+        //        //{
+        //        //    if (c.ToString() == L)
+        //        //    {
+        //        //        gift = false;
+        //        //    }
+        //        //}
 
-                //if (gift)
-                //{
-                //    mainForm.comboBox5.Items.Add(L);
-                //}
-            }
-        }
+        //        //if (gift)
+        //        //{
+        //        //    mainForm.comboBox5.Items.Add(L);
+        //        //}
+        //    }
+        //}
 
         // Экспорт данных из Excel-файла (не более 5 столбцов и любое количество строк <= 50.
         public static int ExportExcel(string FilePath, MainForm mainForm)
@@ -285,153 +285,6 @@ namespace VKSMM.StuffClasses
             return 0;
         }
 
-        // Экспорт данных из Excel-файла (не более 5 столбцов и любое количество строк <= 50.
-        public static int ExportProviderExcel(MainForm mainForm, LoadForm loadForm)
-        {
-            try
-            {
-
-                //int countf = 888000;
-
-                Excel.Application ObjWorkExcel = new Excel.Application();
-                Excel.Workbook ObjWorkBook = ObjWorkExcel.Workbooks.Open(mainForm._ProviderDir);//ofd.FileName_PhotoPath
-
-
-
-                Excel.Worksheet ObjWorkSheet_1 = (Excel.Worksheet)ObjWorkBook.Sheets[1]; //получить 1-й лист
-                var lastCell_1 = ObjWorkSheet_1.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);//последнюю ячейку
-                                                                                                        // размеры базы
-                int lastColumn_1 = (int)lastCell_1.Column;
-                int lastRow_1 = (int)lastCell_1.Row;
-                // Перенос в промежуточный массив класса Form1: string[,] list = new string[50, 5]; 
-
-
-                //MessageBox.Show("Данные из XLS получены!");
-
-
-                DateTime dateTime = DateTime.Now;
-
-
-                Action S1 = () => loadForm.progressBarLoadForm.Maximum = lastRow_1;
-                loadForm.progressBarLoadForm.Invoke(S1);
-
-
-                for (int i = 1; i < lastRow_1; i++) // по всем строкам
-                {
-
-                    string[] line = new string[4];
-                    line[0] = ObjWorkSheet_1.Cells[i + 1, 1].Text.ToString();
-                    line[1] = ObjWorkSheet_1.Cells[i + 1, 2].Text.ToString();
-                    line[2] = ObjWorkSheet_1.Cells[i + 1, 3].Text.ToString();
-                    line[3] = ObjWorkSheet_1.Cells[i + 1, 4].Text.ToString();
-                    mainForm.providerDataGrid.Rows.Add(line);
-
-
-
-
-                    Action S2 = () => loadForm.labelLoadForm.Text = "Поставщиков обработано " + i.ToString() + " из " + lastRow_1.ToString();
-                    loadForm.labelLoadForm.Invoke(S2);
-
-                    Action S3 = () => loadForm.progressBarLoadForm.Value = i;
-                    loadForm.progressBarLoadForm.Invoke(S3);
-
-
-
-                    try
-                    {
-
-                        CategoryOfProduct COFP = new CategoryOfProduct();
-                        COFP.Name = ObjWorkSheet_1.Cells[i + 1, 2].Text.ToString();
-
-                        bool Reg = true;
-                        int indexCat = -1;
-                        int IOd = 0;
-                        foreach (CategoryOfProduct C in mainForm.providerCategoryList)
-                        {
-                            if (C.Name == COFP.Name)
-                            {
-                                Reg = false;
-                                indexCat = IOd;
-                                break;
-                            }
-                            IOd++;
-                        }
-
-
-
-                        if (COFP.Name.Length > 0)
-                        {
-                            if (Reg)
-                            {
-                                //Создаем экземпляр ключа
-                                Key kmc = new Key();
-                                //Значение ключа
-                                kmc.Value = ObjWorkSheet_1.Cells[i + 1, 3].Text.ToString();
-                                //kmc.Value = KEYPL.ChildNodes[0].InnerText;
-                                //Флаг активности ключа
-                                kmc.IsActiv = true;
-
-                                COFP.Keys.Add(kmc);
-
-
-                                COFP.isProvider = false;
-
-
-
-
-
-                                //mainForm.catListBox.Items.Add(COFP.Name);
-
-                                mainForm.providerCategoryList.Add(COFP);
-
-                                //string[] s = new string[2];
-
-                                //s[0] = COFP.Name;
-                                //s[1] = COFP.SubCategoty.Count.ToString();
-                                //mainForm.dataGridView7.Rows.Add(s);
-                            }
-                            else
-                            {
-
-                                //Создаем экземпляр ключа
-                                Key kmc = new Key();
-                                //Значение ключа
-                                kmc.Value = ObjWorkSheet_1.Cells[i + 1, 3].Text.ToString();
-                                //kmc.Value = KEYPL.ChildNodes[0].InnerText;
-                                //Флаг активности ключа
-                                kmc.IsActiv = true;
-
-                                kmc.isProvider = false;
-
-                                //COFP.Keys.Add(kmc);
-
-                                mainForm.providerCategoryList[indexCat].Keys.Add(kmc);
-
-                            }
-                        }
-
-
-
-                    }
-                    catch { }
-
-
-                }
-
-
-
-
-
-                ObjWorkBook.Close(false, Type.Missing, Type.Missing); //закрыть не сохраняя
-                ObjWorkExcel.Quit(); // выйти из Excel
-                GC.Collect(); // убрать за собой
-            }
-            catch
-            {
-
-            }
-            return 0;
-        }
 
 
 

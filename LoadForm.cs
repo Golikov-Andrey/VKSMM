@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Threading;
 using VKSMM.StuffClasses;//Файл с классами вспомогательных методов
+using VKSMM.ThredsCode;//Файл с классами потока
 
 namespace VKSMM
 {
@@ -22,8 +23,8 @@ namespace VKSMM
             InitializeComponent();
 
             //Запускаем поток конвертации файла с постовщиками во внутренний формат
-            Thread_Load_Data = new Thread(Thread_Load_Data_Code);
-            Thread_Load_Data.Start();
+            Thread_Load_Data = new Thread(Core.Thread_Provider_Excel_Code);
+            Thread_Load_Data.Start(this);
 
         }
 
@@ -37,12 +38,5 @@ namespace VKSMM
         /// </summary>
         public MainForm mainForm;
 
-        public void Thread_Load_Data_Code()
-        {
-            Stuff.ExportProviderExcel(mainForm, this);
-
-            Action S1 = () => this.Close();
-            this.Invoke(S1);            
-        }
     }
 }
