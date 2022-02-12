@@ -286,7 +286,7 @@ namespace VKSMM.StuffClasses
         }
 
         // Экспорт данных из Excel-файла (не более 5 столбцов и любое количество строк <= 50.
-        public static int ExportProviderExcel(MainForm mainForm)
+        public static int ExportProviderExcel(MainForm mainForm, LoadForm loadForm)
         {
             try
             {
@@ -312,14 +312,30 @@ namespace VKSMM.StuffClasses
                 DateTime dateTime = DateTime.Now;
 
 
+                Action S1 = () => loadForm.progressBarLoadForm.Maximum = lastRow_1;
+                loadForm.progressBarLoadForm.Invoke(S1);
 
 
                 for (int i = 1; i < lastRow_1; i++) // по всем строкам
                 {
 
+                    string[] line = new string[4];
+                    line[0] = ObjWorkSheet_1.Cells[i + 1, 1].Text.ToString();
+                    line[1] = ObjWorkSheet_1.Cells[i + 1, 2].Text.ToString();
+                    line[2] = ObjWorkSheet_1.Cells[i + 1, 3].Text.ToString();
+                    line[3] = ObjWorkSheet_1.Cells[i + 1, 4].Text.ToString();
+                    mainForm.providerDataGrid.Rows.Add(line);
 
-                    Action S2 = () => mainForm.XMLLoadLabel.Text = "Поставщиков обработано " + i.ToString() + " из " + lastRow_1.ToString();
-                    mainForm.XMLLoadLabel.Invoke(S2);
+
+
+
+                    Action S2 = () => loadForm.labelLoadForm.Text = "Поставщиков обработано " + i.ToString() + " из " + lastRow_1.ToString();
+                    loadForm.labelLoadForm.Invoke(S2);
+
+                    Action S3 = () => loadForm.progressBarLoadForm.Value = i;
+                    loadForm.progressBarLoadForm.Invoke(S3);
+
+
 
                     try
                     {
@@ -330,7 +346,7 @@ namespace VKSMM.StuffClasses
                         bool Reg = true;
                         int indexCat = -1;
                         int IOd = 0;
-                        foreach (CategoryOfProduct C in mainForm.mainCategoryList)
+                        foreach (CategoryOfProduct C in mainForm.providerCategoryList)
                         {
                             if (C.Name == COFP.Name)
                             {
@@ -364,15 +380,15 @@ namespace VKSMM.StuffClasses
 
 
 
-                                mainForm.catListBox.Items.Add(COFP.Name);
+                                //mainForm.catListBox.Items.Add(COFP.Name);
 
-                                mainForm.mainCategoryList.Add(COFP);
+                                mainForm.providerCategoryList.Add(COFP);
 
-                                string[] s = new string[2];
+                                //string[] s = new string[2];
 
-                                s[0] = COFP.Name;
-                                s[1] = COFP.SubCategoty.Count.ToString();
-                                mainForm.dataGridView7.Rows.Add(s);
+                                //s[0] = COFP.Name;
+                                //s[1] = COFP.SubCategoty.Count.ToString();
+                                //mainForm.dataGridView7.Rows.Add(s);
                             }
                             else
                             {
@@ -389,7 +405,7 @@ namespace VKSMM.StuffClasses
 
                                 //COFP.Keys.Add(kmc);
 
-                                mainForm.mainCategoryList[indexCat].Keys.Add(kmc);
+                                mainForm.providerCategoryList[indexCat].Keys.Add(kmc);
 
                             }
                         }
@@ -418,241 +434,6 @@ namespace VKSMM.StuffClasses
         }
 
 
-        public static void CreateExcel(MainForm mainForm, SaveFileDialog ofd)
-        {
-
-
-            DirectoryInfo directory = new DirectoryInfo(ofd.FileName.Substring(0, ofd.FileName.LastIndexOf("\\") + 1));
-
-
-
-
-
-
-            Microsoft.Office.Interop.Excel.Application xlApp = new Microsoft.Office.Interop.Excel.Application();
-
-            if (xlApp == null)
-            {
-                MessageBox.Show("У Вас не установлден Exel!!");
-                return;
-            }
-
-
-            Microsoft.Office.Interop.Excel.Workbook xlWorkBook;
-            Microsoft.Office.Interop.Excel.Worksheet xlWorkSheet;
-            object misValue = System.Reflection.Missing.Value;
-
-            xlWorkBook = xlApp.Workbooks.Add(misValue);
-            xlWorkSheet = (Microsoft.Office.Interop.Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
-
-            //Set Text-Wrap for all rows true//
-            xlWorkSheet.Rows.WrapText = true;
-
-            xlWorkSheet.Rows.HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
-            xlWorkSheet.Rows.VerticalAlignment = Excel.XlVAlign.xlVAlignTop;
-
-            xlWorkSheet.Columns["A:A"].ColumnWidth = 20.14;
-            xlWorkSheet.Columns["B:B"].ColumnWidth = 29.43;
-            xlWorkSheet.Columns["C:C"].ColumnWidth = 21.71;
-            xlWorkSheet.Columns["D:D"].ColumnWidth = 24.00;
-
-            xlWorkSheet.Columns["E:E"].ColumnWidth = 10.71;
-            xlWorkSheet.Columns["F:F"].ColumnWidth = 10.71;
-            xlWorkSheet.Columns["G:G"].ColumnWidth = 10.71;
-            xlWorkSheet.Columns["H:H"].ColumnWidth = 10.71;
-            xlWorkSheet.Columns["I:I"].ColumnWidth = 10.71;
-
-            xlWorkSheet.Columns["J:J"].ColumnWidth = 21.29;
-            xlWorkSheet.Columns["K:K"].ColumnWidth = 35.29;
-            xlWorkSheet.Columns["L:L"].ColumnWidth = 35.29;
-
-            xlWorkSheet.Columns["M:M"].ColumnWidth = 33.57;
-
-            xlWorkSheet.Columns["N:N"].ColumnWidth = 8.43;
-            xlWorkSheet.Columns["O:O"].ColumnWidth = 8.43;
-            xlWorkSheet.Columns["P:P"].ColumnWidth = 8.43;
-            xlWorkSheet.Columns["Q:Q"].ColumnWidth = 8.43;
-            xlWorkSheet.Columns["R:R"].ColumnWidth = 8.43;
-            xlWorkSheet.Columns["S:S"].ColumnWidth = 8.43;
-            xlWorkSheet.Columns["T:T"].ColumnWidth = 8.43;
-            xlWorkSheet.Columns["U:U"].ColumnWidth = 8.43;
-            xlWorkSheet.Columns["V:V"].ColumnWidth = 8.43;
-            xlWorkSheet.Columns["W:W"].ColumnWidth = 8.43;
-            xlWorkSheet.Columns["X:X"].ColumnWidth = 8.43;
-            xlWorkSheet.Columns["Y:Y"].ColumnWidth = 8.43;
-            xlWorkSheet.Columns["Z:Z"].ColumnWidth = 8.43;
-
-
-            xlWorkSheet.Cells[1, 1] = "№";
-            xlWorkSheet.Cells[1, 2] = "Фото";
-            xlWorkSheet.Cells[1, 3] = "Дата поста";
-            xlWorkSheet.Cells[1, 4] = "Ссылка на товар";
-            xlWorkSheet.Cells[1, 5] = "Цена 1";
-            xlWorkSheet.Cells[1, 6] = "Цена 2";
-            xlWorkSheet.Cells[1, 7] = "Цена 3";
-            xlWorkSheet.Cells[1, 8] = "Цена 4";
-            xlWorkSheet.Cells[1, 9] = "Цена 5";
-            xlWorkSheet.Cells[1, 10] = "Размеры";
-            xlWorkSheet.Cells[1, 11] = "Описание поставщика";
-            xlWorkSheet.Cells[1, 12] = "Чистое описание";
-            xlWorkSheet.Cells[1, 13] = "Материал";
-            xlWorkSheet.Cells[1, 14] = "ссылка 1";
-            xlWorkSheet.Cells[1, 15] = "ссылка 2";
-            xlWorkSheet.Cells[1, 16] = "ссылка 3";
-            xlWorkSheet.Cells[1, 17] = "ссылка 4";
-            xlWorkSheet.Cells[1, 18] = "ссылка 5";
-            xlWorkSheet.Cells[1, 19] = "ссылка 6";
-            xlWorkSheet.Cells[1, 20] = "ссылка 7";
-            xlWorkSheet.Cells[1, 21] = "ссылка 8";
-            xlWorkSheet.Cells[1, 22] = "ссылка 9";
-            xlWorkSheet.Cells[1, 23] = "ссылка 10";
-            xlWorkSheet.Cells[1, 24] = "ссылка 11";
-            xlWorkSheet.Cells[1, 25] = "ссылка 12";
-            xlWorkSheet.Cells[1, 26] = "ссылка 13";
-
-
-            int i = 2;
-            int t = 1;
-            foreach (Product p in mainForm.ProductListForPosting)
-            {
-
-                Action S2 = () => mainForm.label15.Text = "Постов обработано " + t.ToString() + " из " + mainForm.ProductListForPosting.Count.ToString();
-                mainForm.label15.Invoke(S2);
-                t++;
-
-                string Opesanie1 = "";
-                foreach (string ss in p.sellerText)
-                {
-                    Opesanie1 = Opesanie1 + ss + "\r\n";
-                }
-
-                string Opesanie2 = "";
-                foreach (string ss in p.sellerTextCleen)
-                {
-                    Opesanie2 = Opesanie2 + ss + "\r\n";
-                }
-
-
-                int j = 0;
-                foreach (string s in p.FilePath)
-                {
-
-                    string OutJPGPath = s;
-
-                    try
-                    {
-                        Directory.CreateDirectory(directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\");
-
-                        File.Copy(s, directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\" + s.Substring(s.LastIndexOf("\\") + 1), true);
-
-                        OutJPGPath = directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\" + s.Substring(s.LastIndexOf("\\") + 1);
-
-                    }
-                    catch { }
-
-
-
-
-
-
-                    xlWorkSheet.Cells[i, 1] = OutJPGPath;//s
-                    xlWorkSheet.Cells[i, 2] = p.URLPhoto[j];
-                    xlWorkSheet.Cells[i, 3] = p.datePost.ToString("dd/MM/yy hh:mm");
-                    xlWorkSheet.Cells[i, 4] = p.IDURL;
-
-                    xlWorkSheet.Cells[i, 5] = p.prise[0];
-                    xlWorkSheet.Cells[i, 6] = p.prise[1];
-                    xlWorkSheet.Cells[i, 7] = p.prise[2];
-                    xlWorkSheet.Cells[i, 8] = p.prise[3];
-                    xlWorkSheet.Cells[i, 9] = p.Prises;//p.prise[4];
-
-                    xlWorkSheet.Cells[i, 10] = p.Sizes;
-                    xlWorkSheet.Cells[i, 11] = Opesanie1;
-                    xlWorkSheet.Cells[i, 12] = Opesanie2;
-                    xlWorkSheet.Cells[i, 13] = p.Materials;
-                    xlWorkSheet.Cells[i, 14] = "";
-                    xlWorkSheet.Cells[i, 15] = "";
-                    xlWorkSheet.Cells[i, 16] = "";
-                    xlWorkSheet.Cells[i, 17] = "";
-                    xlWorkSheet.Cells[i, 18] = "";
-                    xlWorkSheet.Cells[i, 19] = "";
-                    xlWorkSheet.Cells[i, 20] = "";
-                    xlWorkSheet.Cells[i, 21] = "";
-                    xlWorkSheet.Cells[i, 22] = "";
-                    xlWorkSheet.Cells[i, 23] = "";
-                    xlWorkSheet.Cells[i, 24] = "";
-                    xlWorkSheet.Cells[i, 25] = "";
-                    xlWorkSheet.Cells[i, 26] = "";
-
-                    j++;
-                    i++;
-                }
-            }
-
-
-
-            //Захватываем диапазон ячеек
-            //  Excel.Range range1 = xlWorkSheet.get_Range((Excel.Range)(xlWorkSheet.Cells[1, 1]), (Excel.Range)(xlWorkSheet.Cells[i, 1]));
-
-            //  range1.ColumnWidth = 145;
-
-            // (xlWorkSheet.Cells[1, 1] as Excel.Range).VerticalAlignment = Excel.XlVAlign.xlVAlignCenter;
-            // (xlWorkSheet.Cells[1, 1] as Excel.Range).HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
-            // (xlWorkSheet.Cells[1, 1] as Excel.Range).HorizontalAlignment = Excel.XlHAlign.xlHAlignLeft;
-
-
-
-
-
-            //Захватываем другой диапазон ячеек
-            Excel.Range range2 = xlWorkSheet.get_Range((Excel.Range)(xlWorkSheet.Cells[1, 1]), (Excel.Range)(xlWorkSheet.Cells[1, 26]));
-
-            range2.Cells.Font.Name = "Calibri";
-            range2.Cells.Font.Size = 14;
-            range2.Cells.Font.Bold = true;
-
-            //Задаем цвет этого диапазона. Необходимо подключить System.Drawing
-            range2.Cells.Font.Color = ColorTranslator.ToOle(Color.White);
-            //Фоновый цвет
-            range2.Interior.Color = ColorTranslator.ToOle(Color.DarkGray);
-
-
-            //Захватываем диапазон ячеек
-            Excel.Range rangeAll = xlWorkSheet.get_Range((Excel.Range)(xlWorkSheet.Cells[1, 1]), (Excel.Range)(xlWorkSheet.Cells[i, 26]));
-            //rangeAll.WrapText = Excel.wr
-            rangeAll.EntireRow.AutoFit();
-
-
-            //xlWorkSheet.Cells[1, 2] = "Name";
-            //xlWorkSheet.Cells[2, 1] = "1";
-            //xlWorkSheet.Cells[2, 2] = "One";
-            //xlWorkSheet.Cells[3, 1] = "2";
-            //xlWorkSheet.Cells[3, 2] = "Two";
-
-            //	Фото Дата поста Ссылка на товар Цена 1  Цена 2  Цена 3  Цена 4  Цена 5  Размеры Описание поставщика Чистое описание Материал    ссылка 1    ссылка 2    ссылка 3    ссылка 4    ссылка 5    ссылка 6    ссылка 7    ссылка 8    ссылка 9    ссылка 10   ссылка 11   ссылка 12   ссылка 13
-
-
-
-            //Here saving the file in xlsx + ".xlsx"
-            xlWorkBook.SaveAs(ofd.FileName, Microsoft.Office.Interop.Excel.XlFileFormat.xlOpenXMLWorkbook, misValue,
-            misValue, misValue, misValue, Microsoft.Office.Interop.Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
-
-
-            xlWorkBook.Close(true, misValue, misValue);
-            xlApp.Quit();
-
-            Marshal.ReleaseComObject(xlWorkSheet);
-            Marshal.ReleaseComObject(xlWorkBook);
-            Marshal.ReleaseComObject(xlApp);
-
-            MessageBox.Show("Файл сохранен!");
-
-
-            mainForm.ProductListForPosting.Clear();
-            mainForm.treeView1.Nodes.Clear();
-            mainForm.listView2.Items.Clear();
-
-        }
 
 
         public static List<int> ProcessingProductsAll(MainForm mainForm)
@@ -689,7 +470,7 @@ namespace VKSMM.StuffClasses
                     string Razmer = string.Empty;
                     bool RazmerFind = false;
 
-
+                    List<string> akamulateRegexLog = new List<string>();
 
 
                     //Проходим по всем строчкам из описания
@@ -768,6 +549,8 @@ namespace VKSMM.StuffClasses
                                             //Буфферная переменная куда поступают данные после коррекции
                                 string resultLine = s;
 
+                                int i = 0;
+
                                 //====================================== Блок замены или стирания ненужной информации ================================================
                                 //Производим замену по ключам
                                 foreach (ReplaceKeys k in mainForm.Replace_Keys)
@@ -775,40 +558,58 @@ namespace VKSMM.StuffClasses
                                     //Если ключ включен, то его исполняем
                                     if (k.RegKey.IsActiv)
                                     {
+
+
+
                                         //Регулярное выражение
                                         regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
 
+                                        Match M = regex.Match(resultLine);
                                         if (regex.IsMatch(resultLine))
                                         {
-                                            P.logRegularExpression.Add(k.RegKey.Value);
-                                        }
+
+                                            //    if (regex.IsMatch(resultLine))
+                                            //{
+                                            //    P.logRegularExpression.Add(k.RegKey.Value);
+                                            //}
 
 
-                                        //Если режим замены, то заменяем на значение ключа
-                                        if (k.Action == 3)
-                                        {
-                                            //Выполняем замену
-                                            resultLine = regex.Replace(resultLine, k.NewValue);
-                                        }
-                                        //Если режим удаления, то просто вставляем пустое значение
-                                        if (k.Action == 4)
-                                        {
-                                            //Выполняем замену
-                                            resultLine = regex.Replace(resultLine, "");
-                                        }
-
-                                        //Если режим удаления, то просто вставляем пустое значение
-                                        if (k.Action == 5)
-                                        {
-                                            if (regex.IsMatch(resultLine))
+                                            //Если режим замены, то заменяем на значение ключа
+                                            if (k.Action == 3)
                                             {
-                                                resultLine = "";
+                                                //Выполняем замену
+                                                resultLine = regex.Replace(resultLine, k.NewValue);
+
+                                                akamulateRegexLog.Add( "# стр." + u + " найдено:|" + M.Value + "| Рег.№:" + i + " замена:|" + k.NewValue + "|");
                                             }
-                                            //Выполняем замену
-                                            //resultLine = regex.Replace(resultLine, "");
+                                            //Если режим удаления, то просто вставляем пустое значение
+                                            if (k.Action == 4)
+                                            {
+                                                //Выполняем замену
+                                                resultLine = regex.Replace(resultLine, "");
+
+                                                akamulateRegexLog.Add("# стр." + u + " найдено:|" + M.Value + "| Рег.№:" + i + " удалена подстрока ");
+
+                                            }
+
+                                            //Если режим удаления, то просто вставляем пустое значение
+                                            if (k.Action == 5)
+                                            {
+                                                akamulateRegexLog.Add("# стр." + u + " найдено:|" + M.Value + "| Рег.№:" + i + " строчка заблокирована ");
+
+
+                                                if (regex.IsMatch(resultLine))
+                                                {
+                                                    resultLine = "";
+                                                }
+                                                //Выполняем замену
+                                                //resultLine = regex.Replace(resultLine, "");
+                                            }
                                         }
 
                                     }
+
+                                    i++;
                                 }
 
 
@@ -858,6 +659,9 @@ namespace VKSMM.StuffClasses
 
                     }
 
+
+
+                    P.logRegularExpression = akamulateRegexLog;
 
 
                     string sumPrise = "";
@@ -915,94 +719,17 @@ namespace VKSMM.StuffClasses
                     //  //break;
                     //}
                     ////============================================================= временное решение ===============================================================================
-                    //========================== Блок с автоподбором категорий ====================================================
-                    int i = 0;
-                    int j = 0;
-                    //Регулярное выражение
-                    Regex regexCat;
-                    //Перебираем категории товара
-                    foreach (CategoryOfProduct c in mainForm.mainCategoryList)
+
+
+                    //Пытаемся подобрать категорию по ключам из общей библиотеки категорий
+                    autoSelectionCategory(mainForm.mainCategoryList, P, stringpost);
+
+                    //Проверяем была ли на предидущем щаге подобрана категория
+                    if (P.CategoryOfProductName == "ВСЕ")
                     {
-                        //Флаг обнаружения категории
-                        bool regincat = false;
-
-                        if (P.CategoryOfProductName == c.Name)
-                        {
-                            //listBox1.SelectedIndex = i;
-                            regincat = true;
-                        }
-
-
-
-                        //Перебираем все ключи привязанные к категории товара
-                        foreach (Key k in c.Keys)
-                        {
-                            //Если ключ активен, то проверяем его
-                            if (k.IsActiv)
-                            {
-                                //Проверяем регулярное выражение
-                                regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
-                                //Аккамулируем результаты поиска 
-                                regincat = regexCat.IsMatch(stringpost) || regincat;
-                            }
-                        }
-                        //Если категория выбрана, то выделяем ее на форме
-                        if (regincat)
-                        {
-                            if (P.CategoryOfProductName == "ВСЕ")
-                            {
-                                P.CategoryOfProductName = c.Name;
-                            }
-                            //if (!P.HandBlock)
-                            //{
-                            //    //Выделяем категорию
-                            //    listBox1.SelectedIndex = i;
-                            //}
-                            j = 0;
-                            //Перебираем подкатегории выбранной категории
-                            foreach (SubCategoryOfProduct s in c.SubCategoty)
-                            {
-                                //
-                                bool reginsubcat = false;
-
-                                //if (P.SubCategoryOfProductName == s.Name)
-                                //{
-                                //    listBox2.SelectedIndex = j;
-                                //}
-
-                                foreach (Key k in s.Keys)
-                                {
-                                    if (k.IsActiv)
-                                    {
-                                        regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
-
-                                        reginsubcat = regexCat.IsMatch(stringpost) || reginsubcat;
-                                    }
-                                }
-
-                                if (reginsubcat)
-                                {
-                                    if (P.SubCategoryOfProductName == "ВСЕ")
-                                    {
-                                        P.SubCategoryOfProductName = s.Name;
-                                    }
-
-                                    if (!P.HandBlock)
-                                    {
-                                        // listBox2.SelectedIndex = j;
-                                        break;
-                                    }
-                                }
-                                j++;
-                            }
-
-                            break;
-                        }
-                        //Индекс ссылка на категорию товара
-                        i++;
+                        //Подбираем категорию по ключам поставщиков если не подобралась по общей категории
+                        autoSelectionCategory(mainForm.providerCategoryList, P, stringpost);
                     }
-
-
 
                     //if (isCat)
                     //{
@@ -1022,7 +749,7 @@ namespace VKSMM.StuffClasses
 
                         mainForm.ProductListForPosting.Add(P);
 
-                        mainForm.AddToTreeView(P, indexTV);
+                        AddToTreeView(mainForm, P, indexTV);
 
                         RemovedIndexes.Add(index);
 
@@ -1040,6 +767,194 @@ namespace VKSMM.StuffClasses
 
             return RemovedIndexes;
         }
+
+        /// <summary>
+        /// Метод добавления товара в TREEVIEW на форме поста товара
+        /// </summary>
+        public static void AddToTreeView(MainForm mainForm, Product P, int index)
+        {
+            bool NodeExistCat = false;
+            bool NodeExistSub = false;
+
+            int idNodeExistCat = -1;
+            int idNodeExistSub = -1;
+            int i = 0;
+            int j = 0;
+
+            foreach (TreeNode S in mainForm.treeViewProductForPostBox.Nodes)
+            {
+                if (S.Text == P.CategoryOfProductName)
+                {
+                    idNodeExistCat = i;
+                    NodeExistCat = true;
+
+                    j = 0;
+                    foreach (TreeNode SC in mainForm.treeViewProductForPostBox.Nodes[idNodeExistCat].Nodes)
+                    {
+                        if (SC.Text == P.SubCategoryOfProductName)
+                        {
+                            idNodeExistSub = j;
+                            NodeExistSub = true;
+                            break;
+                        }
+                        j++;
+                    }
+                    break;
+                }
+                i++;
+            }
+
+
+            if (!NodeExistCat)
+            {
+                idNodeExistCat = mainForm.treeViewProductForPostBox.Nodes.Count;
+                idNodeExistSub = 0;
+
+                mainForm.treeViewProductForPostBox.Nodes.Add(P.CategoryOfProductName);
+
+                if (P.SubCategoryOfProductName == "ВСЕ")
+                {
+                    mainForm.treeViewProductForPostBox.Nodes[mainForm.treeViewProductForPostBox.Nodes.Count - 1].Nodes.Add("ВСЕ");
+                }
+                else
+                {
+                    idNodeExistSub++;
+                    mainForm.treeViewProductForPostBox.Nodes[mainForm.treeViewProductForPostBox.Nodes.Count - 1].Nodes.Add("ВСЕ");
+                    mainForm.treeViewProductForPostBox.Nodes[mainForm.treeViewProductForPostBox.Nodes.Count - 1].Nodes.Add(P.SubCategoryOfProductName);
+
+                }
+
+
+
+
+                NodeExistCat = true;
+                NodeExistSub = true;
+            }
+
+            if ((NodeExistCat) && (!NodeExistSub))
+            {
+                idNodeExistSub = mainForm.treeViewProductForPostBox.Nodes[idNodeExistCat].Nodes.Count;
+
+                mainForm.treeViewProductForPostBox.Nodes[idNodeExistCat].Nodes.Add(P.SubCategoryOfProductName);
+
+                NodeExistSub = true;
+            }
+
+            if ((NodeExistCat) && (NodeExistSub))
+            {
+                mainForm.treeViewProductForPostBox.Nodes[idNodeExistCat].Nodes[idNodeExistSub].Nodes.Add(index.ToString());
+            }
+        }
+
+
+        /// <summary>
+        /// Метод подбора категории товара по ключам из массива категорий
+        /// </summary>
+        private static void autoSelectionCategory(List<CategoryOfProduct> CategoryList, Product P, string stringpost)
+        {
+            //========================== Блок с автоподбором категорий ====================================================
+            int i = 0;
+            int j = 0;
+            //Регулярное выражение
+            Regex regexCat;
+            //Перебираем категории товара
+            foreach (CategoryOfProduct c in CategoryList)
+            {
+                //Флаг обнаружения категории
+                bool regincat = false;
+
+                if (P.CategoryOfProductName == c.Name)
+                {
+                    //listBox1.SelectedIndex = i;
+                    regincat = true;
+                }
+
+
+
+                //Перебираем все ключи привязанные к категории товара
+                foreach (Key k in c.Keys)
+                {
+                    //Если ключ активен, то проверяем его
+                    if (k.IsActiv)
+                    {
+                        //Проверяем регулярное выражение
+                        regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
+                        //Аккамулируем результаты поиска 
+                        regincat = regexCat.IsMatch(stringpost) || regincat;
+
+                        if (regincat)
+                        {
+                            Match M = regexCat.Match(stringpost);
+                            P.logRegularExpression.Add("# подбор категории:|" + M.Value + "| Рег.:" + k.Value + " категория:|" + c.Name + "|");
+                        }
+                    }
+                }
+                //Если категория выбрана, то выделяем ее на форме
+                if (regincat)
+                {
+                    if (P.CategoryOfProductName == "ВСЕ")
+                    {
+                        P.CategoryOfProductName = c.Name;
+                    }
+                    //if (!P.HandBlock)
+                    //{
+                    //    //Выделяем категорию
+                    //    listBox1.SelectedIndex = i;
+                    //}
+                    j = 0;
+                    //Перебираем подкатегории выбранной категории
+                    foreach (SubCategoryOfProduct s in c.SubCategoty)
+                    {
+                        //
+                        bool reginsubcat = false;
+
+                        //if (P.SubCategoryOfProductName == s.Name)
+                        //{
+                        //    listBox2.SelectedIndex = j;
+                        //}
+
+                        foreach (Key k in s.Keys)
+                        {
+                            if (k.IsActiv)
+                            {
+                                regexCat = new Regex(k.Value, RegexOptions.IgnoreCase);
+
+                                reginsubcat = regexCat.IsMatch(stringpost) || reginsubcat;
+
+                                if (reginsubcat)
+                                {
+                                    Match M = regexCat.Match(stringpost);
+                                    P.logRegularExpression.Add("# подбор подкатегории:|" + M.Value + "| Рег.:" + k.Value + " категория:|" + s.Name + "|");
+                                }
+
+                            }
+                        }
+
+                        if (reginsubcat)
+                        {
+                            if (P.SubCategoryOfProductName == "ВСЕ")
+                            {
+                                P.SubCategoryOfProductName = s.Name;
+                            }
+
+                            if (!P.HandBlock)
+                            {
+                                // listBox2.SelectedIndex = j;
+                                break;
+                            }
+                        }
+                        j++;
+                    }
+
+                    break;
+                }
+                //Индекс ссылка на категорию товара
+                i++;
+            }
+
+        }
+
+
 
 
         #region //Старые блоки с кодом применения регулярных выражений
@@ -1618,7 +1533,7 @@ namespace VKSMM.StuffClasses
 
                         mainForm.ProductListForPosting.Add(P);
 
-                        mainForm.AddToTreeView(P, indexTV);
+                        AddToTreeView(mainForm, P, indexTV);
 
                         RemovedIndexes.Add(index);
 
@@ -1640,8 +1555,7 @@ namespace VKSMM.StuffClasses
 
         public static string descriptionProcessing(MainForm mainForm, string s, int u)
         {
-            mainForm.logRegexListBox.Items.Add("Строчка - "+ u );
-            mainForm.logRegexListBox.Items.Add("--------------------------------------------------------------------------------------------------------------------------------------------");
+            mainForm.logRegexListBox.Items.Add("---------------------------------------------Строчка - " + (u+1) + "----------------------------------------------------");
 
 
             //Вспомогательные переменные
@@ -1741,7 +1655,7 @@ namespace VKSMM.StuffClasses
                                 {
                                     //Выполняем замену
                                     resultLine = regex.Replace(resultLine, k.NewValue);
-                                    mainForm.logRegexListBox.Items.Add("# найдено:" + M.Value + " Рег.№:" + i + " замена:" + k.RegKey.Value);
+                                    mainForm.logRegexListBox.Items.Add("# найдено:|" + M.Value + "| Рег.№:" + i + " замена:|" + k.NewValue+"|");
 
                                 }
                                 //Если режим удаления, то просто вставляем пустое значение
@@ -1749,14 +1663,14 @@ namespace VKSMM.StuffClasses
                                 {
                                     //Выполняем замену
                                     resultLine = regex.Replace(resultLine, "");
-                                    mainForm.logRegexListBox.Items.Add("# найдено:" + M.Value + " Рег.№:" + i + " удалена подстрока ");
+                                    mainForm.logRegexListBox.Items.Add("# найдено:|" + M.Value + "| Рег.№:" + i + " удалена подстрока ");
 
                                 }
 
                                 //Если режим удаления, то просто вставляем пустое значение
                                 if (k.Action == 5)
                                 {
-                                    mainForm.logRegexListBox.Items.Add("# найдено:" + M.Value + " Рег.№:" + i + " строчка заблокирована ");
+                                    mainForm.logRegexListBox.Items.Add("# найдено:|" + M.Value + "| Рег.№:" + i + " строчка заблокирована ");
 
 
                                     if (regex.IsMatch(resultLine))
@@ -1824,7 +1738,7 @@ namespace VKSMM.StuffClasses
         public static void loadImageInListBox(MainForm mainForm)
         {
             //Чистим картинки в листбоксе
-            mainForm.imageListUnProcessedProduct.Images.Clear();
+            mainForm.imageListProduct.Images.Clear();
             mainForm.unProcessedProductListView.Items.Clear();
 
             int ii = 0;
@@ -1843,7 +1757,7 @@ namespace VKSMM.StuffClasses
                         if (f.Exists)
                         {
 
-                            mainForm.imageListUnProcessedProduct.Images.Add(new Bitmap(s));
+                            mainForm.imageListProduct.Images.Add(new Bitmap(s));
                             mainForm.unProcessedProductListView.Items.Add(new ListViewItem(s, ii));
                             ii++;
                         }
@@ -1957,6 +1871,7 @@ namespace VKSMM.StuffClasses
         }
 
 
+        
 
+        }
     }
-}

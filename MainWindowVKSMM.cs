@@ -25,6 +25,7 @@ namespace VKSMM
         public MainForm()
         {
             InitializeComponent();
+
         }
 
         //====================================================================================================================================================================
@@ -52,7 +53,15 @@ namespace VKSMM
 
         public int GUIDReplaceKey = 0;
 
+        /// <summary>
+        /// Основные категории товара по регулярным выражениям
+        /// </summary>
         public List<CategoryOfProduct> mainCategoryList = new List<CategoryOfProduct>();
+
+        /// <summary>
+        /// Основные категории товара по поставщикам
+        /// </summary>
+        public List<CategoryOfProduct> providerCategoryList = new List<CategoryOfProduct>();
 
         /// <summary>
         /// Список не обработанных товаров. Заполняется при загрузке XLS файлов   
@@ -158,6 +167,8 @@ namespace VKSMM
 
             //Обновляем поставщиков
             Stuff.UpdatePostavshikov(this);
+
+           
                         
         }
 
@@ -420,9 +431,9 @@ namespace VKSMM
                     descriptionSourceDataGridView.Rows[descriptionSourceDataGridView.Rows.Count - 1].DefaultCellStyle.SelectionBackColor = descriptionSourceDataGridView.Rows[descriptionSourceDataGridView.Rows.Count - 1].DefaultCellStyle.BackColor;
                 }
 
-                textBox7.Text = stringpost;
+                sourceDescrSelectedProductTextBoxPostBox.Text = stringpost;
 
-                imageListUnProcessedProduct.Images.Clear();
+                imageListProduct.Images.Clear();
                 unProcessedProductListView.Items.Clear();
                 //int i = 0;
 
@@ -837,7 +848,7 @@ namespace VKSMM
 
             try
             {
-                treeView1.SelectedNode = treeView1.Nodes[0];
+                treeViewProductForPostBox.SelectedNode = treeViewProductForPostBox.Nodes[0];
             }
             catch
             { }
@@ -871,80 +882,7 @@ namespace VKSMM
            
         }
 
-        public void AddToTreeView(Product P, int index)
-        {
-            bool NodeExistCat = false;
-            bool NodeExistSub = false;
 
-            int idNodeExistCat = -1;
-            int idNodeExistSub = -1;
-            int i = 0;
-            int j = 0;
-
-            foreach (TreeNode S in treeView1.Nodes)
-            {
-                if (S.Text == P.CategoryOfProductName)
-                {
-                    idNodeExistCat = i;
-                    NodeExistCat = true;
-
-                    j = 0;
-                    foreach (TreeNode SC in treeView1.Nodes[idNodeExistCat].Nodes)
-                    {
-                        if (SC.Text == P.SubCategoryOfProductName)
-                        {
-                            idNodeExistSub = j;
-                            NodeExistSub = true;
-                            break;
-                        }
-                        j++;
-                    }
-                    break;
-                }
-                i++;
-            }
-
-
-            if (!NodeExistCat)
-            {
-                idNodeExistCat = treeView1.Nodes.Count;
-                idNodeExistSub = 0;
-
-                treeView1.Nodes.Add(P.CategoryOfProductName);
-
-                if (P.SubCategoryOfProductName == "ВСЕ")
-                {
-                    treeView1.Nodes[treeView1.Nodes.Count - 1].Nodes.Add("ВСЕ");
-                }
-                else
-                {
-                    idNodeExistSub++;
-                    treeView1.Nodes[treeView1.Nodes.Count - 1].Nodes.Add("ВСЕ");
-                    treeView1.Nodes[treeView1.Nodes.Count - 1].Nodes.Add(P.SubCategoryOfProductName);
-
-                }
-
-
-
-
-                NodeExistCat = true;
-                NodeExistSub = true;
-            }
-
-            if ((NodeExistCat) && (!NodeExistSub))
-            {
-                idNodeExistSub = treeView1.Nodes[idNodeExistCat].Nodes.Count;
-
-                treeView1.Nodes[idNodeExistCat].Nodes.Add(P.SubCategoryOfProductName);
-
-                NodeExistSub = true;
-            }
-
-            if ((NodeExistCat) && (NodeExistSub))
-            {
-                treeView1.Nodes[idNodeExistCat].Nodes[idNodeExistSub].Nodes.Add(index.ToString());
-            }
-        }
 
         public void AddGroup(ReplaceKeys R)
         {
@@ -967,7 +905,7 @@ namespace VKSMM
         {
             try
             {
-                treeView1.SelectedNode = treeView1.Nodes[0];
+                treeViewProductForPostBox.SelectedNode = treeViewProductForPostBox.Nodes[0];
             }
             catch
             { }
@@ -981,6 +919,7 @@ namespace VKSMM
             unProcessedProductListView.Items.Clear();
             numericUpDownPrize.Value = 0;
             descriptionSourceDataGridView.Rows.Clear();
+            logRegexListBox.Items.Clear();
 
 
             List<int> RemovedIndexes = new List<int>();
@@ -1027,347 +966,468 @@ namespace VKSMM
         //}
 
 
-
-
-        private void listBox2_SelectedIndexChanged(object sender, EventArgs e)
+        /// <summary>
+        /// Действие при выделении товара в TREEVIEW в окне постинга товара
+        /// </summary>
+        private void treeViewProductForPostBox_AfterSelect(object sender, TreeViewEventArgs e)
         {
+            if(treeViewProductForPostBox.SelectedNode.Level == 2)
+            {
+                int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
+
+                selectProductTreeView(indexOfProduct,true);
+            }
+
+
+            if (treeViewProductForPostBox.SelectedNode.Level == 1)
+            {
+                selectSubCategoryTreeView(0,0,true);
+            }
+
+
+            if (treeViewProductForPostBox.SelectedNode.Level == 0)
+            {
+               selectAllCategoryTreeView(0, 0, true);
+            }
+
         }
 
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        private int showProductLowBorder = 0;
+        private int showProductTopBorder = 0;
+        private int showProductMaxBorder = 0;
+
+        private void selectProductTreeView(int indexOfProduct, bool refreshListView)
         {
-            if(treeView1.SelectedNode.Level==2)
+
+            //buttonPreveusPagePostBox.Enabled = false;
+            //buttonNextPagePostBox.Enabled = false;
+
+
+            sourceDescrSelectedProductTextBoxPostBox.Text = "";
+            prizeDescrSelectedProductTextBoxPostBox.Text = "";
+            clearDescrSelectedProductTextBoxPostBox.Text = "";
+
+            logRegexListBoxPostBox.Items.Clear();
+
+
+            listBoxMainCategoryPostBox.Items.Clear();
+            listBoxSubCategoryPostBox.Items.Clear();
+            
+            
+
+
+
+            int ic = 0;
+
+            int indexcat = -1;
+            int indexSUB = -1;
+
+            try
             {
-
-                button29.Enabled = false;
-                button30.Enabled = false;
-
-
-                textBox7.Text = "";
-                textBox5.Text = "";
-                listBox5.Items.Clear();
-                listBox4.Items.Clear();
-                int ic = 0;
-
-                int indexOfProduct = Convert.ToInt32(treeView1.SelectedNode.Text);
-                int indexcat = -1;
-                int indexSUB = -1;
-
-                try
+                foreach (CategoryOfProduct cat in mainCategoryList)
                 {
-                    foreach (CategoryOfProduct cat in mainCategoryList)
-                    {
-                        listBox5.Items.Add(cat.Name);
+                    listBoxMainCategoryPostBox.Items.Add(cat.Name);
 
-                        if(cat.Name==ProductListForPosting[indexOfProduct].CategoryOfProductName)
-                        {
-                            indexcat = ic;
-                        }
-                        ic++;
+                    if (cat.Name == ProductListForPosting[indexOfProduct].CategoryOfProductName)
+                    {
+                        indexcat = ic;
                     }
+                    ic++;
                 }
-                catch
-                { }
-                ic = 0;
-                try
+            }
+            catch
+            { }
+            ic = 0;
+            try
+            {
+                foreach (SubCategoryOfProduct SUB in mainCategoryList[indexcat].SubCategoty)
                 {
-                    foreach (SubCategoryOfProduct SUB in mainCategoryList[indexcat].SubCategoty)
+                    listBoxSubCategoryPostBox.Items.Add(SUB.Name);
+
+                    if (SUB.Name == ProductListForPosting[indexOfProduct].SubCategoryOfProductName)
                     {
-                        listBox4.Items.Add(SUB.Name);
-
-                        if (SUB.Name == ProductListForPosting[indexOfProduct].SubCategoryOfProductName)
-                        {
-                            indexSUB = ic;
-                        }
-                        ic++;
+                        indexSUB = ic;
                     }
+                    ic++;
                 }
-                catch
-                { }
+            }
+            catch
+            { }
 
 
-                listBox5.SelectedIndex = indexcat;
-                listBox4.SelectedIndex = indexSUB;
+            listBoxMainCategoryPostBox.SelectedIndex = indexcat;
+            listBoxSubCategoryPostBox.SelectedIndex = indexSUB;
 
 
 
+            if (refreshListView)
+            {
+                listViewPostBox.Items.Clear();
                 //Чистим картинки в листбоксе
-                imageListUnProcessedProduct.Images.Clear();
-                listView2.Items.Clear();
+                imageListProduct.Images.Clear();
+            }
 
-                int ii = 0;
-                foreach (string s in ProductListForPosting[indexOfProduct].FilePath)
+
+            imageListProductSmall.Images.Clear();
+            selectedProductListViewPostBox.Items.Clear();
+
+            int ii = 0;
+            foreach (string s in ProductListForPosting[indexOfProduct].FilePath)
+            {
+                try
+                {
+                    if (s.Length > 3)
+                    {
+                        imageListProductSmall.Images.Add(new Bitmap(s));
+                        selectedProductListViewPostBox.Items.Add(new ListViewItem(s, ii));
+
+
+                        if (refreshListView)
+                        {
+                            imageListProduct.Images.Add(new Bitmap(s));
+                            listViewPostBox.Items.Add(new ListViewItem(s, ii));
+                        }
+
+                        ii++;
+                    }
+                }
+                catch { }
+            }
+
+
+
+
+
+            string sout = "";
+            foreach (string sss in ProductListForPosting[indexOfProduct].sellerTextCleen)
+            {
+                sout = sout + sss + "\r\n";
+            }
+            sourceDescrSelectedProductTextBoxPostBox.Text = sout;
+            sout = "";
+            foreach (string sss in ProductListForPosting[indexOfProduct].sellerText)
+            {
+                sout = sout + sss + "\r\n";
+            }
+            clearDescrSelectedProductTextBoxPostBox.Text = sout;
+
+
+            prizeDescrSelectedProductTextBoxPostBox.Text = ProductListForPosting[indexOfProduct].Prises;
+
+            foreach (string sss in ProductListForPosting[indexOfProduct].logRegularExpression)
+            {
+                logRegexListBoxPostBox.Items.Add(sss);
+            }
+
+        }
+
+        private void selectSubCategoryTreeView(int lowBorder, int topBorder, bool ferstClick)
+        {
+            if(ferstClick)
+            {
+                lowBorder = 0;
+                topBorder = 100;
+            }
+
+
+
+            //buttonPreveusPagePostBox.Enabled = false;
+            //buttonNextPagePostBox.Enabled = true;
+
+            swownProductInListView = new List<string>();
+
+
+
+            sourceDescrSelectedProductTextBoxPostBox.Text = "";
+            prizeDescrSelectedProductTextBoxPostBox.Text = "";
+            listBoxMainCategoryPostBox.Items.Clear();
+            listBoxSubCategoryPostBox.Items.Clear();
+            int ic = 0;
+
+            label16.Text = treeViewProductForPostBox.SelectedNode.Parent.Text + "/" + treeViewProductForPostBox.SelectedNode.Text;
+
+
+            int indexcat = -1;
+            int indexSUB = -1;
+
+            try
+            {
+                foreach (CategoryOfProduct cat in mainCategoryList)
+                {
+                    listBoxMainCategoryPostBox.Items.Add(cat.Name);
+
+                    if (cat.Name == treeViewProductForPostBox.SelectedNode.Parent.Text)
+                    {
+                        indexcat = ic;
+                    }
+                    ic++;
+                }
+            }
+            catch
+            { }
+            ic = 0;
+            try
+            {
+                foreach (SubCategoryOfProduct SUB in mainCategoryList[indexcat].SubCategoty)
+                {
+                    listBoxSubCategoryPostBox.Items.Add(SUB.Name);
+
+                    if (SUB.Name == treeViewProductForPostBox.SelectedNode.Text)
+                    {
+                        indexSUB = ic;
+                    }
+                    ic++;
+                }
+            }
+            catch
+            { }
+
+
+            listBoxMainCategoryPostBox.SelectedIndex = indexcat;
+            listBoxSubCategoryPostBox.SelectedIndex = indexSUB;
+
+
+
+            //Чистим картинки в листбоксе
+            imageListProduct.Images.Clear();
+            listViewPostBox.Items.Clear();
+
+            int ii = 0;
+            int iii = 0;
+            foreach (TreeNode tns in treeViewProductForPostBox.SelectedNode.Nodes)
+            {
+                int indexOfProduct = Convert.ToInt32(tns.Text);
+
+                 foreach (string s in ProductListForPosting[indexOfProduct].FilePath)
                 {
                     try
                     {
+                        //string s = ProductListForPosting[indexOfProduct].FilePath[0];
                         if (s.Length > 3)
                         {
-                            imageListUnProcessedProduct.Images.Add(new Bitmap(s));
-                            listView2.Items.Add(new ListViewItem(s, ii));
+
+                            swownProductInListView.Add(s);
+
+                            if (ii>=lowBorder && ii <= topBorder)
+                            {
+                                imageListProduct.Images.Add(new Bitmap(s));
+                                listViewPostBox.Items.Add(new ListViewItem(s, iii));
+
+                                iii++;
+
+                            }
+
                             ii++;
+
+                            //imageList1.Images.Add(new Bitmap(s));
+                            //listView2.Items.Add(new ListViewItem(s, ii));
+                            //ii++;
                         }
                     }
-                    catch { }
+                    catch
+                    { }
                 }
-
-                string sout = "";
-                foreach (string sss in ProductListForPosting[indexOfProduct].sellerTextCleen)
-                {
-                    sout = sout + sss + "\r\n";
-                }
-                textBox7.Text = sout;
-                sout = "";
-                foreach (string sss in ProductListForPosting[indexOfProduct].sellerText)
-                {
-                    sout = sout + sss + "\r\n";
-                }
-                textBox11.Text = sout;
-
-
-                textBox5.Text = ProductListForPosting[indexOfProduct].Prises;
             }
 
 
-            if (treeView1.SelectedNode.Level == 1)
+            if (ferstClick)
+            {
+                int countShowProduct = (int)(swownProductInListView.Count / 100) + 2;
+
+                //if (countShowProduct == 1)
+                //{
+                //    buttonNextPagePostBox.Enabled = false;
+                //}
+
+                buttonPreveusPagePostBox.Text = "<- 1";
+                buttonNextPagePostBox.Text = countShowProduct + " ->";
+
+                showProductLowBorder = 0;
+                showProductTopBorder = 100;
+                showProductMaxBorder = countShowProduct;
+            }
+            else
+            {
+                buttonPreveusPagePostBox.Text = "<- "+(int)((lowBorder/100)+1);
+                buttonNextPagePostBox.Text = showProductMaxBorder  + " ->";
+
+
+            }
+
+
+        }
+
+        private void selectAllCategoryTreeView(int lowBorder, int topBorder, bool ferstClick)
+        {
+            //buttonPreveusPagePostBox.Enabled = false;
+            //buttonNextPagePostBox.Enabled = true;
+
+            if (ferstClick)
+            {
+                lowBorder = 0;
+                topBorder = 100;
+            }
+
+
+
+            swownProductInListView = new List<string>();
+
+
+
+            sourceDescrSelectedProductTextBoxPostBox.Text = "";
+            prizeDescrSelectedProductTextBoxPostBox.Text = "";
+            listBoxMainCategoryPostBox.Items.Clear();
+            listBoxSubCategoryPostBox.Items.Clear();
+
+            label16.Text = treeViewProductForPostBox.SelectedNode.Text;
+
+            int ic = 0;
+
+            // int indexOfProduct = Convert.ToInt32(treeView1.SelectedNode.Text);
+            int indexcat = -1;
+            int indexSUB = -1;
+
+            try
+            {
+                foreach (CategoryOfProduct cat in mainCategoryList)
+                {
+                    listBoxMainCategoryPostBox.Items.Add(cat.Name);
+
+                    if (cat.Name == treeViewProductForPostBox.SelectedNode.Text)
+                    {
+                        indexcat = ic;
+                    }
+                    ic++;
+                }
+            }
+            catch
+            { }
+            //ic = 0;
+            //try
+            //{
+            //    foreach (SubCategoryOfProduct SUB in mainCategoryList[indexcat].SubCategoty)
+            //    {
+            //        listBox4.Items.Add(SUB.Name);
+
+            //        if (SUB.Name == ProductListForPosting[indexOfProduct].SubCategoryOfProductName)
+            //        {
+            //            indexSUB = ic;
+            //        }
+            //        ic++;
+            //    }
+            //}
+            //catch
+            //{ }
+
+
+            listBoxMainCategoryPostBox.SelectedIndex = indexcat;
+            //listBox4.SelectedIndex = indexSUB;
+
+
+
+            //Чистим картинки в листбоксе
+            imageListProduct.Images.Clear();
+            listViewPostBox.Items.Clear();
+            int ii = 0;
+            int iii = 0;
+
+            foreach (TreeNode cns in treeViewProductForPostBox.SelectedNode.Nodes)
             {
 
-                button29.Enabled = false;
-                button30.Enabled = true;
-
-                swownProductInListView = new List<string>();
-
-
-
-                textBox7.Text = "";
-                textBox5.Text = "";
-                listBox5.Items.Clear();
-                listBox4.Items.Clear();
-                int ic = 0;
-
-                label16.Text = treeView1.SelectedNode.Parent.Text +"/"+ treeView1.SelectedNode.Text;
-
-
-                int indexcat = -1;
-                int indexSUB = -1;
-
-                try
+                foreach (TreeNode tns in cns.Nodes)
                 {
-                    foreach (CategoryOfProduct cat in mainCategoryList)
+                    try
                     {
-                        listBox5.Items.Add(cat.Name);
+                        int indexOfProduct = Convert.ToInt32(tns.Text);
 
-                        if (cat.Name == treeView1.SelectedNode.Parent.Text)
+
+                        string fn = "";
+                        foreach(string s in ProductListForPosting[indexOfProduct].FilePath)
                         {
-                            indexcat = ic;
-                        }
-                        ic++;
-                    }
-                }
-                catch
-                { }
-                ic = 0;
-                try
-                {
-                    foreach (SubCategoryOfProduct SUB in mainCategoryList[indexcat].SubCategoty)
-                    {
-                        listBox4.Items.Add(SUB.Name);
-
-                        if (SUB.Name == treeView1.SelectedNode.Text)
-                        {
-                            indexSUB = ic;
-                        }
-                        ic++;
-                    }
-                }
-                catch
-                { }
-
-
-                listBox5.SelectedIndex = indexcat;
-                listBox4.SelectedIndex = indexSUB;
-
-
-
-                //Чистим картинки в листбоксе
-                imageListUnProcessedProduct.Images.Clear();
-                listView2.Items.Clear();
-
-                int ii = 0;
-                foreach (TreeNode tns in treeView1.SelectedNode.Nodes)
-                {
-                    int indexOfProduct = Convert.ToInt32(tns.Text);
-                   
-                   // foreach (string s in ProductListForPosting[indexOfProduct].FilePath)
-                    {
-                        try
-                        {
-                            string s = ProductListForPosting[indexOfProduct].FilePath[0];
-                            if (s.Length > 3)
+                            FileInfo f = new FileInfo(s);
+                            if(f.Exists)
                             {
-
-
-                                swownProductInListView.Add(s);
-
-                                if (ii < 100)
-                                {
-                                    imageListUnProcessedProduct.Images.Add(new Bitmap(s));
-                                    listView2.Items.Add(new ListViewItem(s, ii));
-                                }
-
-                                ii++;
-
-                                //imageList1.Images.Add(new Bitmap(s));
-                                //listView2.Items.Add(new ListViewItem(s, ii));
-                                //ii++;
+                                fn = s;
+                                break;
                             }
                         }
-                        catch
-                        { }
+
+
+
+                        //if (ProductListForPosting[indexOfProduct].FilePath[0].Length > 3)
+                        //{
+                            swownProductInListView.Add(fn);
+
+                            if (ii >= lowBorder && ii <= topBorder)
+                            {
+                                imageListProduct.Images.Add(new Bitmap(fn));
+
+                                listViewPostBox.Items.Add(new ListViewItem(fn, iii));
+
+                                iii++;
+                            }
+
+                            ii++;
+                        //}
                     }
+                    catch
+                    { }
                 }
-
-
-                int countShowProduct = (int)(swownProductInListView.Count / 100) + 1;
-
-                if (countShowProduct == 1)
-                {
-                    button30.Enabled = false;
-                }
-
-                button29.Text = "<- 1";
-                button30.Text = countShowProduct + " ->";
-
-                //string sout = "";
-                //foreach (string sss in ProductListForPosting[indexOfProduct].sellerTextCleen)
-                //{
-                //    sout = sout + sss + "\r\n";
-                //}
-                //textBox7.Text = sout;
-
-
-                // textBox5.Text = ProductListForPosting[indexOfProduct].Prises;
             }
 
 
-            if (treeView1.SelectedNode.Level == 0)
+            //int countShowProduct = (int)(swownProductInListView.Count / 100) + 1;
+
+            //if (countShowProduct == 1)
+            //{
+            //    buttonNextPagePostBox.Enabled = false;
+            //}
+
+            //buttonPreveusPagePostBox.Text = "<- 1";
+            //buttonNextPagePostBox.Text = countShowProduct + " ->";
+
+
+            if (ferstClick)
             {
+                int countShowProduct = (int)(swownProductInListView.Count / 100) + 2;
 
-                button29.Enabled = false;
-                button30.Enabled = true;
-
-                swownProductInListView = new List<string>();
-
-
-
-                textBox7.Text = "";
-                textBox5.Text = "";
-                listBox5.Items.Clear();
-                listBox4.Items.Clear();
-
-                label16.Text = treeView1.SelectedNode.Text;
-
-                int ic = 0;
-
-               // int indexOfProduct = Convert.ToInt32(treeView1.SelectedNode.Text);
-                int indexcat = -1;
-                int indexSUB = -1;
-
-                try
-                {
-                    foreach (CategoryOfProduct cat in mainCategoryList)
-                    {
-                        listBox5.Items.Add(cat.Name);
-
-                        if (cat.Name == treeView1.SelectedNode.Text)
-                        {
-                            indexcat = ic;
-                        }
-                        ic++;
-                    }
-                }
-                catch
-                { }
-                //ic = 0;
-                //try
+                //if (countShowProduct == 1)
                 //{
-                //    foreach (SubCategoryOfProduct SUB in mainCategoryList[indexcat].SubCategoty)
-                //    {
-                //        listBox4.Items.Add(SUB.Name);
-
-                //        if (SUB.Name == ProductListForPosting[indexOfProduct].SubCategoryOfProductName)
-                //        {
-                //            indexSUB = ic;
-                //        }
-                //        ic++;
-                //    }
+                //    buttonNextPagePostBox.Enabled = false;
                 //}
-                //catch
-                //{ }
 
+                buttonPreveusPagePostBox.Text = "<- 1";
+                buttonNextPagePostBox.Text = countShowProduct + " ->";
 
-                listBox5.SelectedIndex = indexcat;
-                //listBox4.SelectedIndex = indexSUB;
-
-
-
-                //Чистим картинки в листбоксе
-                imageListUnProcessedProduct.Images.Clear();
-                listView2.Items.Clear();
-                int ii = 0;
-
-                foreach (TreeNode cns in treeView1.SelectedNode.Nodes)
-                {
-
-                    foreach (TreeNode tns in cns.Nodes)
-                    {
-                        try
-                        {
-                            int indexOfProduct = Convert.ToInt32(tns.Text);
-
-                            if (ProductListForPosting[indexOfProduct].FilePath[0].Length > 3)
-                            {
-                                swownProductInListView.Add(ProductListForPosting[indexOfProduct].FilePath[0]);
-
-                                if (ii < 100)
-                                {
-                                    imageListUnProcessedProduct.Images.Add(new Bitmap(ProductListForPosting[indexOfProduct].FilePath[0]));
-                                    listView2.Items.Add(new ListViewItem(ProductListForPosting[indexOfProduct].FilePath[0], ii));
-                                }
-                                
-                                ii++;
-                            }
-                        }
-                        catch
-                        { }
-                    }
-                }
-
-
-                int countShowProduct = (int)(swownProductInListView.Count/100)+1;
-
-                if(countShowProduct == 1)
-                {
-                    button30.Enabled = false;
-                }
-
-                button29.Text = "<- 1";
-                button30.Text = countShowProduct + " ->";
-                //string sout = "";
-                //foreach (string sss in ProductListForPosting[indexOfProduct].sellerTextCleen)
-                //{
-                //    sout = sout + sss + "\r\n";
-                //}
-                //textBox7.Text = sout;
-
-
-                //textBox5.Text = ProductListForPosting[indexOfProduct].Prises;
+                showProductLowBorder = 0;
+                showProductTopBorder = 100;
+                showProductMaxBorder = countShowProduct;
             }
+            else
+            {
+                buttonPreveusPagePostBox.Text = "<- " + (int)((lowBorder / 100) + 1);
+                buttonNextPagePostBox.Text = showProductMaxBorder + " ->";
+
+
+            }
+
+            //string sout = "";
+            //foreach (string sss in ProductListForPosting[indexOfProduct].sellerTextCleen)
+            //{
+            //    sout = sout + sss + "\r\n";
+            //}
+            //textBox7.Text = sout;
+
+
+            //textBox5.Text = ProductListForPosting[indexOfProduct].Prises;
 
         }
 
 
-        private void listBox5_SelectedIndexChanged(object sender, EventArgs e)
+
+        private void listBoxMainCategoryPostBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            listBox4.Items.Clear();
+            listBoxSubCategoryPostBox.Items.Clear();
 
             //if ((listBox3.SelectedIndex >= 0) && (listBox1.SelectedIndex >= 0))
             //{
@@ -1376,9 +1436,9 @@ namespace VKSMM
 
             try
             {
-                foreach (SubCategoryOfProduct sub in mainCategoryList[listBox5.SelectedIndex].SubCategoty)
+                foreach (SubCategoryOfProduct sub in mainCategoryList[listBoxMainCategoryPostBox.SelectedIndex].SubCategoty)
                 {
-                    listBox4.Items.Add(sub.Name);
+                    listBoxSubCategoryPostBox.Items.Add(sub.Name);
                 }
             }
             catch
@@ -1422,10 +1482,10 @@ namespace VKSMM
 
         private void button5_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode.Level == 2)
+            if (treeViewProductForPostBox.SelectedNode.Level == 2)
             {
 
-                int indexOfProduct = Convert.ToInt32(treeView1.SelectedNode.Text);
+                int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
 
 
 
@@ -1465,7 +1525,7 @@ namespace VKSMM
                 }
 
 
-                treeView1.SelectedNode.Parent.Nodes.Add(ProductListForPosting.Count.ToString());
+                treeViewProductForPostBox.SelectedNode.Parent.Nodes.Add(ProductListForPosting.Count.ToString());
                 ProductListForPosting.Add(double_produkt);
 
             }
@@ -1485,16 +1545,19 @@ namespace VKSMM
             if ((ofd.ShowDialog() == DialogResult.OK)) // если файл БД не выбран -> Выход
             {
 
-                Thread_Create_XLS_Processing = new Thread(Thread_Create_XLS_Processing_Code);
-                Thread_Create_XLS_Processing.Start();
+                OutputForm outputForm = new OutputForm();
+
+                outputForm.outputFilePath = ofd.FileName;
+
+                outputForm.mainForm = this;
+
+                outputForm.ShowDialog();
+
             }
         }
 
 
-        void Thread_Create_XLS_Processing_Code()
-        { 
-            Stuff.CreateExcel(this, ofd);
-        }
+        
 
         private void textBox7_TextChanged(object sender, EventArgs e)
         {
@@ -1506,37 +1569,17 @@ namespace VKSMM
 
         }
 
-        private void listBox4_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //if (treeView1.SelectedNode.Level == 2)
-            //{
-
-            //    int indexOfProduct = Convert.ToInt32(treeView1.SelectedNode.Text);
-
-            //    try
-            //    {
-            //        ProductListForPosting[indexOfProduct].SubCategoryOfProductName = listBox4.SelectedItem.ToString();
-            //    }
-            //    catch
-            //    {
-
-            //    }
-
-            //    treeView1.Nodes.Remove(treeView1.SelectedNode);
-
-            //    AddToTreeView(ProductListForPosting[indexOfProduct], indexOfProduct);
-            //}
-        }
+      
 
         private void textBox7_KeyUp(object sender, KeyEventArgs e)
         {
-            if (treeView1.SelectedNode.Level == 2)
+            if (treeViewProductForPostBox.SelectedNode.Level == 2)
             {
 
-                int indexOfProduct = Convert.ToInt32(treeView1.SelectedNode.Text);
+                int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
 
                 ProductListForPosting[indexOfProduct].sellerTextCleen.Clear();
-                foreach (string s in textBox7.Text.Split('\n'))
+                foreach (string s in sourceDescrSelectedProductTextBoxPostBox.Text.Split('\n'))
                 {
                     ProductListForPosting[indexOfProduct].sellerTextCleen.Add(s);
                 }
@@ -1549,140 +1592,174 @@ namespace VKSMM
 
         private void numericUpDown1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (treeView1.SelectedNode.Level == 2)
+            if (treeViewProductForPostBox.SelectedNode.Level == 2)
             {
 
-                int indexOfProduct = Convert.ToInt32(treeView1.SelectedNode.Text);
+                int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
 
 
-                ProductListForPosting[indexOfProduct].Prises = textBox5.Text;
+                ProductListForPosting[indexOfProduct].Prises = prizeDescrSelectedProductTextBoxPostBox.Text;
             }
 
         }
 
         private void listView2_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode==Keys.Delete)
-            {
-                int indexOfProduct = Convert.ToInt32(treeView1.SelectedNode.Text);
+            //if(e.KeyCode==Keys.Delete)
+            //{
+            //    int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
 
-                ProductListForPosting[indexOfProduct].URLPhoto.RemoveAt(listView2.SelectedIndices[0]);
-                ProductListForPosting[indexOfProduct].FilePath.RemoveAt(listView2.SelectedIndices[0]);
+            //    ProductListForPosting[indexOfProduct].URLPhoto.RemoveAt(listViewPostBox.SelectedIndices[0]);
+            //    ProductListForPosting[indexOfProduct].FilePath.RemoveAt(listViewPostBox.SelectedIndices[0]);
 
 
-                listView2.Items.Remove(listView2.SelectedItems[0]);
-            }
+            //    listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
+            //}
         }
 
         private void numericUpDown1_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode.Level == 2)
+            if (treeViewProductForPostBox.SelectedNode.Level == 2)
             {
 
-                int indexOfProduct = Convert.ToInt32(treeView1.SelectedNode.Text);
+                int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
 
 
-                ProductListForPosting[indexOfProduct].Prises = textBox5.Text;
+                ProductListForPosting[indexOfProduct].Prises = prizeDescrSelectedProductTextBoxPostBox.Text;
             }
 
         }
 
-        private void listBox4_Click(object sender, EventArgs e)
+        private void listBoxSubCategoryPostBox_Click(object sender, EventArgs e)
         {
-            if (((treeView1.SelectedNode.Level == 0)||(treeView1.SelectedNode.Level == 1)) && (listView2.SelectedItems.Count > 0))//
+            if (((treeViewProductForPostBox.SelectedNode.Level == 0)||(treeViewProductForPostBox.SelectedNode.Level == 1)) && (listViewPostBox.SelectedItems.Count > 0))//
             {
 
-                string Line1 = listBox5.SelectedItem.ToString();
-                string Line2 = listBox4.SelectedItem.ToString();
-                int iii = listView2.SelectedItems.Count - 1;
+                string Line1 = listBoxMainCategoryPostBox.SelectedItem.ToString();
+                string Line2 = listBoxSubCategoryPostBox.SelectedItem.ToString();
+                int iii = listViewPostBox.SelectedItems.Count - 1;
 
                 for(int ii= iii; ii>=0 ;ii--)
-                //while(listView2.SelectedItems.Count>0)
                 {
-
-
-
-                    int indexOfProduct = -1;
-                    int i = 0;
-                    foreach (Product P in ProductListForPosting)
-                    {
-                        if (listView2.SelectedItems[ii].Text == P.FilePath[0])
-                        {
-                            indexOfProduct = i;
-                            break;
-                        }
-                        i++;
-                    }
-
-
 
                     try
                     {
-                        ProductListForPosting[indexOfProduct].CategoryOfProductName = Line1;
-                        ProductListForPosting[indexOfProduct].SubCategoryOfProductName = Line2;
-                        listView2.Items.RemoveAt(listView2.SelectedItems[ii].Index);
-                    }
-                    catch
-                    {
 
-                    }
-                    bool gt = false;
-
-                    foreach (TreeNode t in treeView1.Nodes)
-                    {
-                        foreach (TreeNode tt in t.Nodes)
+                        int indexOfProduct = -1;
+                        int i = 0;
+                        foreach (Product P in ProductListForPosting)
                         {
-                            int ht = 0;
-                            foreach (TreeNode ttt in tt.Nodes)
+                            foreach (string s in P.FilePath)
                             {
-                                if (ttt.Text == indexOfProduct.ToString())
+                                if (listViewPostBox.SelectedItems[ii].Text == s)
                                 {
-                                    gt = true;
+                                    indexOfProduct = i;
                                     break;
                                 }
-                                ht++;
                             }
+                            i++;
 
-                            if (gt)
+                            if (indexOfProduct >= 0)
                             {
-                                tt.Nodes.RemoveAt(ht);
                                 break;
                             }
                         }
-                        if (gt)
+
+                        try
                         {
-                            break;
+                            ProductListForPosting[indexOfProduct].CategoryOfProductName = Line1;
+                            ProductListForPosting[indexOfProduct].SubCategoryOfProductName = Line2;
                         }
+                        catch
+                        {
+
+                        }
+
+
+                        if (treeViewProductForPostBox.SelectedNode.Level == 0)
+                        {
+                            listViewPostBox.Items.RemoveAt(listViewPostBox.SelectedItems[ii].Index);
+                        }
+                        else
+                        {
+                            for (int pp = listViewPostBox.Items.Count - 1; pp >= 0; pp--)
+                            {
+                                foreach (string s in ProductListForPosting[indexOfProduct].FilePath)
+                                {
+                                    if (listViewPostBox.Items[pp].Text == s)
+                                    {
+                                        listViewPostBox.Items.RemoveAt(pp);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+
+
+
+                        bool gt = false;
+                        TreeNode tnfd = new TreeNode();
+
+                        foreach (TreeNode t in treeViewProductForPostBox.Nodes)
+                        {
+                            foreach (TreeNode tt in t.Nodes)
+                            {
+                                int ht = 0;
+                                foreach (TreeNode ttt in tt.Nodes)
+                                {
+                                    if (ttt.Text == indexOfProduct.ToString())
+                                    {
+                                        gt = true;
+                                        break;
+                                    }
+                                    ht++;
+                                }
+
+                                if (gt)
+                                {
+                                    tt.Nodes.RemoveAt(ht);
+                                    break;
+                                }
+                            }
+                            if (gt)
+                            {
+                                break;
+                            }
+                        }
+
+                        // treeViewProductForPostBox.Nodes.Remove(tnfd);
+
+                        Stuff.AddToTreeView(this, ProductListForPosting[indexOfProduct], indexOfProduct);
                     }
-
-                    //treeView1.Nodes.Remove(treeView1.SelectedNode);
-
-                    AddToTreeView(ProductListForPosting[indexOfProduct], indexOfProduct);
+                    catch { }
                 }
+
+
             }
             else
             {
 
 
 
-                if (treeView1.SelectedNode.Level == 2)
+                if (treeViewProductForPostBox.SelectedNode.Level == 2)
                 {
 
-                    int indexOfProduct = Convert.ToInt32(treeView1.SelectedNode.Text);
+                    int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
 
                     try
                     {
-                        ProductListForPosting[indexOfProduct].CategoryOfProductName = listBox5.SelectedItem.ToString();
-                        ProductListForPosting[indexOfProduct].SubCategoryOfProductName = listBox4.SelectedItem.ToString();
+                        ProductListForPosting[indexOfProduct].CategoryOfProductName = listBoxMainCategoryPostBox.SelectedItem.ToString();
+                        ProductListForPosting[indexOfProduct].SubCategoryOfProductName = listBoxSubCategoryPostBox.SelectedItem.ToString();
                     }
                     catch
                     {
 
                     }
 
-                    treeView1.Nodes.Remove(treeView1.SelectedNode);
+                    treeViewProductForPostBox.Nodes.Remove(treeViewProductForPostBox.SelectedNode);
 
-                    AddToTreeView(ProductListForPosting[indexOfProduct], indexOfProduct);
+                    Stuff.AddToTreeView(this, ProductListForPosting[indexOfProduct], indexOfProduct);
                 }
             }
 
@@ -1690,13 +1767,13 @@ namespace VKSMM
 
         private void textBox5_KeyUp(object sender, KeyEventArgs e)
         {
-            if (treeView1.SelectedNode.Level == 2)
+            if (treeViewProductForPostBox.SelectedNode.Level == 2)
             {
 
-                int indexOfProduct = Convert.ToInt32(treeView1.SelectedNode.Text);
+                int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
 
 
-                ProductListForPosting[indexOfProduct].Prises = textBox5.Text;
+                ProductListForPosting[indexOfProduct].Prises = prizeDescrSelectedProductTextBoxPostBox.Text;
             }
 
         }
@@ -2479,7 +2556,7 @@ namespace VKSMM
                 {
                     foreach (string photopath in p.FilePath)
                     {
-                        if (photopath == listView2.SelectedItems[0].Text)
+                        if (photopath == listViewPostBox.SelectedItems[0].Text)
                         {
                             indexOfProduct = j;
                             break;
@@ -2498,94 +2575,115 @@ namespace VKSMM
 
             if (indexOfProduct>=0)
             {
-                textBox7.Text = "";
-                textBox5.Text = "";
-                listBox5.Items.Clear();
-                listBox4.Items.Clear();
-                int ic = 0;
+                //sourceDescrSelectedProductTextBoxPostBox.Text = "";
+                //prizeDescrSelectedProductTextBoxPostBox.Text = "";
+                //listBoxMainCategoryPostBox.Items.Clear();
+                //listBoxSubCategoryPostBox.Items.Clear();
+                //logRegexListBoxPostBox.Items.Clear();
 
-                int indexcat = -1;
-                int indexSUB = -1;
-
-                try
-                {
-                    foreach (CategoryOfProduct cat in mainCategoryList)
-                    {
-                        listBox5.Items.Add(cat.Name);
-
-                        if (cat.Name == ProductListForPosting[indexOfProduct].CategoryOfProductName)
-                        {
-                            indexcat = ic;
-                        }
-                        ic++;
-                    }
-                }
-                catch
-                { }
-                ic = 0;
-                try
-                {
-                    foreach (SubCategoryOfProduct SUB in mainCategoryList[indexcat].SubCategoty)
-                    {
-                        listBox4.Items.Add(SUB.Name);
-
-                        if (SUB.Name == ProductListForPosting[indexOfProduct].SubCategoryOfProductName)
-                        {
-                            indexSUB = ic;
-                        }
-                        ic++;
-                    }
-                }
-                catch
-                { }
-
-
-                listBox5.SelectedIndex = indexcat;
-                listBox4.SelectedIndex = indexSUB;
+                selectProductTreeView(indexOfProduct,false);
 
 
 
-                ////Чистим картинки в листбоксе
-                //imageList1.Images.Clear();
-                //listView2.Items.Clear();
+
+                //sourceDescrSelectedProductTextBoxPostBox.Text = "";
+                //prizeDescrSelectedProductTextBoxPostBox.Text = "";
+                //listBoxMainCategoryPostBox.Items.Clear();
+                //listBoxSubCategoryPostBox.Items.Clear();
+                //int ic = 0;
+
+                //int indexcat = -1;
+                //int indexSUB = -1;
+
+                //try
+                //{
+                //    foreach (CategoryOfProduct cat in mainCategoryList)
+                //    {
+                //        listBoxMainCategoryPostBox.Items.Add(cat.Name);
+
+                //        if (cat.Name == ProductListForPosting[indexOfProduct].CategoryOfProductName)
+                //        {
+                //            indexcat = ic;
+                //        }
+                //        ic++;
+                //    }
+                //}
+                //catch
+                //{ }
+                //ic = 0;
+                //try
+                //{
+                //    foreach (SubCategoryOfProduct SUB in mainCategoryList[indexcat].SubCategoty)
+                //    {
+                //        listBoxSubCategoryPostBox.Items.Add(SUB.Name);
+
+                //        if (SUB.Name == ProductListForPosting[indexOfProduct].SubCategoryOfProductName)
+                //        {
+                //            indexSUB = ic;
+                //        }
+                //        ic++;
+                //    }
+                //}
+                //catch
+                //{ }
+
+
+                //listBoxMainCategoryPostBox.SelectedIndex = indexcat;
+                //listBoxSubCategoryPostBox.SelectedIndex = indexSUB;
+
+
+
+                //////Чистим картинки в листбоксе
+                ////imageList1.Images.Clear();
+                ////listView2.Items.Clear();
+
+                ////int ii = 0;
+                ////foreach (string s in ProductListForPosting[indexOfProduct].FilePath)
+                ////{
+                ////    imageList1.Images.Add(new Bitmap(s));
+                ////    listView2.Items.Add(new ListViewItem(s, ii));
+                ////    ii++;
+                ////}
+
+                //string sout = "";
+                //foreach (string sss in ProductListForPosting[indexOfProduct].sellerTextCleen)
+                //{
+                //    sout = sout + sss + "\r\n";
+                //}
+                //sourceDescrSelectedProductTextBoxPostBox.Text = sout;
+
+
+                //sout = "";
+                //foreach (string sss in ProductListForPosting[indexOfProduct].sellerText)
+                //{
+                //    sout = sout + sss + "\r\n";
+                //}
+                //clearDescrSelectedProductTextBoxPostBox.Text = sout;
+
+
+
+                //prizeDescrSelectedProductTextBoxPostBox.Text = ProductListForPosting[indexOfProduct].Prises;
+
+                //imageListProductSmall.Images.Clear();
+                //selectedProductListViewPostBox.Items.Clear();
 
                 //int ii = 0;
                 //foreach (string s in ProductListForPosting[indexOfProduct].FilePath)
                 //{
-                //    imageList1.Images.Add(new Bitmap(s));
-                //    listView2.Items.Add(new ListViewItem(s, ii));
-                //    ii++;
+                //    try
+                //    {
+                //        Bitmap B = new Bitmap(s);
+
+
+                //        imageListProductSmall.Images.Add(B);
+
+                //        selectedProductListViewPostBox.Items.Add(new ListViewItem(s, ii));
+                //        ii++;
+                //    }
+                //    catch
+                //    { }
+                    
                 //}
-
-                string sout = "";
-                foreach (string sss in ProductListForPosting[indexOfProduct].sellerTextCleen)
-                {
-                    sout = sout + sss + "\r\n";
-                }
-                textBox7.Text = sout;
-
-
-                sout = "";
-                foreach (string sss in ProductListForPosting[indexOfProduct].sellerText)
-                {
-                    sout = sout + sss + "\r\n";
-                }
-                textBox11.Text = sout;
-
-
-
-                textBox5.Text = ProductListForPosting[indexOfProduct].Prises;
-
-                imageList2.Images.Clear();
-                listView3.Items.Clear();
-
-                int ii = 0;
-                foreach (string s in ProductListForPosting[indexOfProduct].FilePath)
-                {
-                    imageList2.Images.Add(new Bitmap(s));
-                    listView3.Items.Add(new ListViewItem(s, ii));
-                    ii++;
-                }
 
             }
 
@@ -2605,7 +2703,7 @@ namespace VKSMM
                     {
                         foreach (string photopath in p.FilePath)
                         {
-                            if (photopath == listView2.SelectedItems[0].Text)
+                            if (photopath == listViewPostBox.SelectedItems[0].Text)
                             {
                                 indexOfProduct = j;
                                 break;
@@ -2628,12 +2726,12 @@ namespace VKSMM
                       
                         
                         
-                    ProductListForPosting[indexOfProduct].URLPhoto.RemoveAt(listView3.SelectedIndices[0]);
-                    ProductListForPosting[indexOfProduct].FilePath.RemoveAt(listView3.SelectedIndices[0]);
+                    ProductListForPosting[indexOfProduct].URLPhoto.RemoveAt(selectedProductListViewPostBox.SelectedIndices[0]);
+                    ProductListForPosting[indexOfProduct].FilePath.RemoveAt(selectedProductListViewPostBox.SelectedIndices[0]);
 
 
-                    listView3.Items.Remove(listView3.SelectedItems[0]);
-                    listView2.Items.Remove(listView2.SelectedItems[0]);
+                    selectedProductListViewPostBox.Items.Remove(selectedProductListViewPostBox.SelectedItems[0]);
+                    listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
 
                 }
 
@@ -2947,7 +3045,7 @@ namespace VKSMM
         public void Thread_Provider_Processing_Code()
         {
 
-            Stuff.ExportProviderExcel(this);
+            //Stuff.ExportProviderExcel(this);
 
 
 
@@ -3031,6 +3129,74 @@ namespace VKSMM
 
         }
 
+        /// <summary>
+        /// Действие при первом отображениии формы
+        /// </summary>
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            //Отображаем окно загрузки поставщиков
+            LoadForm loadForm = new LoadForm();
+            //Ссылка на основную форму
+            loadForm.mainForm = this;
+            //Отображаем форму
+            loadForm.ShowDialog();
+        }
+
+        private void buttonNextPagePostBox_Click(object sender, EventArgs e)
+        {
+            if (treeViewProductForPostBox.SelectedNode.Level == 1)
+            {
+                if (showProductTopBorder + 100 < showProductMaxBorder * 100)
+                {
+                    showProductLowBorder = showProductLowBorder + 100;
+                    showProductTopBorder = showProductTopBorder + 100;
+
+                    selectSubCategoryTreeView(showProductLowBorder, showProductTopBorder,false);
+                }
+            }
+
+
+            if (treeViewProductForPostBox.SelectedNode.Level == 0)
+            {
+                if (showProductTopBorder + 100 < showProductMaxBorder * 100)
+                {
+                    showProductLowBorder = showProductLowBorder + 100;
+                    showProductTopBorder = showProductTopBorder + 100;
+
+                    selectAllCategoryTreeView(showProductLowBorder, showProductTopBorder, false);
+                }
+               // selectAllCategoryTreeView();
+            }
+
+        }
+
+        private void buttonPreveusPagePostBox_Click(object sender, EventArgs e)
+        {
+            if (treeViewProductForPostBox.SelectedNode.Level == 1)
+            {
+                if (showProductLowBorder - 100 >= 0)
+                {
+                    showProductLowBorder = showProductLowBorder - 100;
+                    showProductTopBorder = showProductTopBorder - 100;
+
+                    selectSubCategoryTreeView(showProductLowBorder, showProductTopBorder, false);
+                }
+            }
+
+
+            if (treeViewProductForPostBox.SelectedNode.Level == 0)
+            {
+                if (showProductLowBorder - 100 >= 0)
+                {
+                    showProductLowBorder = showProductLowBorder - 100;
+                    showProductTopBorder = showProductTopBorder - 100;
+
+                    selectAllCategoryTreeView(showProductLowBorder, showProductTopBorder, false);
+                }
+                //selectAllCategoryTreeView();
+            }
+
+        }
     }
 }
 

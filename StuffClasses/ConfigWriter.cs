@@ -10,9 +10,11 @@ using VKSMM.ModelClasses;//Файл с классами моделей данн�
 
 namespace VKSMM.StuffClasses
 {
+    /// <summary>
+    /// Класс записи данных программы на жесткий диск
+    /// </summary>
     class ConfigWriter
     {
-
         public static void writeDirToConfigFile(MainForm mainForm, XmlWriter writerConfigXML)
         {
             //Сохраняем максимальный объем файлов в контейнере
@@ -216,6 +218,12 @@ namespace VKSMM.StuffClasses
                     Line = Line.Substring(0, Line.Length - 1) + "\t";
 
                     foreach (string intten in P.FilePath)
+                    {
+                        Line = Line + intten + ",";
+                    }
+                    Line = Line.Substring(0, Line.Length - 1) + "\t";
+
+                    foreach (string intten in P.logRegularExpression)
                     {
                         Line = Line + intten + ",";
                     }

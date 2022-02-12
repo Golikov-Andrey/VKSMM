@@ -10,6 +10,9 @@ using VKSMM.ModelClasses;//Файл с классами моделей данн�
 
 namespace VKSMM.StuffClasses
 {
+    /// <summary>
+    /// Класс чтения данных программы с жесткого диска
+    /// </summary>
     class ConfigReader
     {
 
@@ -304,9 +307,11 @@ namespace VKSMM.StuffClasses
 
                     PN.FilePath = Stuff.ConvertMassToList(MassLine[12].Split(new char[] { ',' }));
 
+                    PN.logRegularExpression = Stuff.ConvertMassToList(MassLine[13].Split(new char[] { ','}));
+
                     mainForm.ProductListForPosting.Add(PN);
 
-                    mainForm.AddToTreeView(PN, _it);
+                    Stuff.AddToTreeView(mainForm, PN, _it);
                     _it++;
                 }
                 catch
@@ -371,7 +376,7 @@ namespace VKSMM.StuffClasses
 
                     mainForm.productListSource.Add(PN);
 
-                    mainForm.productUnProcessedListBox.Items.Add(PN.IDURL);
+                    mainForm.productUnProcessedListBox.Items.Add(_it);//PN.IDURL
                     _it++;
                 }
                 catch

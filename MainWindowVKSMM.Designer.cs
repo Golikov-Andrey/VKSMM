@@ -33,7 +33,7 @@ namespace VKSMM
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.imageListUnProcessedProduct = new System.Windows.Forms.ImageList(this.components);
+            this.imageListProduct = new System.Windows.Forms.ImageList(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -49,47 +49,48 @@ namespace VKSMM
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.productUnProcessedListBox = new System.Windows.Forms.ListBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.numericUpDownPrize = new System.Windows.Forms.NumericUpDown();
+            this.label14 = new System.Windows.Forms.Label();
             this.descriptionSourceDataGridView = new System.Windows.Forms.DataGridView();
             this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.numericUpDownPrize = new System.Windows.Forms.NumericUpDown();
-            this.label2 = new System.Windows.Forms.Label();
-            this.descriptionRegexTextBox = new System.Windows.Forms.TextBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.logRegexListBox = new System.Windows.Forms.ListBox();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
             this.subCatListBox = new System.Windows.Forms.ListBox();
+            this.logRegexListBox = new System.Windows.Forms.ListBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.groupBox14 = new System.Windows.Forms.GroupBox();
             this.catListBox = new System.Windows.Forms.ListBox();
+            this.descriptionRegexTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             this.unProcessedProductListView = new System.Windows.Forms.ListView();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.logRegexListBoxPostBox = new System.Windows.Forms.ListBox();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
             this.label16 = new System.Windows.Forms.Label();
-            this.listView3 = new System.Windows.Forms.ListView();
-            this.imageList2 = new System.Windows.Forms.ImageList(this.components);
+            this.selectedProductListViewPostBox = new System.Windows.Forms.ListView();
+            this.imageListProductSmall = new System.Windows.Forms.ImageList(this.components);
             this.label15 = new System.Windows.Forms.Label();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.listBox4 = new System.Windows.Forms.ListBox();
+            this.listBoxSubCategoryPostBox = new System.Windows.Forms.ListBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.listBox5 = new System.Windows.Forms.ListBox();
-            this.textBox11 = new System.Windows.Forms.TextBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.listBoxMainCategoryPostBox = new System.Windows.Forms.ListBox();
+            this.clearDescrSelectedProductTextBoxPostBox = new System.Windows.Forms.TextBox();
+            this.prizeDescrSelectedProductTextBoxPostBox = new System.Windows.Forms.TextBox();
+            this.sourceDescrSelectedProductTextBoxPostBox = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.treeViewProductForPostBox = new System.Windows.Forms.TreeView();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.button30 = new System.Windows.Forms.Button();
-            this.button29 = new System.Windows.Forms.Button();
-            this.listView2 = new System.Windows.Forms.ListView();
-            this.button6 = new System.Windows.Forms.Button();
+            this.buttonNextPagePostBox = new System.Windows.Forms.Button();
+            this.buttonPreveusPagePostBox = new System.Windows.Forms.Button();
+            this.listViewPostBox = new System.Windows.Forms.ListView();
+            this.buttonUnLoadingPostBox = new System.Windows.Forms.Button();
             this.button19 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
+            this.buttonSeparatedProductPostBox = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.listBox6 = new System.Windows.Forms.ListBox();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
@@ -156,12 +157,11 @@ namespace VKSMM
             this.dataGridView6 = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.providerDataGrid = new System.Windows.Forms.DataGridView();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.contextMenuStrip4 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.удалитьToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip3 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -178,8 +178,8 @@ namespace VKSMM
             this.groupBox15.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.descriptionSourceDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPrize)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.descriptionSourceDataGridView)).BeginInit();
             this.groupBox13.SuspendLayout();
             this.groupBox14.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -202,7 +202,7 @@ namespace VKSMM
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView6)).BeginInit();
             this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.providerDataGrid)).BeginInit();
             this.contextMenuStrip4.SuspendLayout();
             this.contextMenuStrip3.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -210,11 +210,11 @@ namespace VKSMM
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).BeginInit();
             this.SuspendLayout();
             // 
-            // imageListUnProcessedProduct
+            // imageListProduct
             // 
-            this.imageListUnProcessedProduct.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this.imageListUnProcessedProduct.ImageSize = new System.Drawing.Size(225, 225);
-            this.imageListUnProcessedProduct.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageListProduct.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            this.imageListProduct.ImageSize = new System.Drawing.Size(225, 225);
+            this.imageListProduct.TransparentColor = System.Drawing.Color.Transparent;
             // 
             // tabControl1
             // 
@@ -269,6 +269,7 @@ namespace VKSMM
             this.LoadProviderXLSButton.TabIndex = 6;
             this.LoadProviderXLSButton.Text = "Загрузить XLS с  поставщиками";
             this.LoadProviderXLSButton.UseVisualStyleBackColor = true;
+            this.LoadProviderXLSButton.Visible = false;
             this.LoadProviderXLSButton.Click += new System.EventHandler(this.LoadProviderXLSButton_Click);
             // 
             // groupBox15
@@ -322,9 +323,11 @@ namespace VKSMM
             this.providerLoadLabel.Size = new System.Drawing.Size(99, 13);
             this.providerLoadLabel.TabIndex = 3;
             this.providerLoadLabel.Text = "PROVIDER: 0 из 0";
+            this.providerLoadLabel.Visible = false;
             // 
             // processedAllProductButton
             // 
+            this.processedAllProductButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.processedAllProductButton.Location = new System.Drawing.Point(1144, 19);
             this.processedAllProductButton.Name = "processedAllProductButton";
             this.processedAllProductButton.Size = new System.Drawing.Size(99, 62);
@@ -342,6 +345,7 @@ namespace VKSMM
             this.processedOneProductButton.TabIndex = 2;
             this.processedOneProductButton.Text = "Обработать\r\nОДИН товар";
             this.processedOneProductButton.UseVisualStyleBackColor = true;
+            this.processedOneProductButton.Visible = false;
             this.processedOneProductButton.Click += new System.EventHandler(this.PublicationButton_Click);
             // 
             // LoadProductXLSButton
@@ -399,6 +403,27 @@ namespace VKSMM
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Карточка товара";
             // 
+            // numericUpDownPrize
+            // 
+            this.numericUpDownPrize.Location = new System.Drawing.Point(266, 221);
+            this.numericUpDownPrize.Maximum = new decimal(new int[] {
+            10000000,
+            0,
+            0,
+            0});
+            this.numericUpDownPrize.Name = "numericUpDownPrize";
+            this.numericUpDownPrize.Size = new System.Drawing.Size(88, 20);
+            this.numericUpDownPrize.TabIndex = 11;
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(230, 225);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(33, 13);
+            this.label14.TabIndex = 9;
+            this.label14.Text = "Цена";
+            // 
             // descriptionSourceDataGridView
             // 
             this.descriptionSourceDataGridView.AllowUserToAddRows = false;
@@ -428,67 +453,6 @@ namespace VKSMM
             this.Column9.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.Column9.Width = 400;
             // 
-            // numericUpDownPrize
-            // 
-            this.numericUpDownPrize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.numericUpDownPrize.Location = new System.Drawing.Point(266, 221);
-            this.numericUpDownPrize.Maximum = new decimal(new int[] {
-            10000000,
-            0,
-            0,
-            0});
-            this.numericUpDownPrize.Name = "numericUpDownPrize";
-            this.numericUpDownPrize.Size = new System.Drawing.Size(88, 20);
-            this.numericUpDownPrize.TabIndex = 11;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 14);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(187, 13);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Описание продовца от постовщика";
-            // 
-            // descriptionRegexTextBox
-            // 
-            this.descriptionRegexTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.descriptionRegexTextBox.Location = new System.Drawing.Point(6, 246);
-            this.descriptionRegexTextBox.Multiline = true;
-            this.descriptionRegexTextBox.Name = "descriptionRegexTextBox";
-            this.descriptionRegexTextBox.Size = new System.Drawing.Size(348, 184);
-            this.descriptionRegexTextBox.TabIndex = 10;
-            // 
-            // label14
-            // 
-            this.label14.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(230, 225);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(33, 13);
-            this.label14.TabIndex = 9;
-            this.label14.Text = "Цена";
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 224);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(206, 13);
-            this.label13.TabIndex = 8;
-            this.label13.Text = "Описание товара переданное на ПОСТ";
-            // 
-            // logRegexListBox
-            // 
-            this.logRegexListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.logRegexListBox.FormattingEnabled = true;
-            this.logRegexListBox.HorizontalScrollbar = true;
-            this.logRegexListBox.Location = new System.Drawing.Point(6, 432);
-            this.logRegexListBox.Name = "logRegexListBox";
-            this.logRegexListBox.Size = new System.Drawing.Size(348, 134);
-            this.logRegexListBox.TabIndex = 1;
-            // 
             // groupBox13
             // 
             this.groupBox13.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -511,8 +475,27 @@ namespace VKSMM
             this.subCatListBox.Name = "subCatListBox";
             this.subCatListBox.Size = new System.Drawing.Size(125, 534);
             this.subCatListBox.TabIndex = 0;
-            this.subCatListBox.SelectedIndexChanged += new System.EventHandler(this.listBox2_SelectedIndexChanged);
             this.subCatListBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.listBox2_MouseUp);
+            // 
+            // logRegexListBox
+            // 
+            this.logRegexListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.logRegexListBox.FormattingEnabled = true;
+            this.logRegexListBox.HorizontalScrollbar = true;
+            this.logRegexListBox.Location = new System.Drawing.Point(6, 432);
+            this.logRegexListBox.Name = "logRegexListBox";
+            this.logRegexListBox.Size = new System.Drawing.Size(348, 134);
+            this.logRegexListBox.TabIndex = 1;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 14);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(187, 13);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Описание продовца от постовщика";
             // 
             // groupBox14
             // 
@@ -538,6 +521,15 @@ namespace VKSMM
             this.catListBox.TabIndex = 0;
             this.catListBox.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
+            // descriptionRegexTextBox
+            // 
+            this.descriptionRegexTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.descriptionRegexTextBox.Location = new System.Drawing.Point(6, 246);
+            this.descriptionRegexTextBox.Multiline = true;
+            this.descriptionRegexTextBox.Name = "descriptionRegexTextBox";
+            this.descriptionRegexTextBox.Size = new System.Drawing.Size(348, 184);
+            this.descriptionRegexTextBox.TabIndex = 10;
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -547,13 +539,22 @@ namespace VKSMM
             this.label1.TabIndex = 1;
             this.label1.Text = "Фото товара";
             // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 224);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(206, 13);
+            this.label13.TabIndex = 8;
+            this.label13.Text = "Описание товара переданное на ПОСТ";
+            // 
             // unProcessedProductListView
             // 
             this.unProcessedProductListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.unProcessedProductListView.HideSelection = false;
-            this.unProcessedProductListView.LargeImageList = this.imageListUnProcessedProduct;
+            this.unProcessedProductListView.LargeImageList = this.imageListProduct;
             this.unProcessedProductListView.Location = new System.Drawing.Point(631, 26);
             this.unProcessedProductListView.Name = "unProcessedProductListView";
             this.unProcessedProductListView.Size = new System.Drawing.Size(468, 537);
@@ -573,23 +574,24 @@ namespace VKSMM
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.logRegexListBoxPostBox);
             this.groupBox2.Controls.Add(this.groupBox16);
-            this.groupBox2.Controls.Add(this.listView3);
+            this.groupBox2.Controls.Add(this.selectedProductListViewPostBox);
             this.groupBox2.Controls.Add(this.label15);
             this.groupBox2.Controls.Add(this.groupBox8);
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.groupBox9);
-            this.groupBox2.Controls.Add(this.textBox11);
-            this.groupBox2.Controls.Add(this.textBox5);
-            this.groupBox2.Controls.Add(this.textBox7);
+            this.groupBox2.Controls.Add(this.clearDescrSelectedProductTextBoxPostBox);
+            this.groupBox2.Controls.Add(this.prizeDescrSelectedProductTextBoxPostBox);
+            this.groupBox2.Controls.Add(this.sourceDescrSelectedProductTextBoxPostBox);
             this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.groupBox6);
             this.groupBox2.Controls.Add(this.groupBox5);
-            this.groupBox2.Controls.Add(this.button6);
+            this.groupBox2.Controls.Add(this.buttonUnLoadingPostBox);
             this.groupBox2.Controls.Add(this.button19);
             this.groupBox2.Controls.Add(this.button2);
-            this.groupBox2.Controls.Add(this.button5);
+            this.groupBox2.Controls.Add(this.buttonSeparatedProductPostBox);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(3, 3);
             this.groupBox2.Name = "groupBox2";
@@ -597,6 +599,17 @@ namespace VKSMM
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "ПОСТЫ";
+            // 
+            // logRegexListBoxPostBox
+            // 
+            this.logRegexListBoxPostBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.logRegexListBoxPostBox.FormattingEnabled = true;
+            this.logRegexListBoxPostBox.HorizontalScrollbar = true;
+            this.logRegexListBoxPostBox.Location = new System.Drawing.Point(991, 610);
+            this.logRegexListBoxPostBox.Name = "logRegexListBoxPostBox";
+            this.logRegexListBoxPostBox.Size = new System.Drawing.Size(253, 43);
+            this.logRegexListBoxPostBox.TabIndex = 13;
             // 
             // groupBox16
             // 
@@ -618,24 +631,23 @@ namespace VKSMM
             this.label16.TabIndex = 10;
             this.label16.Text = "_";
             // 
-            // listView3
+            // selectedProductListViewPostBox
             // 
-            this.listView3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listView3.HideSelection = false;
-            this.listView3.LargeImageList = this.imageList2;
-            this.listView3.Location = new System.Drawing.Point(991, 422);
-            this.listView3.Name = "listView3";
-            this.listView3.Size = new System.Drawing.Size(253, 231);
-            this.listView3.TabIndex = 11;
-            this.listView3.UseCompatibleStateImageBehavior = false;
-            this.listView3.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView3_KeyDown);
+            this.selectedProductListViewPostBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.selectedProductListViewPostBox.HideSelection = false;
+            this.selectedProductListViewPostBox.LargeImageList = this.imageListProductSmall;
+            this.selectedProductListViewPostBox.Location = new System.Drawing.Point(991, 381);
+            this.selectedProductListViewPostBox.Name = "selectedProductListViewPostBox";
+            this.selectedProductListViewPostBox.Size = new System.Drawing.Size(253, 226);
+            this.selectedProductListViewPostBox.TabIndex = 11;
+            this.selectedProductListViewPostBox.UseCompatibleStateImageBehavior = false;
+            this.selectedProductListViewPostBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView3_KeyDown);
             // 
-            // imageList2
+            // imageListProductSmall
             // 
-            this.imageList2.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.imageList2.ImageSize = new System.Drawing.Size(64, 64);
-            this.imageList2.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageListProductSmall.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
+            this.imageListProductSmall.ImageSize = new System.Drawing.Size(64, 64);
+            this.imageListProductSmall.TransparentColor = System.Drawing.Color.Transparent;
             // 
             // label15
             // 
@@ -650,7 +662,7 @@ namespace VKSMM
             // 
             this.groupBox8.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox8.Controls.Add(this.listBox4);
+            this.groupBox8.Controls.Add(this.listBoxSubCategoryPostBox);
             this.groupBox8.Location = new System.Drawing.Point(127, 370);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(120, 286);
@@ -658,24 +670,24 @@ namespace VKSMM
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Подкатегория";
             // 
-            // listBox4
+            // listBoxSubCategoryPostBox
             // 
-            this.listBox4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBox4.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.listBox4.FormattingEnabled = true;
-            this.listBox4.ItemHeight = 24;
-            this.listBox4.Location = new System.Drawing.Point(3, 16);
-            this.listBox4.Name = "listBox4";
-            this.listBox4.Size = new System.Drawing.Size(114, 267);
-            this.listBox4.TabIndex = 0;
-            this.listBox4.Click += new System.EventHandler(this.listBox4_Click);
-            this.listBox4.SelectedIndexChanged += new System.EventHandler(this.listBox4_SelectedIndexChanged);
+            this.listBoxSubCategoryPostBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxSubCategoryPostBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.listBoxSubCategoryPostBox.FormattingEnabled = true;
+            this.listBoxSubCategoryPostBox.ItemHeight = 24;
+            this.listBoxSubCategoryPostBox.Location = new System.Drawing.Point(3, 16);
+            this.listBoxSubCategoryPostBox.Name = "listBoxSubCategoryPostBox";
+            this.listBoxSubCategoryPostBox.Size = new System.Drawing.Size(114, 267);
+            this.listBoxSubCategoryPostBox.TabIndex = 0;
+            this.listBoxSubCategoryPostBox.Click += new System.EventHandler(this.listBoxSubCategoryPostBox_Click);
+           // this.listBoxSubCategoryPostBox.SelectedIndexChanged += new System.EventHandler(this.listBox4_SelectedIndexChanged);
             // 
             // label5
             // 
             this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(988, 260);
+            this.label5.Location = new System.Drawing.Point(988, 221);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(163, 13);
             this.label5.TabIndex = 1;
@@ -685,7 +697,7 @@ namespace VKSMM
             // 
             this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(988, 105);
+            this.label7.Location = new System.Drawing.Point(988, 66);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(136, 13);
             this.label7.TabIndex = 1;
@@ -695,7 +707,7 @@ namespace VKSMM
             // 
             this.groupBox9.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox9.Controls.Add(this.listBox5);
+            this.groupBox9.Controls.Add(this.listBoxMainCategoryPostBox);
             this.groupBox9.Location = new System.Drawing.Point(4, 370);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(120, 287);
@@ -703,54 +715,54 @@ namespace VKSMM
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Категория";
             // 
-            // listBox5
+            // listBoxMainCategoryPostBox
             // 
-            this.listBox5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.listBox5.FormattingEnabled = true;
-            this.listBox5.ItemHeight = 24;
-            this.listBox5.Location = new System.Drawing.Point(3, 16);
-            this.listBox5.Name = "listBox5";
-            this.listBox5.Size = new System.Drawing.Size(114, 268);
-            this.listBox5.TabIndex = 0;
-            this.listBox5.SelectedIndexChanged += new System.EventHandler(this.listBox5_SelectedIndexChanged);
+            this.listBoxMainCategoryPostBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxMainCategoryPostBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.listBoxMainCategoryPostBox.FormattingEnabled = true;
+            this.listBoxMainCategoryPostBox.ItemHeight = 24;
+            this.listBoxMainCategoryPostBox.Location = new System.Drawing.Point(3, 16);
+            this.listBoxMainCategoryPostBox.Name = "listBoxMainCategoryPostBox";
+            this.listBoxMainCategoryPostBox.Size = new System.Drawing.Size(114, 268);
+            this.listBoxMainCategoryPostBox.TabIndex = 0;
+            this.listBoxMainCategoryPostBox.SelectedIndexChanged += new System.EventHandler(this.listBoxMainCategoryPostBox_SelectedIndexChanged);
             // 
-            // textBox11
+            // clearDescrSelectedProductTextBoxPostBox
             // 
-            this.textBox11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBox11.Location = new System.Drawing.Point(991, 276);
-            this.textBox11.Multiline = true;
-            this.textBox11.Name = "textBox11";
-            this.textBox11.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox11.Size = new System.Drawing.Size(253, 140);
-            this.textBox11.TabIndex = 2;
-            this.textBox11.TextChanged += new System.EventHandler(this.textBox7_TextChanged);
-            this.textBox11.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox7_KeyUp);
+            this.clearDescrSelectedProductTextBoxPostBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.clearDescrSelectedProductTextBoxPostBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.clearDescrSelectedProductTextBoxPostBox.Location = new System.Drawing.Point(991, 237);
+            this.clearDescrSelectedProductTextBoxPostBox.Multiline = true;
+            this.clearDescrSelectedProductTextBoxPostBox.Name = "clearDescrSelectedProductTextBoxPostBox";
+            this.clearDescrSelectedProductTextBoxPostBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.clearDescrSelectedProductTextBoxPostBox.Size = new System.Drawing.Size(253, 140);
+            this.clearDescrSelectedProductTextBoxPostBox.TabIndex = 2;
+            this.clearDescrSelectedProductTextBoxPostBox.TextChanged += new System.EventHandler(this.textBox7_TextChanged);
+            this.clearDescrSelectedProductTextBoxPostBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox7_KeyUp);
             // 
-            // textBox5
+            // prizeDescrSelectedProductTextBoxPostBox
             // 
-            this.textBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBox5.Location = new System.Drawing.Point(991, 27);
-            this.textBox5.Multiline = true;
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(253, 77);
-            this.textBox5.TabIndex = 2;
-            this.textBox5.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox5_KeyUp);
+            this.prizeDescrSelectedProductTextBoxPostBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.prizeDescrSelectedProductTextBoxPostBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.prizeDescrSelectedProductTextBoxPostBox.Location = new System.Drawing.Point(991, 27);
+            this.prizeDescrSelectedProductTextBoxPostBox.Multiline = true;
+            this.prizeDescrSelectedProductTextBoxPostBox.Name = "prizeDescrSelectedProductTextBoxPostBox";
+            this.prizeDescrSelectedProductTextBoxPostBox.Size = new System.Drawing.Size(253, 37);
+            this.prizeDescrSelectedProductTextBoxPostBox.TabIndex = 2;
+            this.prizeDescrSelectedProductTextBoxPostBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox5_KeyUp);
             // 
-            // textBox7
+            // sourceDescrSelectedProductTextBoxPostBox
             // 
-            this.textBox7.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBox7.Location = new System.Drawing.Point(991, 121);
-            this.textBox7.Multiline = true;
-            this.textBox7.Name = "textBox7";
-            this.textBox7.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox7.Size = new System.Drawing.Size(253, 138);
-            this.textBox7.TabIndex = 2;
-            this.textBox7.TextChanged += new System.EventHandler(this.textBox7_TextChanged);
-            this.textBox7.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox7_KeyUp);
+            this.sourceDescrSelectedProductTextBoxPostBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.sourceDescrSelectedProductTextBoxPostBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.sourceDescrSelectedProductTextBoxPostBox.Location = new System.Drawing.Point(991, 82);
+            this.sourceDescrSelectedProductTextBoxPostBox.Multiline = true;
+            this.sourceDescrSelectedProductTextBoxPostBox.Name = "sourceDescrSelectedProductTextBoxPostBox";
+            this.sourceDescrSelectedProductTextBoxPostBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.sourceDescrSelectedProductTextBoxPostBox.Size = new System.Drawing.Size(253, 138);
+            this.sourceDescrSelectedProductTextBoxPostBox.TabIndex = 2;
+            this.sourceDescrSelectedProductTextBoxPostBox.TextChanged += new System.EventHandler(this.textBox7_TextChanged);
+            this.sourceDescrSelectedProductTextBoxPostBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox7_KeyUp);
             // 
             // label6
             // 
@@ -764,7 +776,7 @@ namespace VKSMM
             // 
             // groupBox6
             // 
-            this.groupBox6.Controls.Add(this.treeView1);
+            this.groupBox6.Controls.Add(this.treeViewProductForPostBox);
             this.groupBox6.Location = new System.Drawing.Point(0, 15);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(247, 352);
@@ -772,24 +784,24 @@ namespace VKSMM
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Готовые Посты";
             // 
-            // treeView1
+            // treeViewProductForPostBox
             // 
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.treeView1.Location = new System.Drawing.Point(3, 16);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(241, 333);
-            this.treeView1.TabIndex = 3;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.treeViewProductForPostBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeViewProductForPostBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.treeViewProductForPostBox.Location = new System.Drawing.Point(3, 16);
+            this.treeViewProductForPostBox.Name = "treeViewProductForPostBox";
+            this.treeViewProductForPostBox.Size = new System.Drawing.Size(241, 333);
+            this.treeViewProductForPostBox.TabIndex = 3;
+            this.treeViewProductForPostBox.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewProductForPostBox_AfterSelect);
             // 
             // groupBox5
             // 
             this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox5.Controls.Add(this.button30);
-            this.groupBox5.Controls.Add(this.button29);
-            this.groupBox5.Controls.Add(this.listView2);
+            this.groupBox5.Controls.Add(this.buttonNextPagePostBox);
+            this.groupBox5.Controls.Add(this.buttonPreveusPagePostBox);
+            this.groupBox5.Controls.Add(this.listViewPostBox);
             this.groupBox5.Location = new System.Drawing.Point(250, 64);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(735, 592);
@@ -797,48 +809,50 @@ namespace VKSMM
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Фото товара";
             // 
-            // button30
+            // buttonNextPagePostBox
             // 
-            this.button30.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button30.Location = new System.Drawing.Point(654, 19);
-            this.button30.Name = "button30";
-            this.button30.Size = new System.Drawing.Size(75, 23);
-            this.button30.TabIndex = 6;
-            this.button30.Text = "0 -->";
-            this.button30.UseVisualStyleBackColor = true;
+            this.buttonNextPagePostBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonNextPagePostBox.Location = new System.Drawing.Point(654, 19);
+            this.buttonNextPagePostBox.Name = "buttonNextPagePostBox";
+            this.buttonNextPagePostBox.Size = new System.Drawing.Size(75, 23);
+            this.buttonNextPagePostBox.TabIndex = 6;
+            this.buttonNextPagePostBox.Text = "0 -->";
+            this.buttonNextPagePostBox.UseVisualStyleBackColor = true;
+            this.buttonNextPagePostBox.Click += new System.EventHandler(this.buttonNextPagePostBox_Click);
             // 
-            // button29
+            // buttonPreveusPagePostBox
             // 
-            this.button29.Location = new System.Drawing.Point(6, 19);
-            this.button29.Name = "button29";
-            this.button29.Size = new System.Drawing.Size(75, 23);
-            this.button29.TabIndex = 6;
-            this.button29.Text = "<-- 0";
-            this.button29.UseVisualStyleBackColor = true;
+            this.buttonPreveusPagePostBox.Location = new System.Drawing.Point(6, 19);
+            this.buttonPreveusPagePostBox.Name = "buttonPreveusPagePostBox";
+            this.buttonPreveusPagePostBox.Size = new System.Drawing.Size(75, 23);
+            this.buttonPreveusPagePostBox.TabIndex = 6;
+            this.buttonPreveusPagePostBox.Text = "<-- 0";
+            this.buttonPreveusPagePostBox.UseVisualStyleBackColor = true;
+            this.buttonPreveusPagePostBox.Click += new System.EventHandler(this.buttonPreveusPagePostBox_Click);
             // 
-            // listView2
+            // listViewPostBox
             // 
-            this.listView2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView2.HideSelection = false;
-            this.listView2.LargeImageList = this.imageListUnProcessedProduct;
-            this.listView2.Location = new System.Drawing.Point(3, 16);
-            this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(729, 573);
-            this.listView2.TabIndex = 5;
-            this.listView2.UseCompatibleStateImageBehavior = false;
-            this.listView2.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
-            this.listView2.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView2_KeyDown);
+            this.listViewPostBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewPostBox.HideSelection = false;
+            this.listViewPostBox.LargeImageList = this.imageListProduct;
+            this.listViewPostBox.Location = new System.Drawing.Point(3, 16);
+            this.listViewPostBox.Name = "listViewPostBox";
+            this.listViewPostBox.Size = new System.Drawing.Size(729, 573);
+            this.listViewPostBox.TabIndex = 5;
+            this.listViewPostBox.UseCompatibleStateImageBehavior = false;
+            this.listViewPostBox.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
+            this.listViewPostBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView2_KeyDown);
             // 
-            // button6
+            // buttonUnLoadingPostBox
             // 
-            this.button6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button6.Location = new System.Drawing.Point(856, 19);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(120, 35);
-            this.button6.TabIndex = 2;
-            this.button6.Text = "Выгрузить товар";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
+            this.buttonUnLoadingPostBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonUnLoadingPostBox.Location = new System.Drawing.Point(856, 19);
+            this.buttonUnLoadingPostBox.Name = "buttonUnLoadingPostBox";
+            this.buttonUnLoadingPostBox.Size = new System.Drawing.Size(120, 35);
+            this.buttonUnLoadingPostBox.TabIndex = 2;
+            this.buttonUnLoadingPostBox.Text = "Выгрузить товар";
+            this.buttonUnLoadingPostBox.UseVisualStyleBackColor = true;
+            this.buttonUnLoadingPostBox.Click += new System.EventHandler(this.button6_Click);
             // 
             // button19
             // 
@@ -860,15 +874,15 @@ namespace VKSMM
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Visible = false;
             // 
-            // button5
+            // buttonSeparatedProductPostBox
             // 
-            this.button5.Location = new System.Drawing.Point(253, 19);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(117, 35);
-            this.button5.TabIndex = 2;
-            this.button5.Text = "Разделить товар";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.buttonSeparatedProductPostBox.Location = new System.Drawing.Point(253, 19);
+            this.buttonSeparatedProductPostBox.Name = "buttonSeparatedProductPostBox";
+            this.buttonSeparatedProductPostBox.Size = new System.Drawing.Size(117, 35);
+            this.buttonSeparatedProductPostBox.TabIndex = 2;
+            this.buttonSeparatedProductPostBox.Text = "Разделить товар";
+            this.buttonSeparatedProductPostBox.UseVisualStyleBackColor = true;
+            this.buttonSeparatedProductPostBox.Click += new System.EventHandler(this.button5_Click);
             // 
             // tabPage3
             // 
@@ -889,6 +903,7 @@ namespace VKSMM
             this.listBox6.Name = "listBox6";
             this.listBox6.Size = new System.Drawing.Size(211, 615);
             this.listBox6.TabIndex = 5;
+            this.listBox6.Visible = false;
             // 
             // groupBox10
             // 
@@ -1032,7 +1047,7 @@ namespace VKSMM
             this.groupBox7.Controls.Add(this.button9);
             this.groupBox7.Location = new System.Drawing.Point(3, 3);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(1027, 631);
+            this.groupBox7.Size = new System.Drawing.Size(1250, 631);
             this.groupBox7.TabIndex = 0;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Ключи замены";
@@ -1056,7 +1071,7 @@ namespace VKSMM
             this.dataGridView2.ReadOnly = true;
             this.dataGridView2.RowHeadersVisible = false;
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView2.Size = new System.Drawing.Size(1015, 347);
+            this.dataGridView2.Size = new System.Drawing.Size(1245, 347);
             this.dataGridView2.TabIndex = 4;
             this.dataGridView2.SelectionChanged += new System.EventHandler(this.dataGridView2_SelectionChanged);
             // 
@@ -1138,7 +1153,7 @@ namespace VKSMM
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox1.Size = new System.Drawing.Size(1014, 230);
+            this.textBox1.Size = new System.Drawing.Size(1244, 230);
             this.textBox1.TabIndex = 2;
             // 
             // comboBox2
@@ -1594,7 +1609,7 @@ namespace VKSMM
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.dataGridView1);
+            this.tabPage2.Controls.Add(this.providerDataGrid);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -1603,60 +1618,62 @@ namespace VKSMM
             this.tabPage2.Text = "База данных поставщиков";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // dataGridView1
+            // providerDataGrid
             // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.providerDataGrid.AllowUserToAddRows = false;
+            this.providerDataGrid.AllowUserToDeleteRows = false;
+            this.providerDataGrid.AllowUserToResizeColumns = false;
+            this.providerDataGrid.AllowUserToResizeRows = false;
+            this.providerDataGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.providerDataGrid.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.providerDataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.providerDataGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Column1,
             this.Column2,
             this.Column3,
-            this.Column4,
-            this.Column5});
-            this.dataGridView1.Location = new System.Drawing.Point(3, 6);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.Size = new System.Drawing.Size(1255, 633);
-            this.dataGridView1.TabIndex = 0;
+            this.Column4});
+            this.providerDataGrid.Location = new System.Drawing.Point(3, 6);
+            this.providerDataGrid.Name = "providerDataGrid";
+            this.providerDataGrid.ReadOnly = true;
+            this.providerDataGrid.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
+            this.providerDataGrid.RowHeadersVisible = false;
+            this.providerDataGrid.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            this.providerDataGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.providerDataGrid.Size = new System.Drawing.Size(1255, 633);
+            this.providerDataGrid.TabIndex = 0;
             // 
             // Column1
             // 
-            this.Column1.HeaderText = "VK_ID";
+            this.Column1.HeaderText = "Дата";
             this.Column1.Name = "Column1";
             this.Column1.ReadOnly = true;
+            this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             // 
             // Column2
             // 
-            this.Column2.HeaderText = "Имя поставщика";
+            this.Column2.HeaderText = "Товар";
             this.Column2.Name = "Column2";
             this.Column2.ReadOnly = true;
+            this.Column2.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column2.Width = 150;
             // 
             // Column3
             // 
-            this.Column3.HeaderText = "Статус";
+            this.Column3.HeaderText = "id VK";
             this.Column3.Name = "Column3";
             this.Column3.ReadOnly = true;
+            this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column3.Width = 400;
             // 
             // Column4
             // 
-            this.Column4.HeaderText = "Закрепленный пост";
+            this.Column4.HeaderText = "Продавец";
             this.Column4.Name = "Column4";
             this.Column4.ReadOnly = true;
+            this.Column4.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column4.Width = 400;
-            // 
-            // Column5
-            // 
-            this.Column5.HeaderText = "Дата активности";
-            this.Column5.Name = "Column5";
-            this.Column5.ReadOnly = true;
-            this.Column5.Width = 120;
             // 
             // contextMenuStrip4
             // 
@@ -1727,9 +1744,11 @@ namespace VKSMM
             this.Controls.Add(this.tabControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "VK ТК Садовод Версия: 0.22 от 14.12.2021";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.tabControl1.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
@@ -1738,8 +1757,8 @@ namespace VKSMM
             this.groupBox4.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.descriptionSourceDataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPrize)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.descriptionSourceDataGridView)).EndInit();
             this.groupBox13.ResumeLayout(false);
             this.groupBox14.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -1768,7 +1787,7 @@ namespace VKSMM
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView6)).EndInit();
             this.tabPage2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.providerDataGrid)).EndInit();
             this.contextMenuStrip4.ResumeLayout(false);
             this.contextMenuStrip3.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
@@ -1784,18 +1803,12 @@ namespace VKSMM
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Button buttonUnLoadingPostBox;
+        private System.Windows.Forms.Button buttonSeparatedProductPostBox;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox textBox7;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
+        private System.Windows.Forms.TextBox sourceDescrSelectedProductTextBoxPostBox;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.Label label9;
@@ -1850,12 +1863,12 @@ namespace VKSMM
         private System.Windows.Forms.Button button14;
         private System.Windows.Forms.Button button13;
         private System.Windows.Forms.GroupBox groupBox8;
-        private System.Windows.Forms.ListBox listBox4;
+        private System.Windows.Forms.ListBox listBoxSubCategoryPostBox;
         private System.Windows.Forms.GroupBox groupBox9;
-        private System.Windows.Forms.ListBox listBox5;
+        private System.Windows.Forms.ListBox listBoxMainCategoryPostBox;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TextBox prizeDescrSelectedProductTextBoxPostBox;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button19;
@@ -1896,11 +1909,11 @@ namespace VKSMM
         private System.Windows.Forms.TextBox textBox8;
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox11;
-        private System.Windows.Forms.ListView listView3;
-        private System.Windows.Forms.ImageList imageList2;
-        private System.Windows.Forms.Button button30;
-        private System.Windows.Forms.Button button29;
+        private System.Windows.Forms.TextBox clearDescrSelectedProductTextBoxPostBox;
+        private System.Windows.Forms.ListView selectedProductListViewPostBox;
+        private System.Windows.Forms.ImageList imageListProductSmall;
+        private System.Windows.Forms.Button buttonNextPagePostBox;
+        private System.Windows.Forms.Button buttonPreveusPagePostBox;
         private System.Windows.Forms.GroupBox groupBox16;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Button button33;
@@ -1918,8 +1931,8 @@ namespace VKSMM
 
         public System.Windows.Forms.DataGridView dataGridView7;
         public System.Windows.Forms.Label label15;
-        public System.Windows.Forms.TreeView treeView1;
-        public System.Windows.Forms.ListView listView2;
+        public System.Windows.Forms.TreeView treeViewProductForPostBox;
+        public System.Windows.Forms.ListView listViewPostBox;
         public System.Windows.Forms.Label XMLLoadLabel;
         public System.Windows.Forms.DataGridView dataGridView2;
         public System.Windows.Forms.DataGridView dataGridView4;
@@ -1933,9 +1946,15 @@ namespace VKSMM
         public System.Windows.Forms.ComboBox comboBox5;
         public System.Windows.Forms.DataGridView descriptionSourceDataGridView;
         public System.Windows.Forms.ListBox logRegexListBox;
-        public System.Windows.Forms.ImageList imageListUnProcessedProduct;
+        public System.Windows.Forms.ImageList imageListProduct;
         public System.Windows.Forms.ListView unProcessedProductListView;
         public System.Windows.Forms.ListBox subCatListBox;
+        public System.Windows.Forms.DataGridView providerDataGrid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        public System.Windows.Forms.ListBox logRegexListBoxPostBox;
     }
 }
 
