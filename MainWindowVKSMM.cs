@@ -25,6 +25,12 @@ namespace VKSMM
         public MainForm()
         {
             InitializeComponent();
+            //Отображаем окно ввода пароля
+            EnterPassForm passForm = new EnterPassForm();
+            //Ссылка на основную форму
+            passForm.mainForm = this;
+            //Отображаем форму
+            passForm.ShowDialog();
 
         }
 
@@ -83,7 +89,30 @@ namespace VKSMM
         //public List<ReplaceKeys> Addition_Replace_Keys = new List<ReplaceKeys>();
 
         public List<ColorKeys> Color_Keys = new List<ColorKeys>();
+
+        /// <summary>
+        /// Массив картинок которые не удалось скачать у поставщика
+        /// </summary>
         public List<string> imageNoExist = new List<string>();
+
+        /// <summary>
+        /// Массив картинок дублей
+        /// </summary>
+        public List<string> imageDoubleList = new List<string>();
+
+        /// <summary>
+        /// Массив всех гистограмм картинок 
+        /// (Необходим для поиска повтора картинок)
+        /// </summary>
+        public List<int[]> imageHistogrammList = new List<int[]>();
+
+
+
+        /// <summary>
+        /// Пароль Администратора введен
+        /// </summary>
+        public bool administrativPassEnter = false;
+
 
         /// <summary>
         /// Путь к месту запуска программы
@@ -3058,12 +3087,18 @@ namespace VKSMM
         /// </summary>
         private void MainForm_Shown(object sender, EventArgs e)
         {
-            //Отображаем окно загрузки поставщиков
-            LoadForm loadForm = new LoadForm();
-            //Ссылка на основную форму
-            loadForm.mainForm = this;
-            //Отображаем форму
-            loadForm.ShowDialog();
+
+
+            //Если пароль введен то загружаем поставщиков
+            if (administrativPassEnter)
+            {
+                //Отображаем окно загрузки поставщиков
+                LoadForm loadForm = new LoadForm();
+                //Ссылка на основную форму
+                loadForm.mainForm = this;
+                //Отображаем форму
+                loadForm.ShowDialog();
+            }
         }
 
         private void buttonNextPagePostBox_Click(object sender, EventArgs e)

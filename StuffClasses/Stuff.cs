@@ -120,24 +120,78 @@ namespace VKSMM.StuffClasses
 
 
 
-
+            //Проходим по всем строчкам XLS файла
             for (int i = 1; i < lastRow_1; i++) // по всем строкам
             {
+                //Сообщаем на форму, что обработана строчка
                 Action S1 = () => mainForm.providerLoadLabel.Text = "Загружено " + i + " из " + lastRow_1;
                 mainForm.providerLoadLabel.Invoke(S1);
 
-
-
+                //Создаем новый товар
                 Product prod = new Product();
 
+                //Ссылка на товар
                 prod.IDURL = ObjWorkSheet_1.Cells[i + 1, 4].Text.ToString();
 
-
+                //Ссылка на фотографию товара
                 string lll = ObjWorkSheet_1.Cells[i + 1, 1].Text.ToString();
                 // lll = "g:\\Job\\Education\\VKSMM\\ТЕСТ\\ФОТО\\" + lll.Substring(lll.IndexOf("\\") + 1);
                 lll = mainForm._PhotoPath + "\\" + lll.Substring(lll.IndexOf("\\") + 1);//fbd.SelectedPath
 
-                prod.FilePath.Add(lll);
+                //--------------------------------------------------------------------------------------------
+                //Проверяем существует ли фотография, докачиваем и проверяем на повторы
+                //--------------------------------------------------------------------------------------------
+                //Получаем ссылку на изображение
+                FileInfo fimage = new FileInfo(lll);
+                //Проверяем существует ли файл с картинкой
+                if (fimage.Exists)
+                {
+                    try
+                    {
+                        //Докачиваем изображение если его не существует
+                        using (WebClient client = new WebClient())
+                        {
+                            client.DownloadFile(new Uri(prod.URLPhoto[0]), lll);// prod.FilePath[0]
+                        }
+                    }
+                    catch { }
+
+                    //Обновляем ссылку на файл с картинкой
+                    fimage.Refresh();
+                }
+
+
+                bool imageRepeat = false;
+
+                //Если файл с картинкой существует проводим проверку на повтор
+                if (fimage.Exists)
+                {
+                    
+
+                    //Получаем гистограмму фотографии
+                    int[] histogramm = collectingHistogramm(new Bitmap(lll));
+
+
+                    imageRepeat = repeatImageTest(histogramm, 0.05, mainForm);
+
+                    if(imageRepeat)
+                    {
+                        mainForm.imageDoubleList.Add(lll);
+
+                        Directory.CreateDirectory(mainForm._PhotoPath + "\\REPEAT_IMAGE\\");
+
+                        fimage.CopyTo(mainForm._PhotoPath + "\\REPEAT_IMAGE\\"+ fimage.Name,true);
+                    }
+                    else
+                    {
+                        prod.FilePath.Add(lll);
+                        mainForm.imageHistogrammList.Add(histogramm);
+                    }
+
+                }
+                //--------------------------------------------------------------------------------------------
+
+
 
 
                 prod.URLPhoto.Add(ObjWorkSheet_1.Cells[i + 1, 2].Text.ToString());
@@ -195,55 +249,18 @@ namespace VKSMM.StuffClasses
                     }
                     iii++;
                 }
+
                 if (get)
                 {
-
-                    try
+                    if (imageRepeat)
                     {
-                        FileInfo f = new FileInfo(prod.FilePath[0]);
-                        if (f.Exists)
-                        {
-                            mainForm.ProductListSourceBuffer[iii].FilePath.Add(prod.FilePath[0]);
-                            mainForm.ProductListSourceBuffer[iii].URLPhoto.Add(prod.URLPhoto[0]);
-                        }
-                        else
-                        {
-
-                            try
-                            {
-                                using (WebClient client = new WebClient())
-                                {
-                                    client.DownloadFile(new Uri(prod.URLPhoto[0]), prod.FilePath[0]);
-                                }
-                            }
-                            catch { }
-
-
-                            f.Refresh();
-                            if (f.Exists)
-                            {
-                                mainForm.ProductListSourceBuffer[iii].FilePath.Add(prod.FilePath[0]);
-                                mainForm.ProductListSourceBuffer[iii].URLPhoto.Add(prod.URLPhoto[0]);
-                            }
-                            else
-                            {
-                                mainForm.imageNoExist.Add(prod.FilePath[0]);
-                            }
-                        }
+                        mainForm.ProductListSourceBuffer[iii].FilePath.Add(prod.FilePath[0]);
+                        mainForm.ProductListSourceBuffer[iii].URLPhoto.Add(prod.URLPhoto[0]);
                     }
-                    catch (Exception ee)
-                    {
-                        MessageBox.Show(ee.ToString());
-                    }
-
-
                 }
                 else
                 {
-                    // ProductListSourceBuffer.Insert(0, prod);
                     mainForm.ProductListSourceBuffer.Add(prod);
-                    //dataGridView5.Rows.Add(prod.IDURL);
-                    //listBox3.Items.Add(prod.IDURL);
                 }
             }
 
@@ -284,6 +301,74 @@ namespace VKSMM.StuffClasses
             GC.Collect(); // убрать за собой
             return 0;
         }
+
+
+
+
+
+
+        public static int[] collectingHistogramm(Image image)
+        {
+            //Выходная гистограмма
+            int[] outHistogramm = new int[256 + 256 + 256];
+
+
+            // получаем битмап из изображения
+            Bitmap bmp = new Bitmap(image);
+
+            //// создаем массивы, в котором будут содержаться количества повторений для каждого из значений каналов.
+            //// индекс соответствует значению канала
+            //int[] R = new int[256];
+            //int[] G = new int[256];
+            //int[] B = new int[256];
+
+            int i, j;
+            Color color;
+
+            // собираем статистику для изображения
+            for (i = 0; i < bmp.Width; ++i)
+                for (j = 0; j < bmp.Height; ++j)
+                {
+                    color = bmp.GetPixel(i, j);
+                    ++outHistogramm[color.R];
+                    ++outHistogramm[color.G + 256];
+                    ++outHistogramm[color.B + 512];
+                }
+
+            return outHistogramm;
+        }
+
+        public static bool repeatImageTest(int[] histogramm, double parametr, MainForm mainForm)
+        {
+            bool result = false;
+
+
+            foreach (int[] hist in mainForm.imageHistogrammList)
+            {
+                double sum = 0;
+
+                for (int i = 0; i < 256 * 3; i++)
+                {
+                    sum = sum + (1 - (double)((double)Math.Min(hist[i], histogramm[i]) / Math.Max(hist[i], histogramm[i])));
+                }
+
+                sum = sum / (256 * 3);
+
+
+                if (sum < parametr) 
+                { 
+                    result = true; 
+                    break; 
+                }
+
+            }
+
+            return result;
+        }
+
+
+
+
 
 
 
@@ -338,42 +423,46 @@ namespace VKSMM.StuffClasses
                         //    dataGridView3.Rows.Add(s);
                         //}
 
+                        //Ищем ключевые слова для начала сборки размеров
                         if ((s.ToLower().IndexOf("размер") >= 0) || (s.ToLower().IndexOf("разм.") >= 0) || (s.ToLower().IndexOf("рост") >= 0) || (s.ToLower().IndexOf("opct") >= 0))
                         {
+                            //Ключи найдены поднимаем флаг сборки размеров
                             RazmerFind = true;
+
+                            akamulateRegexLog.Add("# сборка размера начата");
+
                         }
 
+                        //Действие при сборке размеров
                         if (RazmerFind)
                         {
+                            //Аккамулируем строчки размера
                             Razmer = Razmer + " " + s;
-                        }
+                            akamulateRegexLog.Add("# сборка размера "+ Razmer);
 
-                        if (RazmerFind)
-                        {
+                            //Если конец описание не достигнут то обрабатываем следующую строчку
                             if (u < P.sellerText.Count - 1)
                             {
+                                //Если на следующей строчке есть ключ "рост" то блокируем сборку
                                 if ((P.sellerText[u + 1].ToLower().IndexOf("рост") >= 0))
                                 {
                                     s = Razmer + " " + P.sellerText[u + 1];
 
                                     u++;
 
-                                    ////В строчке должны быть данные
-                                    //if (P.sellerText[u].Length > 1)
-                                    //{
-                                    //    //Добавляем строчку описания в грид
-                                    //    dataGridView3.Rows.Add(P.sellerText[u]);
-                                    //}
-
                                     RazmerFind = false;
+                                    akamulateRegexLog.Add("# сборка размера закончена - в следующей строчке есть |рост|");
+
                                     Razmer = "";
                                 }
                                 else
                                 {
-                                    if ((P.sellerText[u + 1].Length > 4))
+                                    if ((P.sellerText[u + 1].Length >= 4))
                                     {
                                         s = Razmer;
                                         RazmerFind = false;
+                                        akamulateRegexLog.Add("# сборка размера закончена - следующая строчка больше 4 символов");
+
                                         Razmer = "";
                                     }
                                 }
@@ -382,6 +471,8 @@ namespace VKSMM.StuffClasses
                             {
                                 s = Razmer;
                                 RazmerFind = false;
+                                akamulateRegexLog.Add("# сборка размера закончена - последняя строчка");
+
                                 Razmer = "";
                             }
                         }
@@ -433,7 +524,7 @@ namespace VKSMM.StuffClasses
                                                 //Выполняем замену
                                                 resultLine = regex.Replace(resultLine, k.NewValue);
 
-                                                akamulateRegexLog.Add( "# стр." + u + " найдено:|" + M.Value + "| Рег.№:" + i + " замена:|" + k.NewValue + "|");
+                                                akamulateRegexLog.Add( "# стр." + (u + 1) + " найдено:|" + M.Value + "| Рег.№:" + i + " замена:|" + k.NewValue + "|");
                                             }
                                             //Если режим удаления, то просто вставляем пустое значение
                                             if (k.Action == 4)
@@ -441,14 +532,14 @@ namespace VKSMM.StuffClasses
                                                 //Выполняем замену
                                                 resultLine = regex.Replace(resultLine, "");
 
-                                                akamulateRegexLog.Add("# стр." + u + " найдено:|" + M.Value + "| Рег.№:" + i + " удалена подстрока ");
+                                                akamulateRegexLog.Add("# стр." + (u + 1) + " найдено:|" + M.Value + "| Рег.№:" + i + " удалена подстрока ");
 
                                             }
 
                                             //Если режим удаления, то просто вставляем пустое значение
                                             if (k.Action == 5)
                                             {
-                                                akamulateRegexLog.Add("# стр." + u + " найдено:|" + M.Value + "| Рег.№:" + i + " строчка заблокирована ");
+                                                akamulateRegexLog.Add("# стр." + (u + 1) + " найдено:|" + M.Value + "| Рег.№:" + i + " строчка заблокирована ");
 
 
                                                 if (regex.IsMatch(resultLine))

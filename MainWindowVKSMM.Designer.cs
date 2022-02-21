@@ -36,7 +36,7 @@ namespace VKSMM
             this.imageListProduct = new System.Windows.Forms.ImageList(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.groupBoxLoadProduct = new System.Windows.Forms.GroupBox();
             this.LoadProviderXLSButton = new System.Windows.Forms.Button();
             this.groupBox15 = new System.Windows.Forms.GroupBox();
             this.comboBox5 = new System.Windows.Forms.ComboBox();
@@ -104,7 +104,7 @@ namespace VKSMM
             this.button11 = new System.Windows.Forms.Button();
             this.button12 = new System.Windows.Forms.Button();
             this.button14 = new System.Windows.Forms.Button();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.groupBoxKeyManager = new System.Windows.Forms.GroupBox();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -125,7 +125,7 @@ namespace VKSMM
             this.button4 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.groupBoxSubCategory = new System.Windows.Forms.GroupBox();
             this.button33 = new System.Windows.Forms.Button();
             this.button34 = new System.Windows.Forms.Button();
             this.button28 = new System.Windows.Forms.Button();
@@ -140,7 +140,7 @@ namespace VKSMM
             this.textBox9 = new System.Windows.Forms.TextBox();
             this.button24 = new System.Windows.Forms.Button();
             this.button23 = new System.Windows.Forms.Button();
-            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.groupBoxMainCategory = new System.Windows.Forms.GroupBox();
             this.button32 = new System.Windows.Forms.Button();
             this.button31 = new System.Windows.Forms.Button();
             this.button22 = new System.Windows.Forms.Button();
@@ -174,7 +174,7 @@ namespace VKSMM
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
-            this.groupBox1.SuspendLayout();
+            this.groupBoxLoadProduct.SuspendLayout();
             this.groupBox15.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -192,13 +192,13 @@ namespace VKSMM
             this.tabPage3.SuspendLayout();
             this.groupBox10.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).BeginInit();
-            this.groupBox7.SuspendLayout();
+            this.groupBoxKeyManager.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.tabPage4.SuspendLayout();
-            this.groupBox12.SuspendLayout();
+            this.groupBoxSubCategory.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView9)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView8)).BeginInit();
-            this.groupBox11.SuspendLayout();
+            this.groupBoxMainCategory.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView7)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView6)).BeginInit();
             this.tabPage2.SuspendLayout();
@@ -232,7 +232,7 @@ namespace VKSMM
             // 
             // tabPage5
             // 
-            this.tabPage5.Controls.Add(this.groupBox1);
+            this.tabPage5.Controls.Add(this.groupBoxLoadProduct);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
@@ -241,25 +241,26 @@ namespace VKSMM
             this.tabPage5.Text = "Прием товара";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
-            // groupBox1
+            // groupBoxLoadProduct
             // 
-            this.groupBox1.Controls.Add(this.LoadProviderXLSButton);
-            this.groupBox1.Controls.Add(this.groupBox15);
-            this.groupBox1.Controls.Add(this.comboBox4);
-            this.groupBox1.Controls.Add(this.XMLLoadLabel);
-            this.groupBox1.Controls.Add(this.providerLoadLabel);
-            this.groupBox1.Controls.Add(this.processedAllProductButton);
-            this.groupBox1.Controls.Add(this.processedOneProductButton);
-            this.groupBox1.Controls.Add(this.LoadProductXLSButton);
-            this.groupBox1.Controls.Add(this.groupBox4);
-            this.groupBox1.Controls.Add(this.groupBox3);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(3, 3);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1255, 660);
-            this.groupBox1.TabIndex = 1;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Новые товары для поста";
+            this.groupBoxLoadProduct.Controls.Add(this.LoadProviderXLSButton);
+            this.groupBoxLoadProduct.Controls.Add(this.groupBox15);
+            this.groupBoxLoadProduct.Controls.Add(this.comboBox4);
+            this.groupBoxLoadProduct.Controls.Add(this.XMLLoadLabel);
+            this.groupBoxLoadProduct.Controls.Add(this.providerLoadLabel);
+            this.groupBoxLoadProduct.Controls.Add(this.processedAllProductButton);
+            this.groupBoxLoadProduct.Controls.Add(this.processedOneProductButton);
+            this.groupBoxLoadProduct.Controls.Add(this.LoadProductXLSButton);
+            this.groupBoxLoadProduct.Controls.Add(this.groupBox4);
+            this.groupBoxLoadProduct.Controls.Add(this.groupBox3);
+            this.groupBoxLoadProduct.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxLoadProduct.Location = new System.Drawing.Point(3, 3);
+            this.groupBoxLoadProduct.Name = "groupBoxLoadProduct";
+            this.groupBoxLoadProduct.Size = new System.Drawing.Size(1255, 660);
+            this.groupBoxLoadProduct.TabIndex = 1;
+            this.groupBoxLoadProduct.TabStop = false;
+            this.groupBoxLoadProduct.Text = "Новые товары для поста";
+            this.groupBoxLoadProduct.Visible = false;
             // 
             // LoadProviderXLSButton
             // 
@@ -323,7 +324,6 @@ namespace VKSMM
             this.providerLoadLabel.Size = new System.Drawing.Size(99, 13);
             this.providerLoadLabel.TabIndex = 3;
             this.providerLoadLabel.Text = "PROVIDER: 0 из 0";
-            this.providerLoadLabel.Visible = false;
             // 
             // processedAllProductButton
             // 
@@ -887,7 +887,7 @@ namespace VKSMM
             // 
             this.tabPage3.Controls.Add(this.listBox6);
             this.tabPage3.Controls.Add(this.groupBox10);
-            this.tabPage3.Controls.Add(this.groupBox7);
+            this.tabPage3.Controls.Add(this.groupBoxKeyManager);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(1261, 666);
@@ -1025,31 +1025,32 @@ namespace VKSMM
             this.button14.UseVisualStyleBackColor = true;
             this.button14.Click += new System.EventHandler(this.button14_Click);
             // 
-            // groupBox7
+            // groupBoxKeyManager
             // 
-            this.groupBox7.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.groupBoxKeyManager.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox7.Controls.Add(this.dataGridView2);
-            this.groupBox7.Controls.Add(this.label9);
-            this.groupBox7.Controls.Add(this.label10);
-            this.groupBox7.Controls.Add(this.label8);
-            this.groupBox7.Controls.Add(this.textBox2);
-            this.groupBox7.Controls.Add(this.textBox1);
-            this.groupBox7.Controls.Add(this.comboBox2);
-            this.groupBox7.Controls.Add(this.comboBox3);
-            this.groupBox7.Controls.Add(this.button10);
-            this.groupBox7.Controls.Add(this.button8);
-            this.groupBox7.Controls.Add(this.button13);
-            this.groupBox7.Controls.Add(this.button7);
-            this.groupBox7.Controls.Add(this.button4);
-            this.groupBox7.Controls.Add(this.button9);
-            this.groupBox7.Location = new System.Drawing.Point(3, 3);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(1250, 631);
-            this.groupBox7.TabIndex = 0;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Ключи замены";
+            this.groupBoxKeyManager.Controls.Add(this.dataGridView2);
+            this.groupBoxKeyManager.Controls.Add(this.label9);
+            this.groupBoxKeyManager.Controls.Add(this.label10);
+            this.groupBoxKeyManager.Controls.Add(this.label8);
+            this.groupBoxKeyManager.Controls.Add(this.textBox2);
+            this.groupBoxKeyManager.Controls.Add(this.textBox1);
+            this.groupBoxKeyManager.Controls.Add(this.comboBox2);
+            this.groupBoxKeyManager.Controls.Add(this.comboBox3);
+            this.groupBoxKeyManager.Controls.Add(this.button10);
+            this.groupBoxKeyManager.Controls.Add(this.button8);
+            this.groupBoxKeyManager.Controls.Add(this.button13);
+            this.groupBoxKeyManager.Controls.Add(this.button7);
+            this.groupBoxKeyManager.Controls.Add(this.button4);
+            this.groupBoxKeyManager.Controls.Add(this.button9);
+            this.groupBoxKeyManager.Location = new System.Drawing.Point(3, 3);
+            this.groupBoxKeyManager.Name = "groupBoxKeyManager";
+            this.groupBoxKeyManager.Size = new System.Drawing.Size(1250, 631);
+            this.groupBoxKeyManager.TabIndex = 0;
+            this.groupBoxKeyManager.TabStop = false;
+            this.groupBoxKeyManager.Text = "Ключи замены";
+            this.groupBoxKeyManager.Visible = false;
             // 
             // dataGridView2
             // 
@@ -1244,8 +1245,8 @@ namespace VKSMM
             // 
             // tabPage4
             // 
-            this.tabPage4.Controls.Add(this.groupBox12);
-            this.tabPage4.Controls.Add(this.groupBox11);
+            this.tabPage4.Controls.Add(this.groupBoxSubCategory);
+            this.tabPage4.Controls.Add(this.groupBoxMainCategory);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
@@ -1254,28 +1255,29 @@ namespace VKSMM
             this.tabPage4.Text = "Категории";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // groupBox12
+            // groupBoxSubCategory
             // 
-            this.groupBox12.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.groupBoxSubCategory.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox12.Controls.Add(this.button33);
-            this.groupBox12.Controls.Add(this.button34);
-            this.groupBox12.Controls.Add(this.button28);
-            this.groupBox12.Controls.Add(this.dataGridView9);
-            this.groupBox12.Controls.Add(this.button27);
-            this.groupBox12.Controls.Add(this.dataGridView8);
-            this.groupBox12.Controls.Add(this.button26);
-            this.groupBox12.Controls.Add(this.textBox10);
-            this.groupBox12.Controls.Add(this.button25);
-            this.groupBox12.Controls.Add(this.textBox9);
-            this.groupBox12.Controls.Add(this.button24);
-            this.groupBox12.Controls.Add(this.button23);
-            this.groupBox12.Location = new System.Drawing.Point(614, 1);
-            this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Size = new System.Drawing.Size(641, 631);
-            this.groupBox12.TabIndex = 2;
-            this.groupBox12.TabStop = false;
-            this.groupBox12.Text = "Под категории";
+            this.groupBoxSubCategory.Controls.Add(this.button33);
+            this.groupBoxSubCategory.Controls.Add(this.button34);
+            this.groupBoxSubCategory.Controls.Add(this.button28);
+            this.groupBoxSubCategory.Controls.Add(this.dataGridView9);
+            this.groupBoxSubCategory.Controls.Add(this.button27);
+            this.groupBoxSubCategory.Controls.Add(this.dataGridView8);
+            this.groupBoxSubCategory.Controls.Add(this.button26);
+            this.groupBoxSubCategory.Controls.Add(this.textBox10);
+            this.groupBoxSubCategory.Controls.Add(this.button25);
+            this.groupBoxSubCategory.Controls.Add(this.textBox9);
+            this.groupBoxSubCategory.Controls.Add(this.button24);
+            this.groupBoxSubCategory.Controls.Add(this.button23);
+            this.groupBoxSubCategory.Location = new System.Drawing.Point(614, 1);
+            this.groupBoxSubCategory.Name = "groupBoxSubCategory";
+            this.groupBoxSubCategory.Size = new System.Drawing.Size(641, 631);
+            this.groupBoxSubCategory.TabIndex = 2;
+            this.groupBoxSubCategory.TabStop = false;
+            this.groupBoxSubCategory.Text = "Под категории";
+            this.groupBoxSubCategory.Visible = false;
             // 
             // button33
             // 
@@ -1425,29 +1427,30 @@ namespace VKSMM
             this.button23.UseVisualStyleBackColor = true;
             this.button23.Click += new System.EventHandler(this.button23_Click);
             // 
-            // groupBox11
+            // groupBoxMainCategory
             // 
-            this.groupBox11.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.groupBoxMainCategory.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox11.Controls.Add(this.button32);
-            this.groupBox11.Controls.Add(this.button31);
-            this.groupBox11.Controls.Add(this.button22);
-            this.groupBox11.Controls.Add(this.button18);
-            this.groupBox11.Controls.Add(this.button21);
-            this.groupBox11.Controls.Add(this.button17);
-            this.groupBox11.Controls.Add(this.button20);
-            this.groupBox11.Controls.Add(this.button16);
-            this.groupBox11.Controls.Add(this.textBox8);
-            this.groupBox11.Controls.Add(this.textBox6);
-            this.groupBox11.Controls.Add(this.dataGridView7);
-            this.groupBox11.Controls.Add(this.dataGridView6);
-            this.groupBox11.Location = new System.Drawing.Point(6, 0);
-            this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(602, 631);
-            this.groupBox11.TabIndex = 1;
-            this.groupBox11.TabStop = false;
-            this.groupBox11.Text = "Основные категории";
+            this.groupBoxMainCategory.Controls.Add(this.button32);
+            this.groupBoxMainCategory.Controls.Add(this.button31);
+            this.groupBoxMainCategory.Controls.Add(this.button22);
+            this.groupBoxMainCategory.Controls.Add(this.button18);
+            this.groupBoxMainCategory.Controls.Add(this.button21);
+            this.groupBoxMainCategory.Controls.Add(this.button17);
+            this.groupBoxMainCategory.Controls.Add(this.button20);
+            this.groupBoxMainCategory.Controls.Add(this.button16);
+            this.groupBoxMainCategory.Controls.Add(this.textBox8);
+            this.groupBoxMainCategory.Controls.Add(this.textBox6);
+            this.groupBoxMainCategory.Controls.Add(this.dataGridView7);
+            this.groupBoxMainCategory.Controls.Add(this.dataGridView6);
+            this.groupBoxMainCategory.Location = new System.Drawing.Point(6, 0);
+            this.groupBoxMainCategory.Name = "groupBoxMainCategory";
+            this.groupBoxMainCategory.Size = new System.Drawing.Size(602, 631);
+            this.groupBoxMainCategory.TabIndex = 1;
+            this.groupBoxMainCategory.TabStop = false;
+            this.groupBoxMainCategory.Text = "Основные категории";
+            this.groupBoxMainCategory.Visible = false;
             // 
             // button32
             // 
@@ -1642,6 +1645,7 @@ namespace VKSMM
             this.providerDataGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.providerDataGrid.Size = new System.Drawing.Size(1255, 633);
             this.providerDataGrid.TabIndex = 0;
+            this.providerDataGrid.Visible = false;
             // 
             // Column1
             // 
@@ -1750,8 +1754,8 @@ namespace VKSMM
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.tabControl1.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.groupBoxLoadProduct.ResumeLayout(false);
+            this.groupBoxLoadProduct.PerformLayout();
             this.groupBox15.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
@@ -1773,16 +1777,16 @@ namespace VKSMM
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView4)).EndInit();
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
+            this.groupBoxKeyManager.ResumeLayout(false);
+            this.groupBoxKeyManager.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.tabPage4.ResumeLayout(false);
-            this.groupBox12.ResumeLayout(false);
-            this.groupBox12.PerformLayout();
+            this.groupBoxSubCategory.ResumeLayout(false);
+            this.groupBoxSubCategory.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView9)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView8)).EndInit();
-            this.groupBox11.ResumeLayout(false);
-            this.groupBox11.PerformLayout();
+            this.groupBoxMainCategory.ResumeLayout(false);
+            this.groupBoxMainCategory.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView7)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView6)).EndInit();
             this.tabPage2.ResumeLayout(false);
@@ -1809,7 +1813,6 @@ namespace VKSMM
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox sourceDescrSelectedProductTextBoxPostBox;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.GroupBox groupBox7;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox textBox2;
@@ -1825,10 +1828,8 @@ namespace VKSMM
         private System.Windows.Forms.Button button11;
         private System.Windows.Forms.Button button12;
         private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.GroupBox groupBox12;
         private System.Windows.Forms.DataGridView dataGridView8;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
-        private System.Windows.Forms.GroupBox groupBox11;
         private System.Diagnostics.EventLog eventLog1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column11;
@@ -1839,7 +1840,6 @@ namespace VKSMM
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.TabPage tabPage5;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button processedAllProductButton;
         private System.Windows.Forms.Button processedOneProductButton;
         private System.Windows.Forms.GroupBox groupBox4;
@@ -1959,6 +1959,10 @@ namespace VKSMM
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         public System.Windows.Forms.ListBox logRegexListBoxPostBox;
+        public System.Windows.Forms.GroupBox groupBoxLoadProduct;
+        public System.Windows.Forms.GroupBox groupBoxKeyManager;
+        public System.Windows.Forms.GroupBox groupBoxMainCategory;
+        public System.Windows.Forms.GroupBox groupBoxSubCategory;
     }
 }
 

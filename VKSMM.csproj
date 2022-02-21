@@ -73,6 +73,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnterPassForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EnterPassForm.Designer.cs">
+      <DependentUpon>EnterPassForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="LoadForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -98,6 +104,9 @@
     <Compile Include="StuffClasses\ConfigWriter.cs" />
     <Compile Include="StuffClasses\Stuff.cs" />
     <Compile Include="ThredsCode\Core.cs" />
+    <EmbeddedResource Include="EnterPassForm.resx">
+      <DependentUpon>EnterPassForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="LoadForm.resx">
       <DependentUpon>LoadForm.cs</DependentUpon>
     </EmbeddedResource>
