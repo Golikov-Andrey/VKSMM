@@ -1748,7 +1748,7 @@ namespace VKSMM
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "VK ТК Садовод Версия: 0.22 от 14.12.2021";
+            this.Text = "VK ТК Садовод Версия: 0.23 от 22.02.2022";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
