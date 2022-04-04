@@ -2737,28 +2737,38 @@ namespace VKSMM
 
         }
 
-        private void listView3_KeyDown(object sender, KeyEventArgs e)
+        /// <summary>
+        /// Действие при удалении картинки
+        /// </summary>
+        private void selectedProductListViewPostBox_KeyDown(object sender, KeyEventArgs e)
         {
+            //Проверяем что нажата кнопка DELETE
             if (e.KeyCode == Keys.Delete)
             {
-
+                //Индекс продукта который удаляется
                 int indexOfProduct = -1;
 
+                //Определяем индекс выделенного товара
                 int j = 0;
+                //Проходим по всем товарам и ищем картинку с таким же именем
                 foreach (Product p in ProductListForPosting)
                 {
                     try
                     {
+                        //Проходим по всем картинкам товара
                         foreach (string photopath in p.FilePath)
                         {
+                            //Если название картинки товара соответствует 
                             if (photopath == listViewPostBox.SelectedItems[0].Text)
                             {
+                                //Индекс найден
                                 indexOfProduct = j;
                                 break;
                             }
                         }
                         j++;
 
+                        //Если индекс найден выходем из цыкла
                         if (indexOfProduct >= 0)
                         {
                             break;
@@ -2767,27 +2777,22 @@ namespace VKSMM
                     catch { }
                 }
 
-
+                //Проверяем, что индекс найден
                 if (indexOfProduct >= 0)
                 {
-
-                      
-                        
-                        
+                    //Удаляем ссылку на картинку и путь к картинке на диске    
                     ProductListForPosting[indexOfProduct].URLPhoto.RemoveAt(selectedProductListViewPostBox.SelectedIndices[0]);
                     ProductListForPosting[indexOfProduct].FilePath.RemoveAt(selectedProductListViewPostBox.SelectedIndices[0]);
 
-
+                    //Удаляем иконку картинки с лист бокса картинок
                     selectedProductListViewPostBox.Items.Remove(selectedProductListViewPostBox.SelectedItems[0]);
-                    listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
+
+                    //imageListProduct.Images.RemoveAt(listViewPostBox.SelectedItems[0].ImageIndex);
+                    imageListProduct.Images[listViewPostBox.SelectedItems[0].ImageIndex]= imageListProductSmall.Images[0];
+
+                    //listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
 
                 }
-
-
-
-
-
-
 
             }
 

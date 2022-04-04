@@ -123,144 +123,174 @@ namespace VKSMM.StuffClasses
             //Проходим по всем строчкам XLS файла
             for (int i = 1; i < lastRow_1; i++) // по всем строкам
             {
-                //Сообщаем на форму, что обработана строчка
-                Action S1 = () => mainForm.providerLoadLabel.Text = "Загружено " + i + " из " + lastRow_1;
-                mainForm.providerLoadLabel.Invoke(S1);
 
-                //Создаем новый товар
-                Product prod = new Product();
+                //if(i==196)
+                //{
+                //    MessageBox.Show("11");
+                //}
 
-                //Ссылка на товар
-                prod.IDURL = ObjWorkSheet_1.Cells[i + 1, 4].Text.ToString();
 
-                //Ссылка на фотографию товара
-                string lll = ObjWorkSheet_1.Cells[i + 1, 1].Text.ToString();
-                // lll = "g:\\Job\\Education\\VKSMM\\ТЕСТ\\ФОТО\\" + lll.Substring(lll.IndexOf("\\") + 1);
-                lll = mainForm._PhotoPath + "\\" + lll.Substring(lll.IndexOf("\\") + 1);//fbd.SelectedPath
-
-                //--------------------------------------------------------------------------------------------
-                //Проверяем существует ли фотография, докачиваем и проверяем на повторы
-                //--------------------------------------------------------------------------------------------
-                //Получаем ссылку на изображение
-                FileInfo fimage = new FileInfo(lll);
-                //Проверяем существует ли файл с картинкой
-                if (fimage.Exists)
+                try
                 {
+                    //Сообщаем на форму, что обработана строчка
+                    Action S1 = () => mainForm.providerLoadLabel.Text = "Загружено " + i + " из " + lastRow_1;
+                    mainForm.providerLoadLabel.Invoke(S1);
+
+                    //Создаем новый товар
+                    Product prod = new Product();
+
+                    //Ссылка на товар
+                    prod.IDURL = ObjWorkSheet_1.Cells[i + 1, 4].Text.ToString();
+
+                    //Получаем ссылку на URL
+                    prod.URLPhoto.Add(ObjWorkSheet_1.Cells[i + 1, 2].Text.ToString());
+
+
+                    //Ссылка на фотографию товара
+                    string lll = ObjWorkSheet_1.Cells[i + 1, 1].Text.ToString();
+                    // lll = "g:\\Job\\Education\\VKSMM\\ТЕСТ\\ФОТО\\" + lll.Substring(lll.IndexOf("\\") + 1);
+                    lll = mainForm._PhotoPath + "\\" + lll.Substring(lll.IndexOf("\\") + 1);//fbd.SelectedPath
+
+                    //--------------------------------------------------------------------------------------------
+                    //Проверяем существует ли фотография, докачиваем и проверяем на повторы
+                    //--------------------------------------------------------------------------------------------
+                    //Получаем ссылку на изображение
+                    FileInfo fimage = new FileInfo(lll);
+                    //Проверяем существует ли файл с картинкой
+                    if (!fimage.Exists)
+                    {
+                        try
+                        {
+                            //Докачиваем изображение если его не существует
+                            using (WebClient client = new WebClient())
+                            {
+                                client.DownloadFile(new Uri(prod.URLPhoto[0]), lll);// prod.FilePath[0]
+                            }
+                        }
+                        catch { }
+
+                        //Обновляем ссылку на файл с картинкой
+                        fimage.Refresh();
+                    }
+
+
+                    bool imageRepeat = false;
+
+                    //Если файл с картинкой существует проводим проверку на повтор
+                    if (fimage.Exists)
+                    {
+
+
+                        //Получаем гистограмму фотографии
+                        int[] histogramm = collectingHistogramm(new Bitmap(lll));
+
+
+                        imageRepeat = repeatImageTest(histogramm, 0.05, mainForm);
+
+                        if (imageRepeat)
+                        {
+                            mainForm.imageDoubleList.Add(lll);
+
+                            Directory.CreateDirectory(mainForm._PhotoPath + "\\REPEAT_IMAGE\\");
+
+                            fimage.CopyTo(mainForm._PhotoPath + "\\REPEAT_IMAGE\\" + fimage.Name, true);
+                        }
+                        else
+                        {
+                            prod.FilePath.Add(lll);
+                            mainForm.imageHistogrammList.Add(histogramm);
+                        }
+
+                    }
+                    //--------------------------------------------------------------------------------------------
+
+
+
+
+                    prod.datePost = Convert.ToDateTime(ObjWorkSheet_1.Cells[i + 1, 3].Text.ToString());
+
                     try
                     {
-                        //Докачиваем изображение если его не существует
-                        using (WebClient client = new WebClient())
+                        prod.prise[0] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 5].Text.ToString());
+                        prod.prise[1] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 6].Text.ToString());
+                        prod.prise[2] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 7].Text.ToString());
+                        prod.prise[3] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 8].Text.ToString());
+                        prod.prise[4] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 9].Text.ToString());
+                    }
+                    catch { }
+
+
+                    try
+                    {
+                        string www = ObjWorkSheet_1.Cells[i + 1, 11].Text.ToString();
+                        while (www.IndexOf("\n") >= 0)
                         {
-                            client.DownloadFile(new Uri(prod.URLPhoto[0]), lll);// prod.FilePath[0]
+                            prod.sellerText.Add(www.Substring(0, www.IndexOf("\n")));
+                            www = www.Substring(www.IndexOf("\n") + 1);
+                        }
+
+
+                        if ((www.Length > 30) && (www.IndexOf(".") > 0))
+                        {
+                            string wwwb = www;
+                            while (www.IndexOf(".") >= 0)
+                            {
+                                prod.sellerText.Add(www.Substring(0, www.IndexOf(".")));
+                                www = www.Substring(www.IndexOf(".") + 1);
+                            }
+                        }
+
+                        if (www.Length > 0)
+                        {
+                            prod.sellerText.Add(www);
                         }
                     }
                     catch { }
 
-                    //Обновляем ссылку на файл с картинкой
-                    fimage.Refresh();
-                }
-
-
-                bool imageRepeat = false;
-
-                //Если файл с картинкой существует проводим проверку на повтор
-                if (fimage.Exists)
-                {
-                    
-
-                    //Получаем гистограмму фотографии
-                    int[] histogramm = collectingHistogramm(new Bitmap(lll));
-
-
-                    imageRepeat = repeatImageTest(histogramm, 0.05, mainForm);
-
-                    if(imageRepeat)
+                    try
                     {
-                        mainForm.imageDoubleList.Add(lll);
+                        prod.sellerTextCleen.Add(ObjWorkSheet_1.Cells[i + 1, 12].Text.ToString());
+                    }
+                    catch
+                    {
+                        prod.sellerTextCleen.Add(" ");
+                    }
 
-                        Directory.CreateDirectory(mainForm._PhotoPath + "\\REPEAT_IMAGE\\");
+                    bool get = false;
+                    int iii = 0;
+                    foreach (Product p in mainForm.ProductListSourceBuffer)
+                    {
+                        if (p.IDURL == prod.IDURL)
+                        {
+                            get = true;
+                            break;
+                        }
+                        iii++;
+                    }
 
-                        fimage.CopyTo(mainForm._PhotoPath + "\\REPEAT_IMAGE\\"+ fimage.Name,true);
+                    if (get)
+                    {
+                        if (imageRepeat)
+                        {
+                            try
+                            {
+                                mainForm.ProductListSourceBuffer[iii].FilePath.Add(prod.FilePath[0]);
+                                mainForm.ProductListSourceBuffer[iii].URLPhoto.Add(prod.URLPhoto[0]);
+                            }
+                            catch
+                            {
+                                mainForm.ProductListSourceBuffer.Add(prod);
+                            }
+                        }
                     }
                     else
                     {
-                        prod.FilePath.Add(lll);
-                        mainForm.imageHistogrammList.Add(histogramm);
-                    }
-
-                }
-                //--------------------------------------------------------------------------------------------
-
-
-
-
-                prod.URLPhoto.Add(ObjWorkSheet_1.Cells[i + 1, 2].Text.ToString());
-                prod.datePost = Convert.ToDateTime(ObjWorkSheet_1.Cells[i + 1, 3].Text.ToString());
-
-                try
-                {
-                    prod.prise[0] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 5].Text.ToString());
-                    prod.prise[1] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 6].Text.ToString());
-                    prod.prise[2] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 7].Text.ToString());
-                    prod.prise[3] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 8].Text.ToString());
-                    prod.prise[4] = Convert.ToInt32(ObjWorkSheet_1.Cells[i + 1, 9].Text.ToString());
-                }
-                catch { }
-
-
-                try
-                {
-                    string www = ObjWorkSheet_1.Cells[i + 1, 11].Text.ToString();
-                    while (www.IndexOf("\n") >= 0)
-                    {
-                        prod.sellerText.Add(www.Substring(0, www.IndexOf("\n")));
-                        www = www.Substring(www.IndexOf("\n") + 1);
-                    }
-
-
-                    if ((www.Length > 30) && (www.IndexOf(".") > 0))
-                    {
-                        string wwwb = www;
-                        while (www.IndexOf(".") >= 0)
-                        {
-                            prod.sellerText.Add(www.Substring(0, www.IndexOf(".")));
-                            www = www.Substring(www.IndexOf(".") + 1);
-                        }
-                    }
-
-                    if (www.Length > 0)
-                    {
-                        prod.sellerText.Add(www);
+                        mainForm.ProductListSourceBuffer.Add(prod);
                     }
                 }
-                catch { }
-
-
-                prod.sellerTextCleen.Add(ObjWorkSheet_1.Cells[i + 1, 12].Text.ToString());
-
-                bool get = false;
-                int iii = 0;
-                foreach (Product p in mainForm.ProductListSourceBuffer)
+                catch
                 {
-                    if (p.IDURL == prod.IDURL)
-                    {
-                        get = true;
-                        break;
-                    }
-                    iii++;
-                }
-
-                if (get)
-                {
-                    if (imageRepeat)
-                    {
-                        mainForm.ProductListSourceBuffer[iii].FilePath.Add(prod.FilePath[0]);
-                        mainForm.ProductListSourceBuffer[iii].URLPhoto.Add(prod.URLPhoto[0]);
-                    }
-                }
-                else
-                {
-                    mainForm.ProductListSourceBuffer.Add(prod);
+                    MessageBox.Show("11111");
                 }
             }
 

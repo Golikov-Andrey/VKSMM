@@ -641,7 +641,7 @@ namespace VKSMM
             this.selectedProductListViewPostBox.Size = new System.Drawing.Size(253, 226);
             this.selectedProductListViewPostBox.TabIndex = 11;
             this.selectedProductListViewPostBox.UseCompatibleStateImageBehavior = false;
-            this.selectedProductListViewPostBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView3_KeyDown);
+            this.selectedProductListViewPostBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.selectedProductListViewPostBox_KeyDown);
             // 
             // imageListProductSmall
             // 
@@ -1748,7 +1748,7 @@ namespace VKSMM
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "VK ТК Садовод Версия: 0.23 от 22.02.2022";
+            this.Text = "VK ТК Садовод Версия: 0.24 от 05.04.2022";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
