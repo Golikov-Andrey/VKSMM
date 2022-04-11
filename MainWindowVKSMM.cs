@@ -1118,7 +1118,7 @@ namespace VKSMM
         private int showProductTopBorder = 0;
         private int showProductMaxBorder = 0;
 
-        private void selectProductTreeView(int indexOfProduct, bool refreshListView)
+        private void selectProductTreeView(int indexOfProduct, bool refreshListView, bool selectListBox = true)
         {
 
             //buttonPreveusPagePostBox.Enabled = false;
@@ -1132,8 +1132,11 @@ namespace VKSMM
             logRegexListBoxPostBox.Items.Clear();
 
 
-            listBoxMainCategoryPostBox.Items.Clear();
-            listBoxSubCategoryPostBox.Items.Clear();
+            if (selectListBox)
+            {
+                listBoxMainCategoryPostBox.Items.Clear();
+                listBoxSubCategoryPostBox.Items.Clear();
+            }
             
             
 
@@ -1144,41 +1147,47 @@ namespace VKSMM
             int indexcat = -1;
             int indexSUB = -1;
 
-            try
+            if (selectListBox)
             {
-                foreach (CategoryOfProduct cat in mainCategoryList)
+                try
                 {
-                    listBoxMainCategoryPostBox.Items.Add(cat.Name);
-
-                    if (cat.Name == ProductListForPosting[indexOfProduct].CategoryOfProductName)
+                    foreach (CategoryOfProduct cat in mainCategoryList)
                     {
-                        indexcat = ic;
+                        listBoxMainCategoryPostBox.Items.Add(cat.Name);
+
+                        if (cat.Name == ProductListForPosting[indexOfProduct].CategoryOfProductName)
+                        {
+                            indexcat = ic;
+                        }
+                        ic++;
                     }
-                    ic++;
                 }
-            }
-            catch
-            { }
-            ic = 0;
-            try
-            {
-                foreach (SubCategoryOfProduct SUB in mainCategoryList[indexcat].SubCategoty)
+                catch
+                { }
+
+
+
+                ic = 0;
+                try
                 {
-                    listBoxSubCategoryPostBox.Items.Add(SUB.Name);
-
-                    if (SUB.Name == ProductListForPosting[indexOfProduct].SubCategoryOfProductName)
+                    foreach (SubCategoryOfProduct SUB in mainCategoryList[indexcat].SubCategoty)
                     {
-                        indexSUB = ic;
+                        listBoxSubCategoryPostBox.Items.Add(SUB.Name);
+
+                        if (SUB.Name == ProductListForPosting[indexOfProduct].SubCategoryOfProductName)
+                        {
+                            indexSUB = ic;
+                        }
+                        ic++;
                     }
-                    ic++;
                 }
+                catch
+                { }
+
+
+                listBoxMainCategoryPostBox.SelectedIndex = indexcat;
+                listBoxSubCategoryPostBox.SelectedIndex = indexSUB;
             }
-            catch
-            { }
-
-
-            listBoxMainCategoryPostBox.SelectedIndex = indexcat;
-            listBoxSubCategoryPostBox.SelectedIndex = indexSUB;
 
 
 
@@ -2621,7 +2630,7 @@ namespace VKSMM
             }
 
 
-            if (indexOfProduct>=0)
+            if (listViewPostBox.SelectedItems.Count==1)//indexOfProduct >= 0)
             {
                 //sourceDescrSelectedProductTextBoxPostBox.Text = "";
                 //prizeDescrSelectedProductTextBoxPostBox.Text = "";
@@ -2629,7 +2638,7 @@ namespace VKSMM
                 //listBoxSubCategoryPostBox.Items.Clear();
                 //logRegexListBoxPostBox.Items.Clear();
 
-                selectProductTreeView(indexOfProduct,false);
+                selectProductTreeView(indexOfProduct,false,false);
 
 
 
@@ -3162,6 +3171,10 @@ namespace VKSMM
 
         }
 
+        private void listBoxSubCategoryPostBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
 
