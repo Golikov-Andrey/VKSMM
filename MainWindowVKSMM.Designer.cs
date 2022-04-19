@@ -172,6 +172,7 @@ namespace VKSMM
             this.удалитьToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.eventLog1 = new System.Diagnostics.EventLog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.label3 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBoxLoadProduct.SuspendLayout();
@@ -243,12 +244,16 @@ namespace VKSMM
             // 
             // groupBoxLoadProduct
             // 
+            this.groupBoxLoadProduct.Controls.Add(this.numericUpDownPrize);
+            this.groupBoxLoadProduct.Controls.Add(this.label14);
             this.groupBoxLoadProduct.Controls.Add(this.LoadProviderXLSButton);
             this.groupBoxLoadProduct.Controls.Add(this.groupBox15);
             this.groupBoxLoadProduct.Controls.Add(this.comboBox4);
+            this.groupBoxLoadProduct.Controls.Add(this.groupBox13);
             this.groupBoxLoadProduct.Controls.Add(this.XMLLoadLabel);
             this.groupBoxLoadProduct.Controls.Add(this.providerLoadLabel);
             this.groupBoxLoadProduct.Controls.Add(this.processedAllProductButton);
+            this.groupBoxLoadProduct.Controls.Add(this.groupBox14);
             this.groupBoxLoadProduct.Controls.Add(this.processedOneProductButton);
             this.groupBoxLoadProduct.Controls.Add(this.LoadProductXLSButton);
             this.groupBoxLoadProduct.Controls.Add(this.groupBox4);
@@ -385,13 +390,10 @@ namespace VKSMM
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox3.Controls.Add(this.numericUpDownPrize);
-            this.groupBox3.Controls.Add(this.label14);
             this.groupBox3.Controls.Add(this.descriptionSourceDataGridView);
-            this.groupBox3.Controls.Add(this.groupBox13);
             this.groupBox3.Controls.Add(this.logRegexListBox);
+            this.groupBox3.Controls.Add(this.label3);
             this.groupBox3.Controls.Add(this.label2);
-            this.groupBox3.Controls.Add(this.groupBox14);
             this.groupBox3.Controls.Add(this.descriptionRegexTextBox);
             this.groupBox3.Controls.Add(this.label1);
             this.groupBox3.Controls.Add(this.label13);
@@ -405,7 +407,7 @@ namespace VKSMM
             // 
             // numericUpDownPrize
             // 
-            this.numericUpDownPrize.Location = new System.Drawing.Point(266, 221);
+            this.numericUpDownPrize.Location = new System.Drawing.Point(631, 11);
             this.numericUpDownPrize.Maximum = new decimal(new int[] {
             10000000,
             0,
@@ -414,15 +416,17 @@ namespace VKSMM
             this.numericUpDownPrize.Name = "numericUpDownPrize";
             this.numericUpDownPrize.Size = new System.Drawing.Size(88, 20);
             this.numericUpDownPrize.TabIndex = 11;
+            this.numericUpDownPrize.Visible = false;
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(230, 225);
+            this.label14.Location = new System.Drawing.Point(595, 15);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(33, 13);
             this.label14.TabIndex = 9;
             this.label14.Text = "Цена";
+            this.label14.Visible = false;
             // 
             // descriptionSourceDataGridView
             // 
@@ -437,7 +441,7 @@ namespace VKSMM
             this.descriptionSourceDataGridView.Name = "descriptionSourceDataGridView";
             this.descriptionSourceDataGridView.RowHeadersVisible = false;
             this.descriptionSourceDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.descriptionSourceDataGridView.Size = new System.Drawing.Size(348, 187);
+            this.descriptionSourceDataGridView.Size = new System.Drawing.Size(348, 255);
             this.descriptionSourceDataGridView.TabIndex = 2;
             // 
             // Column9
@@ -458,12 +462,13 @@ namespace VKSMM
             this.groupBox13.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox13.Controls.Add(this.subCatListBox);
-            this.groupBox13.Location = new System.Drawing.Point(494, 10);
+            this.groupBox13.Location = new System.Drawing.Point(432, 19);
             this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(131, 553);
+            this.groupBox13.Size = new System.Drawing.Size(131, 57);
             this.groupBox13.TabIndex = 6;
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "Основная категория";
+            this.groupBox13.Visible = false;
             // 
             // subCatListBox
             // 
@@ -473,7 +478,7 @@ namespace VKSMM
             this.subCatListBox.ItemHeight = 24;
             this.subCatListBox.Location = new System.Drawing.Point(3, 16);
             this.subCatListBox.Name = "subCatListBox";
-            this.subCatListBox.Size = new System.Drawing.Size(125, 534);
+            this.subCatListBox.Size = new System.Drawing.Size(125, 38);
             this.subCatListBox.TabIndex = 0;
             this.subCatListBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.subCatListBox_MouseUp);
             // 
@@ -483,9 +488,9 @@ namespace VKSMM
             | System.Windows.Forms.AnchorStyles.Left)));
             this.logRegexListBox.FormattingEnabled = true;
             this.logRegexListBox.HorizontalScrollbar = true;
-            this.logRegexListBox.Location = new System.Drawing.Point(6, 432);
+            this.logRegexListBox.Location = new System.Drawing.Point(360, 27);
             this.logRegexListBox.Name = "logRegexListBox";
-            this.logRegexListBox.Size = new System.Drawing.Size(348, 134);
+            this.logRegexListBox.Size = new System.Drawing.Size(265, 537);
             this.logRegexListBox.TabIndex = 1;
             // 
             // label2
@@ -502,12 +507,13 @@ namespace VKSMM
             this.groupBox14.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox14.Controls.Add(this.catListBox);
-            this.groupBox14.Location = new System.Drawing.Point(360, 10);
+            this.groupBox14.Location = new System.Drawing.Point(321, 23);
             this.groupBox14.Name = "groupBox14";
-            this.groupBox14.Size = new System.Drawing.Size(131, 553);
+            this.groupBox14.Size = new System.Drawing.Size(105, 53);
             this.groupBox14.TabIndex = 7;
             this.groupBox14.TabStop = false;
             this.groupBox14.Text = "Основная категория";
+            this.groupBox14.Visible = false;
             // 
             // catListBox
             // 
@@ -517,17 +523,17 @@ namespace VKSMM
             this.catListBox.ItemHeight = 24;
             this.catListBox.Location = new System.Drawing.Point(3, 16);
             this.catListBox.Name = "catListBox";
-            this.catListBox.Size = new System.Drawing.Size(125, 534);
+            this.catListBox.Size = new System.Drawing.Size(99, 34);
             this.catListBox.TabIndex = 0;
             this.catListBox.SelectedIndexChanged += new System.EventHandler(this.catListBox_SelectedIndexChanged);
             // 
             // descriptionRegexTextBox
             // 
             this.descriptionRegexTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.descriptionRegexTextBox.Location = new System.Drawing.Point(6, 246);
+            this.descriptionRegexTextBox.Location = new System.Drawing.Point(6, 310);
             this.descriptionRegexTextBox.Multiline = true;
             this.descriptionRegexTextBox.Name = "descriptionRegexTextBox";
-            this.descriptionRegexTextBox.Size = new System.Drawing.Size(348, 184);
+            this.descriptionRegexTextBox.Size = new System.Drawing.Size(348, 251);
             this.descriptionRegexTextBox.TabIndex = 10;
             // 
             // label1
@@ -542,7 +548,7 @@ namespace VKSMM
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 224);
+            this.label13.Location = new System.Drawing.Point(6, 288);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(206, 13);
             this.label13.TabIndex = 8;
@@ -1740,6 +1746,15 @@ namespace VKSMM
             // 
             this.eventLog1.SynchronizingObject = this;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(357, 11);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(189, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Лог работы регулярных выражений";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1749,7 +1764,7 @@ namespace VKSMM
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "VK ТК Садовод Версия: 0.25 от 12.04.2022";
+            this.Text = "VK ТК Садовод Версия: 0.26 от 20.04.2022";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
@@ -1964,6 +1979,7 @@ namespace VKSMM
         public System.Windows.Forms.GroupBox groupBoxKeyManager;
         public System.Windows.Forms.GroupBox groupBoxMainCategory;
         public System.Windows.Forms.GroupBox groupBoxSubCategory;
+        private System.Windows.Forms.Label label3;
     }
 }
 

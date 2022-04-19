@@ -254,9 +254,12 @@ namespace VKSMM.ThredsCode
 
                     try
                     {
-                        Directory.CreateDirectory(directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\");
+                        if (outForm.upLoadImage)
+                        {
+                            Directory.CreateDirectory(directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\");
 
-                        File.Copy(s, directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\" + s.Substring(s.LastIndexOf("\\") + 1), true);
+                            File.Copy(s, directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\" + s.Substring(s.LastIndexOf("\\") + 1), true);
+                        }
 
                         OutJPGPath = directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\" + s.Substring(s.LastIndexOf("\\") + 1);
 

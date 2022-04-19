@@ -17,6 +17,8 @@ namespace VKSMM
         public OutputForm()
         {
             InitializeComponent();
+                       
+
 
             Thread_Create_XLS_Processing = new Thread(Core.Thread_Create_Excel_Code);
             Thread_Create_XLS_Processing.Start(this);
@@ -37,6 +39,12 @@ namespace VKSMM
         /// Путь к выгружаемому посту, XML файл 
         /// </summary>
         public string outputFilePath = "";
+
+        /// <summary>
+        /// Флаг выгрузки изображений 
+        /// </summary>
+        public bool upLoadImage = true;
+
 
         //public void Thread_Create_XLS_Processing_Code()
         //{

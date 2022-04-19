@@ -1625,6 +1625,10 @@ namespace VKSMM
 
                 OutputForm outputForm = new OutputForm();
 
+
+                outputForm.upLoadImage = MessageBox.Show("Выгружать изображения товара?", "Внимание", MessageBoxButtons.YesNo, MessageBoxIcon.Question)==DialogResult.Yes;
+
+
                 outputForm.outputFilePath = ofd.FileName;
 
                 outputForm.mainForm = this;
@@ -1683,16 +1687,16 @@ namespace VKSMM
 
         private void listView2_KeyDown(object sender, KeyEventArgs e)
         {
-            //if(e.KeyCode==Keys.Delete)
-            //{
-            //    int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
+            if (e.KeyCode == Keys.Delete)
+            {
+                int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
 
-            //    ProductListForPosting[indexOfProduct].URLPhoto.RemoveAt(listViewPostBox.SelectedIndices[0]);
-            //    ProductListForPosting[indexOfProduct].FilePath.RemoveAt(listViewPostBox.SelectedIndices[0]);
+                ProductListForPosting[indexOfProduct].URLPhoto.RemoveAt(listViewPostBox.SelectedIndices[0]);
+                ProductListForPosting[indexOfProduct].FilePath.RemoveAt(listViewPostBox.SelectedIndices[0]);
 
 
-            //    listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
-            //}
+                listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
+            }
         }
 
         private void numericUpDown1_Click(object sender, EventArgs e)
@@ -3106,12 +3110,18 @@ namespace VKSMM
             //Если пароль введен то загружаем поставщиков
             if (administrativPassEnter)
             {
-                //Отображаем окно загрузки поставщиков
-                LoadForm loadForm = new LoadForm();
-                //Ссылка на основную форму
-                loadForm.mainForm = this;
-                //Отображаем форму
-                loadForm.ShowDialog();
+
+                if (MessageBox.Show("Загрузить поставщиков товара?", "Внимание загрузка необхадима при первичной обработке товара!", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+
+
+                    //Отображаем окно загрузки поставщиков
+                    LoadForm loadForm = new LoadForm();
+                    //Ссылка на основную форму
+                    loadForm.mainForm = this;
+                    //Отображаем форму
+                    loadForm.ShowDialog();
+                }
             }
         }
 

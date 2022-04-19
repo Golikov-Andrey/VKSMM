@@ -1691,7 +1691,7 @@ namespace VKSMM.StuffClasses
                         }
                     }
 
-                    if ((reg_line) && (resultLine.Length > 2))
+                    if ((reg_line) && (resultLine.Replace(" ","").Length > 2))
                     {
                         mainForm.productListSource[mainForm.productUnProcessedListBox.SelectedIndex].sellerTextCleen.Add(resultLine);
 
