@@ -249,59 +249,66 @@ namespace VKSMM.ThredsCode
                 int j = 0;
                 foreach (string s in p.FilePath)
                 {
-
-                    string OutJPGPath = s;
-
                     try
                     {
-                        if (outForm.upLoadImage)
+
+                        string OutJPGPath = s;
+
+                        try
                         {
-                            Directory.CreateDirectory(directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\");
+                            if (outForm.upLoadImage)
+                            {
+                                Directory.CreateDirectory(directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\");
 
-                            File.Copy(s, directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\" + s.Substring(s.LastIndexOf("\\") + 1), true);
+                                File.Copy(s, directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\" + s.Substring(s.LastIndexOf("\\") + 1), true);
+                            }
+
+                            OutJPGPath = directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\" + s.Substring(s.LastIndexOf("\\") + 1);
+
                         }
+                        catch { }
 
-                        OutJPGPath = directory.FullName + p.CategoryOfProductName + "\\" + p.SubCategoryOfProductName + "\\" + s.Substring(s.LastIndexOf("\\") + 1);
+
+
+
+
+
+                        xlWorkSheet.Cells[i, 1] = OutJPGPath;//s
+                        xlWorkSheet.Cells[i, 2] = p.URLPhoto[j];
+                        xlWorkSheet.Cells[i, 3] = p.datePost.ToString("dd/MM/yy hh:mm");
+                        xlWorkSheet.Cells[i, 4] = p.IDURL;
+
+                        xlWorkSheet.Cells[i, 5] = p.prise[0];
+                        xlWorkSheet.Cells[i, 6] = p.prise[1];
+                        xlWorkSheet.Cells[i, 7] = p.prise[2];
+                        xlWorkSheet.Cells[i, 8] = p.prise[3];
+                        xlWorkSheet.Cells[i, 9] = p.Prises;//p.prise[4];
+
+                        xlWorkSheet.Cells[i, 10] = p.Sizes;
+                        xlWorkSheet.Cells[i, 11] = Opesanie1;
+                        xlWorkSheet.Cells[i, 12] = Opesanie2;
+                        xlWorkSheet.Cells[i, 13] = p.Materials;
+                        xlWorkSheet.Cells[i, 14] = "";
+                        xlWorkSheet.Cells[i, 15] = "";
+                        xlWorkSheet.Cells[i, 16] = "";
+                        xlWorkSheet.Cells[i, 17] = "";
+                        xlWorkSheet.Cells[i, 18] = "";
+                        xlWorkSheet.Cells[i, 19] = "";
+                        xlWorkSheet.Cells[i, 20] = "";
+                        xlWorkSheet.Cells[i, 21] = "";
+                        xlWorkSheet.Cells[i, 22] = "";
+                        xlWorkSheet.Cells[i, 23] = "";
+                        xlWorkSheet.Cells[i, 24] = "";
+                        xlWorkSheet.Cells[i, 25] = "";
+                        xlWorkSheet.Cells[i, 26] = "";
+
+                        j++;
+                        i++;
+                    }
+                    catch
+                    {
 
                     }
-                    catch { }
-
-
-
-
-
-
-                    xlWorkSheet.Cells[i, 1] = OutJPGPath;//s
-                    xlWorkSheet.Cells[i, 2] = p.URLPhoto[j];
-                    xlWorkSheet.Cells[i, 3] = p.datePost.ToString("dd/MM/yy hh:mm");
-                    xlWorkSheet.Cells[i, 4] = p.IDURL;
-
-                    xlWorkSheet.Cells[i, 5] = p.prise[0];
-                    xlWorkSheet.Cells[i, 6] = p.prise[1];
-                    xlWorkSheet.Cells[i, 7] = p.prise[2];
-                    xlWorkSheet.Cells[i, 8] = p.prise[3];
-                    xlWorkSheet.Cells[i, 9] = p.Prises;//p.prise[4];
-
-                    xlWorkSheet.Cells[i, 10] = p.Sizes;
-                    xlWorkSheet.Cells[i, 11] = Opesanie1;
-                    xlWorkSheet.Cells[i, 12] = Opesanie2;
-                    xlWorkSheet.Cells[i, 13] = p.Materials;
-                    xlWorkSheet.Cells[i, 14] = "";
-                    xlWorkSheet.Cells[i, 15] = "";
-                    xlWorkSheet.Cells[i, 16] = "";
-                    xlWorkSheet.Cells[i, 17] = "";
-                    xlWorkSheet.Cells[i, 18] = "";
-                    xlWorkSheet.Cells[i, 19] = "";
-                    xlWorkSheet.Cells[i, 20] = "";
-                    xlWorkSheet.Cells[i, 21] = "";
-                    xlWorkSheet.Cells[i, 22] = "";
-                    xlWorkSheet.Cells[i, 23] = "";
-                    xlWorkSheet.Cells[i, 24] = "";
-                    xlWorkSheet.Cells[i, 25] = "";
-                    xlWorkSheet.Cells[i, 26] = "";
-
-                    j++;
-                    i++;
                 }
             }
 

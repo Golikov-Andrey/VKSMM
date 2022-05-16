@@ -14,16 +14,6 @@ namespace VKSMM
 {
     public partial class OutputForm : Form
     {
-        public OutputForm()
-        {
-            InitializeComponent();
-                       
-
-
-            Thread_Create_XLS_Processing = new Thread(Core.Thread_Create_Excel_Code);
-            Thread_Create_XLS_Processing.Start(this);
-
-        }
 
         /// <summary>
         /// Процесс выгрузки данных 
@@ -44,6 +34,25 @@ namespace VKSMM
         /// Флаг выгрузки изображений 
         /// </summary>
         public bool upLoadImage = true;
+
+
+
+        public OutputForm()
+        {
+            InitializeComponent();
+                       
+
+
+
+        }
+
+        private void OutputForm_Load(object sender, EventArgs e)
+        {
+            Thread_Create_XLS_Processing = new Thread(Core.Thread_Create_Excel_Code);
+            Thread_Create_XLS_Processing.Start(this);
+
+        }
+
 
 
         //public void Thread_Create_XLS_Processing_Code()

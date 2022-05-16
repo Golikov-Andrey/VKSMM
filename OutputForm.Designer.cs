@@ -31,8 +31,8 @@ namespace VKSMM
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.progressBarOutputForm = new System.Windows.Forms.ProgressBar();
-            this.label1 = new System.Windows.Forms.Label();
             this.labelOutputFormResult = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,15 +55,6 @@ namespace VKSMM
             this.progressBarOutputForm.Size = new System.Drawing.Size(438, 20);
             this.progressBarOutputForm.TabIndex = 1;
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(29, 110);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Результат: ";
-            // 
             // labelOutputFormResult
             // 
             this.labelOutputFormResult.AutoSize = true;
@@ -73,6 +64,15 @@ namespace VKSMM
             this.labelOutputFormResult.Size = new System.Drawing.Size(106, 25);
             this.labelOutputFormResult.TabIndex = 0;
             this.labelOutputFormResult.Text = "Выгрузка";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(29, 110);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(65, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Результат: ";
             // 
             // OutputForm
             // 
@@ -85,6 +85,7 @@ namespace VKSMM
             this.Name = "OutputForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "outputForm";
+            this.Load += new System.EventHandler(this.OutputForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);

@@ -1252,6 +1252,9 @@ namespace VKSMM
 
         }
 
+        /// <summary>
+        /// При нажатии на подкатегорию товара показываются по одному фото от поста на определенную категорию, а на подкатегорию ВСЕ все фото
+        /// </summary>
         private void selectSubCategoryTreeView(int lowBorder, int topBorder, bool ferstClick)
         {
             if(ferstClick)
@@ -1350,6 +1353,15 @@ namespace VKSMM
 
                             ii++;
 
+                            //FileInfo f = new FileInfo(s);
+                            //if (f.Exists)
+                            //{
+                                if (treeViewProductForPostBox.SelectedNode.Text != "ВСЕ")
+                                {
+                                    break;
+                                }
+                            //}
+
                             //imageList1.Images.Add(new Bitmap(s));
                             //listView2.Items.Add(new ListViewItem(s, ii));
                             //ii++;
@@ -1388,6 +1400,9 @@ namespace VKSMM
 
         }
 
+        /// <summary>
+        /// При нажатии на категорию товара показываются по одному фото от поста
+        /// </summary>
         private void selectAllCategoryTreeView(int lowBorder, int topBorder, bool ferstClick)
         {
             //buttonPreveusPagePostBox.Enabled = false;
@@ -1560,51 +1575,218 @@ namespace VKSMM
 
         private void button5_Click(object sender, EventArgs e)
         {
-            if (treeViewProductForPostBox.SelectedNode.Level == 2)
+            if ((treeViewProductForPostBox.SelectedNode.Level == 1)
+                &&(treeViewProductForPostBox.SelectedNode.Text=="ВСЕ"))
             {
 
-                int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
 
 
 
-                Product double_produkt = new Product();
+                ////Индекс продукта который удаляется
+                //int indexOfProduct = -1;
+                ////Индекс удаляемого фото в товаре
+                //int indexFotoInProduct = -1;
 
 
-                double_produkt.CategoryOfProductName = ProductListForPosting[indexOfProduct].CategoryOfProductName;
-                double_produkt.datePost = ProductListForPosting[indexOfProduct].datePost;
+                ////Определяем индекс выделенного товара
+                //int j = 0;
+                ////Определяем индекс фото товара
+                //int ii = 0;
+                ////Проходим по всем товарам и ищем картинку с таким же именем
+                //foreach (Product p in ProductListForPosting)
+                //{
+                //    try
+                //    {
+                //        //Сбрасываем счетчик фото
+                //        ii = 0;
+                //        //Проходим по всем картинкам товара
+                //        foreach (string photopath in p.FilePath)
+                //        {
+                //            //Если название картинки товара соответствует 
+                //            if (photopath == listViewPostBox.SelectedItems[0].Text)
+                //            {
+                //                //Индекс найден
+                //                indexOfProduct = j;
+                //                indexFotoInProduct = ii;
+                //                break;
+                //            }
+                //            ii++;
+                //        }
+                //        j++;
 
-                foreach (string sss in ProductListForPosting[indexOfProduct].FilePath)
+                //        //Если индекс найден выходем из цыкла
+                //        if (indexOfProduct >= 0)
+                //        {
+                //            break;
+                //        }
+                //    }
+                //    catch { }
+                //}
+
+
+                ////Удаляем удаленную фотографию с большого LISTVIEW
+                //for (int i = 0; i < selectedProductListViewPostBox.Items.Count; i++)
+                //{
+                //    //Если совпали имена фото то удаляем его
+                //    if (selectedProductListViewPostBox.Items[i].Text == listViewPostBox.SelectedItems[0].Text)
+                //    {
+                //        //Удаление фото с основного листа
+                //        selectedProductListViewPostBox.Items.RemoveAt(i);
+                //        break;
+                //    }
+                //}
+
+
+                ////Проверяем, что индекс найден
+                //if (indexOfProduct >= 0)
+                //{
+                //    //Удаляем ссылку на картинку и путь к картинке на диске    
+                //    ProductListForPosting[indexOfProduct].URLPhoto.RemoveAt(indexFotoInProduct);
+                //    ProductListForPosting[indexOfProduct].FilePath.RemoveAt(indexFotoInProduct);
+
+                //    //Удаляем иконку картинки с лист бокса картинок
+                //    listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
+
+                //    //imageListProduct.Images.RemoveAt(listViewPostBox.SelectedItems[0].ImageIndex);
+                //    //imageListProduct.Images[listViewPostBox.SelectedItems[0].ImageIndex]= imageListProductSmall.Images[0];
+
+                //    //listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
+
+                //}
+
+
+
+                //Индекс продукта который удаляется
+                int indexOfProduct = -1;
+
+                //Определяем индекс выделенного товара
+                int j = 0;
+                //Проходим по всем товарам и ищем картинку с таким же именем
+                foreach (Product p in ProductListForPosting)
                 {
-                    double_produkt.FilePath.Add(sss);
+                    try
+                    {
+                        //Проходим по всем картинкам товара
+                        foreach (string photopath in p.FilePath)
+                        {
+                            //Если название картинки товара соответствует 
+                            if (photopath == listViewPostBox.SelectedItems[0].Text)
+                            {
+                                //Индекс найден
+                                indexOfProduct = j;
+                                break;
+                            }
+                        }
+                        j++;
+
+                        //Если индекс найден выходем из цыкла
+                        if (indexOfProduct >= 0)
+                        {
+                            break;
+                        }
+                    }
+                    catch { }
                 }
 
-                double_produkt.IDURL = ProductListForPosting[indexOfProduct].IDURL;
 
-                for (int i = 0; i < ProductListForPosting[indexOfProduct].prise.Length; i++)
+
+
+
+
+                //Проверяем, что индекс найден
+                if (indexOfProduct >= 0)
                 {
-                    double_produkt.prise[i] = ProductListForPosting[indexOfProduct].prise[i];
+
+
+                    Product double_produkt = new Product();
+
+
+                    double_produkt.CategoryOfProductName = ProductListForPosting[indexOfProduct].CategoryOfProductName;
+                    double_produkt.datePost = ProductListForPosting[indexOfProduct].datePost;
+
+                    double_produkt.IDURL = ProductListForPosting[indexOfProduct].IDURL;
+
+                    for (int i = 0; i < ProductListForPosting[indexOfProduct].prise.Length; i++)
+                    {
+                        double_produkt.prise[i] = ProductListForPosting[indexOfProduct].prise[i];
+                    }
+
+                    foreach (string sss in ProductListForPosting[indexOfProduct].sellerText)
+                    {
+                        double_produkt.sellerText.Add(sss);
+                    }
+
+                    foreach (string sss in ProductListForPosting[indexOfProduct].sellerTextCleen)
+                    {
+                        double_produkt.sellerTextCleen.Add(sss);
+                    }
+
+                    double_produkt.SubCategoryOfProductName = ProductListForPosting[indexOfProduct].SubCategoryOfProductName;
+
+
+
+
+                    //foreach (string sss in ProductListForPosting[indexOfProduct].FilePath)
+                    //{
+                    //    double_produkt.FilePath.Add(sss);
+                    //}
+
+                    int k = 0;
+                    foreach (string sss in ProductListForPosting[indexOfProduct].FilePath)
+                    {
+
+                        bool reg = false;
+
+                        for (int i = 0; i < selectedProductListViewPostBox.SelectedItems.Count; i++)
+                        {
+                            if(selectedProductListViewPostBox.SelectedItems[i].Text == sss)
+                            {
+                                reg = true;
+                                break;
+                            }
+                        }
+
+                        if (reg)
+                        {
+                            double_produkt.FilePath.Add(sss);
+
+                            double_produkt.URLPhoto.Add(ProductListForPosting[indexOfProduct].URLPhoto[k]);
+                        }
+                        k++;
+                    }
+
+
+
+                    ProductListForPosting.Add(double_produkt);
+                    Stuff.AddToTreeView(this, double_produkt, ProductListForPosting.Count-1);
+
+
                 }
 
-                foreach (string sss in ProductListForPosting[indexOfProduct].sellerText)
+
+
+                //Проверяем, что индекс найден
+                if (indexOfProduct >= 0)
                 {
-                    double_produkt.sellerText.Add(sss);
+                    //Удаляем удаленную фотографию с большого LISTVIEW
+                    for (int i = selectedProductListViewPostBox.SelectedItems.Count-1; i >=0; i--)
+                    {
+                        //Удаляем ссылку на картинку и путь к картинке на диске    
+                        ProductListForPosting[indexOfProduct].URLPhoto.RemoveAt(selectedProductListViewPostBox.SelectedIndices[i]);
+                        ProductListForPosting[indexOfProduct].FilePath.RemoveAt(selectedProductListViewPostBox.SelectedIndices[i]);
+
+                        //Удаляем иконку картинки с лист бокса картинок
+                        selectedProductListViewPostBox.Items.Remove(selectedProductListViewPostBox.SelectedItems[i]);
+
+                        //imageListProduct.Images.RemoveAt(listViewPostBox.SelectedItems[0].ImageIndex);
+                        //imageListProduct.Images[listViewPostBox.SelectedItems[0].ImageIndex]= imageListProductSmall.Images[0];
+
+                        //listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
+                    }
+
                 }
 
-                foreach (string sss in ProductListForPosting[indexOfProduct].sellerTextCleen)
-                {
-                    double_produkt.sellerTextCleen.Add(sss);
-                }
 
-                double_produkt.SubCategoryOfProductName = ProductListForPosting[indexOfProduct].SubCategoryOfProductName;
-
-                foreach (string sss in ProductListForPosting[indexOfProduct].URLPhoto)
-                {
-                    double_produkt.URLPhoto.Add(sss);
-                }
-
-
-                treeViewProductForPostBox.SelectedNode.Parent.Nodes.Add(ProductListForPosting.Count.ToString());
-                ProductListForPosting.Add(double_produkt);
 
             }
 
@@ -1689,13 +1871,96 @@ namespace VKSMM
         {
             if (e.KeyCode == Keys.Delete)
             {
-                int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
 
-                ProductListForPosting[indexOfProduct].URLPhoto.RemoveAt(listViewPostBox.SelectedIndices[0]);
-                ProductListForPosting[indexOfProduct].FilePath.RemoveAt(listViewPostBox.SelectedIndices[0]);
+                //Индекс продукта который удаляется
+                int indexOfProduct = -1;
+                //Индекс удаляемого фото в товаре
+                int indexFotoInProduct = -1;
 
 
-                listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
+                //Определяем индекс выделенного товара
+                int j = 0;
+                //Определяем индекс фото товара
+                int ii = 0;
+                //Проходим по всем товарам и ищем картинку с таким же именем
+                foreach (Product p in ProductListForPosting)
+                {
+                    try
+                    {
+                        //Сбрасываем счетчик фото
+                        ii = 0;
+                        //Проходим по всем картинкам товара
+                        foreach (string photopath in p.FilePath)
+                        {
+                            //Если название картинки товара соответствует 
+                            if (photopath == listViewPostBox.SelectedItems[0].Text)
+                            {
+                                //Индекс найден
+                                indexOfProduct = j;
+                                indexFotoInProduct = ii;
+                                break;
+                            }
+                            ii++;
+                        }
+                        j++;
+
+                        //Если индекс найден выходем из цыкла
+                        if (indexOfProduct >= 0)
+                        {
+                            break;
+                        }
+                    }
+                    catch { }
+                }
+
+
+                //Удаляем удаленную фотографию с большого LISTVIEW
+                for (int i = 0; i < selectedProductListViewPostBox.Items.Count; i++)
+                {
+                    //Если совпали имена фото то удаляем его
+                    if (selectedProductListViewPostBox.Items[i].Text == listViewPostBox.SelectedItems[0].Text)
+                    {
+                        //Удаление фото с основного листа
+                        selectedProductListViewPostBox.Items.RemoveAt(i);
+                        break;
+                    }
+                }
+
+
+                //Проверяем, что индекс найден
+                if (indexOfProduct >= 0)
+                {
+                    //Удаляем ссылку на картинку и путь к картинке на диске    
+                    ProductListForPosting[indexOfProduct].URLPhoto.RemoveAt(indexFotoInProduct);
+                    ProductListForPosting[indexOfProduct].FilePath.RemoveAt(indexFotoInProduct);
+
+                    //Удаляем иконку картинки с лист бокса картинок
+                    listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
+
+                    //imageListProduct.Images.RemoveAt(listViewPostBox.SelectedItems[0].ImageIndex);
+                    //imageListProduct.Images[listViewPostBox.SelectedItems[0].ImageIndex]= imageListProductSmall.Images[0];
+
+                    //listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
+
+                }
+
+
+
+
+
+
+
+
+
+
+
+                //int indexOfProduct = Convert.ToInt32(treeViewProductForPostBox.SelectedNode.Text);
+
+                //ProductListForPosting[indexOfProduct].URLPhoto.RemoveAt(listViewPostBox.SelectedIndices[0]);
+                //ProductListForPosting[indexOfProduct].FilePath.RemoveAt(listViewPostBox.SelectedIndices[0]);
+
+
+                //listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
             }
         }
 
@@ -2790,6 +3055,20 @@ namespace VKSMM
                     catch { }
                 }
 
+
+                //Удаляем удаленную фотографию с большого LISTVIEW
+                for (int i = 0; i < listViewPostBox.Items.Count; i++)
+                {
+                    //Если совпали имена фото то удаляем его
+                    if (listViewPostBox.Items[i].Text == selectedProductListViewPostBox.SelectedItems[0].Text)
+                    {
+                        //Удаление фото с основного листа
+                        listViewPostBox.Items.RemoveAt(i);
+                        break;
+                    }
+                }
+
+
                 //Проверяем, что индекс найден
                 if (indexOfProduct >= 0)
                 {
@@ -2801,11 +3080,12 @@ namespace VKSMM
                     selectedProductListViewPostBox.Items.Remove(selectedProductListViewPostBox.SelectedItems[0]);
 
                     //imageListProduct.Images.RemoveAt(listViewPostBox.SelectedItems[0].ImageIndex);
-                    imageListProduct.Images[listViewPostBox.SelectedItems[0].ImageIndex]= imageListProductSmall.Images[0];
+                    //imageListProduct.Images[listViewPostBox.SelectedItems[0].ImageIndex]= imageListProductSmall.Images[0];
 
                     //listViewPostBox.Items.Remove(listViewPostBox.SelectedItems[0]);
 
                 }
+
 
             }
 

@@ -270,7 +270,7 @@ namespace VKSMM.StuffClasses
 
                     if (get)
                     {
-                        if (imageRepeat)
+                        if (!imageRepeat)
                         {
                             try
                             {
