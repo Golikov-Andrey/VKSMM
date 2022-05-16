@@ -1356,7 +1356,7 @@ namespace VKSMM
                             //FileInfo f = new FileInfo(s);
                             //if (f.Exists)
                             //{
-                                if (treeViewProductForPostBox.SelectedNode.Text != "ВСЕ")
+                                if (!cbShowAllFotoInPost.Checked)
                                 {
                                     break;
                                 }
@@ -1580,7 +1580,8 @@ namespace VKSMM
             {
 
 
-
+                int iii = 0;
+                iii++;
 
                 ////Индекс продукта который удаляется
                 //int indexOfProduct = -1;

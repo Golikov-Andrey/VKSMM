@@ -66,6 +66,7 @@ namespace VKSMM
             this.unProcessedProductListView = new System.Windows.Forms.ListView();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cbShowAllFotoInPost = new System.Windows.Forms.CheckBox();
             this.logRegexListBoxPostBox = new System.Windows.Forms.ListBox();
             this.groupBox16 = new System.Windows.Forms.GroupBox();
             this.label16 = new System.Windows.Forms.Label();
@@ -589,6 +590,7 @@ namespace VKSMM
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.cbShowAllFotoInPost);
             this.groupBox2.Controls.Add(this.logRegexListBoxPostBox);
             this.groupBox2.Controls.Add(this.groupBox16);
             this.groupBox2.Controls.Add(this.selectedProductListViewPostBox);
@@ -614,6 +616,19 @@ namespace VKSMM
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "ПОСТЫ";
+            // 
+            // cbShowAllFotoInPost
+            // 
+            this.cbShowAllFotoInPost.AutoSize = true;
+            this.cbShowAllFotoInPost.BackColor = System.Drawing.Color.Transparent;
+            this.cbShowAllFotoInPost.Checked = true;
+            this.cbShowAllFotoInPost.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbShowAllFotoInPost.Location = new System.Drawing.Point(120, 17);
+            this.cbShowAllFotoInPost.Name = "cbShowAllFotoInPost";
+            this.cbShowAllFotoInPost.Size = new System.Drawing.Size(124, 17);
+            this.cbShowAllFotoInPost.TabIndex = 14;
+            this.cbShowAllFotoInPost.Text = "Показать все фото";
+            this.cbShowAllFotoInPost.UseVisualStyleBackColor = false;
             // 
             // logRegexListBoxPostBox
             // 
@@ -792,9 +807,9 @@ namespace VKSMM
             // groupBox6
             // 
             this.groupBox6.Controls.Add(this.treeViewProductForPostBox);
-            this.groupBox6.Location = new System.Drawing.Point(0, 15);
+            this.groupBox6.Location = new System.Drawing.Point(0, 32);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(247, 352);
+            this.groupBox6.Size = new System.Drawing.Size(247, 335);
             this.groupBox6.TabIndex = 4;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Готовые Посты";
@@ -805,7 +820,7 @@ namespace VKSMM
             this.treeViewProductForPostBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.treeViewProductForPostBox.Location = new System.Drawing.Point(3, 16);
             this.treeViewProductForPostBox.Name = "treeViewProductForPostBox";
-            this.treeViewProductForPostBox.Size = new System.Drawing.Size(241, 333);
+            this.treeViewProductForPostBox.Size = new System.Drawing.Size(241, 316);
             this.treeViewProductForPostBox.TabIndex = 3;
             this.treeViewProductForPostBox.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeViewProductForPostBox_AfterSelect);
             // 
@@ -1764,7 +1779,7 @@ namespace VKSMM
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "VK ТК Садовод Версия: 0.27 от 16.05.2022";
+            this.Text = "VK ТК Садовод Версия: 0.28 от 16.05.2022";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
@@ -1980,6 +1995,7 @@ namespace VKSMM
         public System.Windows.Forms.GroupBox groupBoxMainCategory;
         public System.Windows.Forms.GroupBox groupBoxSubCategory;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox cbShowAllFotoInPost;
     }
 }
 
