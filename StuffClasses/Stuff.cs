@@ -401,6 +401,360 @@ namespace VKSMM.StuffClasses
 
 
 
+        public static Product ProcessingProductsForTelegram(MainForm mainForm, MainForm.PostOnTheWall post )
+        {
+            int index = 0;
+            //int indexTV = 0;
+            //int indexTV = mainForm.ProductListForPosting.Count;
+
+            //List<int> RemovedIndexes = new List<int>();
+
+            //foreach (Product P in productListSource)
+            //{
+            Product P = new Product();
+
+
+            //            public string IDURL = string.Empty;
+            //public List<string> URLPhoto = new List<string>();
+            //public List<string> FilePath = new List<string>();
+            //public DateTime datePost;
+            //public int[] prise = new int[5];
+            //public List<string> sellerText = new List<string>();
+            //public List<string> sellerTextCleen = new List<string>();
+            //public List<string> logRegularExpression = new List<string>();
+            //public string CategoryOfProductName = "ВСЕ";
+            //public string SubCategoryOfProductName = "ВСЕ";
+            //public bool HandBlock = false;
+
+            //public string Materials = "";
+            //public string Prises = "";
+            // public string Sizes = "";
+
+            P.datePost = post.datetime;
+
+            string Line1 = post.text;
+            string bline = "";
+            while(Line1.IndexOf("\n")>=0)
+            {
+                bline = Line1.Substring(0,Line1.IndexOf("\n"));
+                if (bline.Length >= 2)
+                {
+                    P.sellerText.Add(bline);
+                }
+                Line1 = Line1.Substring(Line1.IndexOf("\n")+1);
+            }
+
+
+            P.sellerText.Add(Line1); 
+            P.URLPhoto = post.pictureURL;
+
+
+        P.sellerTextCleen.Clear();
+
+
+
+                    bool isCat = false;
+                    bool isSub = false;
+                    bool isStop = true;
+
+
+                    //Буфер с новым описанием
+                    string stringpost = "";
+
+
+                    bool goodsProcessed = true;
+
+                    string Razmer = string.Empty;
+                    bool RazmerFind = false;
+
+                    List<string> akamulateRegexLog = new List<string>();
+
+
+                    //Проходим по всем строчкам из описания
+                    for (int u = 0; u < P.sellerText.Count; u++)//listBox2.SelectedIndex
+                    {
+                        string s = P.sellerText[u];
+
+                        ////В строчке должны быть данные
+                        //if (s.Length > 1)
+                        //{
+                        //    //Добавляем строчку описания в грид
+                        //    dataGridView3.Rows.Add(s);
+                        //}
+
+                        //Ищем ключевые слова для начала сборки размеров
+                        if ((s.ToLower().IndexOf("размер") >= 0) || (s.ToLower().IndexOf("разм.") >= 0) || (s.ToLower().IndexOf("рост") >= 0) || (s.ToLower().IndexOf("opct") >= 0))
+                        {
+                            //Ключи найдены поднимаем флаг сборки размеров
+                            RazmerFind = true;
+
+                            akamulateRegexLog.Add("# сборка размера начата");
+
+                        }
+
+                        //Действие при сборке размеров
+                        if (RazmerFind)
+                        {
+                            //Аккамулируем строчки размера
+                            Razmer = Razmer + " " + s;
+                            akamulateRegexLog.Add("# сборка размера " + Razmer);
+
+                            //Если конец описание не достигнут то обрабатываем следующую строчку
+                            if (u < P.sellerText.Count - 1)
+                            {
+                                //Если на следующей строчке есть ключ "рост" то блокируем сборку
+                                if ((P.sellerText[u + 1].ToLower().IndexOf("рост") >= 0))
+                                {
+                                    s = Razmer + " " + P.sellerText[u + 1];
+
+                                    u++;
+
+                                    RazmerFind = false;
+                                    akamulateRegexLog.Add("# сборка размера закончена - в следующей строчке есть |рост|");
+
+                                    Razmer = "";
+                                }
+                                else
+                                {
+                                    if ((P.sellerText[u + 1].Length >= 4))
+                                    {
+                                        s = Razmer;
+                                        RazmerFind = false;
+                                        akamulateRegexLog.Add("# сборка размера закончена - следующая строчка больше 4 символов");
+
+                                        Razmer = "";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                s = Razmer;
+                                RazmerFind = false;
+                                akamulateRegexLog.Add("# сборка размера закончена - последняя строчка");
+
+                                Razmer = "";
+                            }
+                        }
+
+
+
+                        if (!RazmerFind)
+                        {
+
+                            //В строчке должны быть данные
+                            if (s.Length > 1)
+                            {
+                                // //Добавляем строчку описания в грид
+                                // dataGridView3.Rows.Add(s);
+
+                                //Регулярные выражения
+                                Regex regex;// = new Regex(@"туп(\w*)", RegexOptions.IgnoreCase);
+                                            //Буфферная переменная куда поступают данные после коррекции
+                                string resultLine = s;
+
+                                int i = 0;
+
+                                //====================================== Блок замены или стирания ненужной информации ================================================
+                                //Производим замену по ключам
+                                foreach (ReplaceKeys k in mainForm.Replace_Keys)
+                                {
+                                    //Если ключ включен, то его исполняем
+                                    if (k.RegKey.IsActiv)
+                                    {
+
+
+
+                                        //Регулярное выражение
+                                        regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
+
+                                        Match M = regex.Match(resultLine);
+                                        if (regex.IsMatch(resultLine))
+                                        {
+
+                                            //    if (regex.IsMatch(resultLine))
+                                            //{
+                                            //    P.logRegularExpression.Add(k.RegKey.Value);
+                                            //}
+
+
+                                            //Если режим замены, то заменяем на значение ключа
+                                            if (k.Action == 3)
+                                            {
+                                                //Выполняем замену
+                                                resultLine = regex.Replace(resultLine, k.NewValue);
+
+                                                akamulateRegexLog.Add("# стр." + (u + 1) + " найдено:|" + M.Value + "| Рег.№:" + i + " замена:|" + k.NewValue + "|");
+                                            }
+                                            //Если режим удаления, то просто вставляем пустое значение
+                                            if (k.Action == 4)
+                                            {
+                                                //Выполняем замену
+                                                resultLine = regex.Replace(resultLine, "");
+
+                                                akamulateRegexLog.Add("# стр." + (u + 1) + " найдено:|" + M.Value + "| Рег.№:" + i + " удалена подстрока ");
+
+                                            }
+
+                                            //Если режим удаления, то просто вставляем пустое значение
+                                            if (k.Action == 5)
+                                            {
+                                                akamulateRegexLog.Add("# стр." + (u + 1) + " найдено:|" + M.Value + "| Рег.№:" + i + " строчка заблокирована ");
+
+
+                                                if (regex.IsMatch(resultLine))
+                                                {
+                                                    resultLine = "";
+                                                }
+                                                //Выполняем замену
+                                                //resultLine = regex.Replace(resultLine, "");
+                                            }
+                                        }
+
+                                    }
+
+                                    i++;
+                                }
+
+
+                                //if (resultLine.Length == 0)
+                                //{ resultLine = s; }
+                                bool reg_line = true;
+
+                                //Проверяем цвет и статус строчки
+                                foreach (ColorKeys k in mainForm.Color_Keys)
+                                {
+                                    //Если ключ активен, то выполняем его
+                                    if (k.RegKey.IsActiv)
+                                    {
+                                        //Регулярное выражение
+                                        regex = new Regex(k.RegKey.Value, RegexOptions.IgnoreCase);
+                                        //Проверяем вхождение регулярного выражения
+                                        bool result = regex.IsMatch(s);//resultLine
+                                                                       //Если регулярное выражение сработало
+                                        if (result)
+                                        {
+                                            //Красим строчку в нужный цвет
+                                            //dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor = k.color;
+                                            //Если действие регистрация то добавляем в конструктор поста
+                                            if (k.Action == 1)
+                                            {
+                                                reg_line = false;
+                                                //Добавляем к описанию товаров
+                                                //stringpost = stringpost + resultLine + "\r\n";
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if ((reg_line) && (resultLine.Length > 2))
+                                {
+                                    P.sellerTextCleen.Add(resultLine);
+                                    //Аккамулируем данные для поста
+                                    //P.sellerTextCleen.Add(resultLine);
+
+                                    stringpost = stringpost + resultLine + "\r\n";
+                                }
+                                //Красим добавленную строчку 
+                                //dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.SelectionBackColor = dataGridView3.Rows[dataGridView3.Rows.Count - 1].DefaultCellStyle.BackColor;
+                            }
+                        }
+
+                    }
+
+
+
+                    P.logRegularExpression = akamulateRegexLog;
+
+
+                    string sumPrise = "";
+                    string sumSize = "";
+                    string sumMaterial = "";
+
+                    string[] RegPrise = new string[5] { "[0-9]{2,7}[ ]?(руб|р|₽)", "ййй", "йййй", "йййй", "йййй" };
+                    string[] RegSize = new string[5] { "размер", "ййййй", "йййййй", "ййй", "ййййй" };
+                    string[] RegMaterial = new string[5] { "материал", "ййй", "йййй", "ййййй", "йййййй" };
+
+                    int ig = 0;
+
+                    foreach (string Line in P.sellerText)
+                    {
+
+                        foreach (string RegEx in RegPrise)
+                        {
+                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
+                            {
+                                string price = match.Value;
+                                foreach (Match match1 in Regex.Matches(price, "[0-9]{2,7}", RegexOptions.IgnoreCase))
+                                {
+                                    price = match1.Value;
+                                    sumPrise = sumPrise + price + "\r\n";
+                                }
+                            }
+                        }
+
+                        foreach (string RegEx in RegSize)
+                        {
+                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
+                            {
+                                string size = Line;// match.Value;
+                                sumSize = sumSize + size + "\r\n";
+                            }
+                        }
+
+                        foreach (string RegEx in RegMaterial)
+                        {
+                            foreach (Match match in Regex.Matches(Line, RegEx, RegexOptions.IgnoreCase))
+                            {
+                                string material = Line;//match.Value;
+                                sumMaterial = sumMaterial + material + "\r\n";
+                            }
+                        }
+                    }
+
+                    P.Prises = sumPrise;
+                    P.Sizes = sumSize;
+                    P.Materials = sumMaterial;
+
+
+                    //if (i == 0)
+                    //{ //MessageBox.Show("Внимание такой категории не существует!");
+                    //  //break;
+                    //}
+                    ////============================================================= временное решение ===============================================================================
+
+
+                    //Пытаемся подобрать категорию по ключам из общей библиотеки категорий
+                    autoSelectionCategory(mainForm.mainCategoryList, P, stringpost);
+
+                    //Проверяем была ли на предидущем щаге подобрана категория
+                    if (P.CategoryOfProductName == "ВСЕ")
+                    {
+                        //Подбираем категорию по ключам поставщиков если не подобралась по общей категории
+                        autoSelectionCategory(mainForm.providerCategoryList, P, stringpost);
+                    }
+
+            //if (isCat)
+            //{
+            //    isSub = true;
+            //    if (P.SubCategoryOfProductName == "ВСЕ")
+            //    {
+            //        P.SubCategoryOfProductName = "ВСЕ";
+            //    }
+            //}
+
+            //===============================================================================================================================================================
+
+
+
+
+
+
+            // index++;
+            //}
+
+            return P;
+        }
 
 
 
@@ -1844,8 +2198,24 @@ namespace VKSMM.StuffClasses
 
         }
 
-
-        
+        /// <summary>
+        /// Останавливаем процесс сбора данных с ВКонтакте от поставщиков и процесс работы ТЕЛЕГРАМ БОТа
+        /// </summary>
+        public static void stopTelegramBotProcess(MainForm mainForm)
+        {
+            try
+            {
+                mainForm.Thread_Telegramm_Bot_Processing.Abort();
+            }
+            catch { }
+            try
+            {
+                mainForm.Thread_Vk_Collect_Processing.Abort();
+            }
+            catch { }
 
         }
+
+
+    }
     }

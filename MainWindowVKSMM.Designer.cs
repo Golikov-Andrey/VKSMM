@@ -30,8 +30,8 @@ namespace VKSMM
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.imageListProduct = new System.Windows.Forms.ImageList(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -164,6 +164,12 @@ namespace VKSMM
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnTelegramBotProcessStart = new System.Windows.Forms.Button();
+            this.lblTelegramIterationInfo = new System.Windows.Forms.Label();
+            this.prgBrVKID = new System.Windows.Forms.ProgressBar();
             this.contextMenuStrip4 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.удалитьToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip3 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -174,6 +180,11 @@ namespace VKSMM
             this.удалитьToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.eventLog1 = new System.Diagnostics.EventLog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.btnTelegramBotProcessStop = new System.Windows.Forms.Button();
+            this.txtTelegramResultOneIteration = new System.Windows.Forms.TextBox();
+            this.txtTelegramResultALLIteration = new System.Windows.Forms.TextBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBoxLoadProduct.SuspendLayout();
@@ -205,6 +216,8 @@ namespace VKSMM
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView6)).BeginInit();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.providerDataGrid)).BeginInit();
+            this.tabPage6.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.contextMenuStrip4.SuspendLayout();
             this.contextMenuStrip3.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
@@ -225,6 +238,7 @@ namespace VKSMM
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage6);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -497,10 +511,10 @@ namespace VKSMM
             // 
             // Column9
             // 
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
-            this.Column9.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.Black;
+            this.Column9.DefaultCellStyle = dataGridViewCellStyle3;
             this.Column9.FillWeight = 1000F;
             this.Column9.HeaderText = "Column9";
             this.Column9.Name = "Column9";
@@ -711,7 +725,6 @@ namespace VKSMM
             this.listBoxSubCategoryPostBox.Size = new System.Drawing.Size(114, 267);
             this.listBoxSubCategoryPostBox.TabIndex = 0;
             this.listBoxSubCategoryPostBox.Click += new System.EventHandler(this.listBoxSubCategoryPostBox_Click);
-            this.listBoxSubCategoryPostBox.SelectedIndexChanged += new System.EventHandler(this.listBoxSubCategoryPostBox_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -1109,8 +1122,8 @@ namespace VKSMM
             // Column6
             // 
             this.Column6.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Column6.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Column6.DefaultCellStyle = dataGridViewCellStyle4;
             this.Column6.HeaderText = "Ключ";
             this.Column6.Name = "Column6";
             this.Column6.ReadOnly = true;
@@ -1135,7 +1148,7 @@ namespace VKSMM
             this.Column10.HeaderText = "i";
             this.Column10.Name = "Column10";
             this.Column10.ReadOnly = true;
-            this.Column10.Width = 20;
+            this.Column10.Width = 50;
             // 
             // Column12
             // 
@@ -1709,6 +1722,71 @@ namespace VKSMM
             this.Column4.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column4.Width = 400;
             // 
+            // tabPage6
+            // 
+            this.tabPage6.Controls.Add(this.groupBox7);
+            this.tabPage6.Controls.Add(this.groupBox1);
+            this.tabPage6.Location = new System.Drawing.Point(4, 22);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage6.Size = new System.Drawing.Size(1261, 666);
+            this.tabPage6.TabIndex = 5;
+            this.tabPage6.Text = "TELEGRAM BOT";
+            this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Location = new System.Drawing.Point(621, 7);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(634, 652);
+            this.groupBox7.TabIndex = 0;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Постинг товара на сайт";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.label18);
+            this.groupBox1.Controls.Add(this.label17);
+            this.groupBox1.Controls.Add(this.txtTelegramResultALLIteration);
+            this.groupBox1.Controls.Add(this.txtTelegramResultOneIteration);
+            this.groupBox1.Controls.Add(this.btnTelegramBotProcessStop);
+            this.groupBox1.Controls.Add(this.btnTelegramBotProcessStart);
+            this.groupBox1.Controls.Add(this.lblTelegramIterationInfo);
+            this.groupBox1.Controls.Add(this.prgBrVKID);
+            this.groupBox1.Location = new System.Drawing.Point(8, 6);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(607, 652);
+            this.groupBox1.TabIndex = 0;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Сборка товара от поставщиков";
+            // 
+            // btnTelegramBotProcessStart
+            // 
+            this.btnTelegramBotProcessStart.Location = new System.Drawing.Point(406, 19);
+            this.btnTelegramBotProcessStart.Name = "btnTelegramBotProcessStart";
+            this.btnTelegramBotProcessStart.Size = new System.Drawing.Size(75, 23);
+            this.btnTelegramBotProcessStart.TabIndex = 2;
+            this.btnTelegramBotProcessStart.Text = "Старт";
+            this.btnTelegramBotProcessStart.UseVisualStyleBackColor = true;
+            this.btnTelegramBotProcessStart.Click += new System.EventHandler(this.btnTelegramBotProcessStart_Click);
+            // 
+            // lblTelegramIterationInfo
+            // 
+            this.lblTelegramIterationInfo.AutoSize = true;
+            this.lblTelegramIterationInfo.Location = new System.Drawing.Point(15, 64);
+            this.lblTelegramIterationInfo.Name = "lblTelegramIterationInfo";
+            this.lblTelegramIterationInfo.Size = new System.Drawing.Size(436, 13);
+            this.lblTelegramIterationInfo.TabIndex = 1;
+            this.lblTelegramIterationInfo.Text = "Процесс опрооса поставщиков: опрошено 0 из 0                             Собрано " +
+    "постов: 0";
+            // 
+            // prgBrVKID
+            // 
+            this.prgBrVKID.Location = new System.Drawing.Point(18, 80);
+            this.prgBrVKID.Name = "prgBrVKID";
+            this.prgBrVKID.Size = new System.Drawing.Size(569, 23);
+            this.prgBrVKID.TabIndex = 0;
+            // 
             // contextMenuStrip4
             // 
             this.contextMenuStrip4.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1770,6 +1848,53 @@ namespace VKSMM
             // 
             this.eventLog1.SynchronizingObject = this;
             // 
+            // btnTelegramBotProcessStop
+            // 
+            this.btnTelegramBotProcessStop.Enabled = false;
+            this.btnTelegramBotProcessStop.Location = new System.Drawing.Point(512, 19);
+            this.btnTelegramBotProcessStop.Name = "btnTelegramBotProcessStop";
+            this.btnTelegramBotProcessStop.Size = new System.Drawing.Size(75, 23);
+            this.btnTelegramBotProcessStop.TabIndex = 2;
+            this.btnTelegramBotProcessStop.Text = "Стоп";
+            this.btnTelegramBotProcessStop.UseVisualStyleBackColor = true;
+            this.btnTelegramBotProcessStop.Click += new System.EventHandler(this.btnTelegramBotProcessStop_Click);
+            // 
+            // txtTelegramResultOneIteration
+            // 
+            this.txtTelegramResultOneIteration.Location = new System.Drawing.Point(18, 146);
+            this.txtTelegramResultOneIteration.Multiline = true;
+            this.txtTelegramResultOneIteration.Name = "txtTelegramResultOneIteration";
+            this.txtTelegramResultOneIteration.Size = new System.Drawing.Size(569, 235);
+            this.txtTelegramResultOneIteration.TabIndex = 3;
+            this.txtTelegramResultOneIteration.Text = "\r\nВремя обхода поставщиков: \r\n\r\nВсего собрано новых товаров:\r\n\r\n";
+            // 
+            // txtTelegramResultALLIteration
+            // 
+            this.txtTelegramResultALLIteration.Location = new System.Drawing.Point(18, 411);
+            this.txtTelegramResultALLIteration.Multiline = true;
+            this.txtTelegramResultALLIteration.Name = "txtTelegramResultALLIteration";
+            this.txtTelegramResultALLIteration.Size = new System.Drawing.Size(569, 235);
+            this.txtTelegramResultALLIteration.TabIndex = 3;
+            this.txtTelegramResultALLIteration.Text = resources.GetString("txtTelegramResultALLIteration.Text");
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(22, 130);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(149, 13);
+            this.label17.TabIndex = 4;
+            this.label17.Text = "Отчет за последний проход:";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(22, 395);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(85, 13);
+            this.label18.TabIndex = 4;
+            this.label18.Text = "Отчет за сутки:";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1779,7 +1904,7 @@ namespace VKSMM
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "VK ТК Садовод Версия: 0.28 от 16.05.2022";
+            this.Text = "VK ТК Садовод Версия: 0.29 от 25.05.2022";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
@@ -1822,6 +1947,9 @@ namespace VKSMM
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView6)).EndInit();
             this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.providerDataGrid)).EndInit();
+            this.tabPage6.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.contextMenuStrip4.ResumeLayout(false);
             this.contextMenuStrip3.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
@@ -1909,11 +2037,6 @@ namespace VKSMM
         private System.Windows.Forms.ListBox listBox6;
         private System.Windows.Forms.GroupBox groupBox15;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column10;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column12;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem удалитьToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
@@ -1996,6 +2119,22 @@ namespace VKSMM
         public System.Windows.Forms.GroupBox groupBoxSubCategory;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox cbShowAllFotoInPost;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column10;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column12;
+        private System.Windows.Forms.TabPage tabPage6;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button btnTelegramBotProcessStart;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Button btnTelegramBotProcessStop;
+        public System.Windows.Forms.ProgressBar prgBrVKID;
+        public System.Windows.Forms.Label lblTelegramIterationInfo;
+        public System.Windows.Forms.TextBox txtTelegramResultALLIteration;
+        public System.Windows.Forms.TextBox txtTelegramResultOneIteration;
     }
 }
 

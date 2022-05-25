@@ -22,6 +22,9 @@ namespace VKSMM.ModelClasses
         public string SubCategoryOfProductName = "ВСЕ";
         public bool HandBlock = false;
 
+        public Guid productGuid = Guid.Empty;
+        public int groupIDSendToTelegram = 0;
+
         public string Materials = "";
         public string Prises = "";
         public string Sizes = "";

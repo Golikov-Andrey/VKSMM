@@ -268,6 +268,13 @@ namespace VKSMM
                 ConfigWriter.writeProductDBUnProcessed(this);
                 //=======================================================================================================
 
+                //=======================================================================================================
+                //Останавливаем работу ТЕЛЕГРАМ БОТа
+                //=======================================================================================================
+                Stuff.stopTelegramBotProcess(this);
+                //=======================================================================================================
+
+
             }
             catch (Exception e3)
             {
@@ -3462,10 +3469,95 @@ namespace VKSMM
 
         }
 
-        private void listBoxSubCategoryPostBox_SelectedIndexChanged(object sender, EventArgs e)
+
+
+        public List<string> providerVKIDs = new List<string>();
+        public List<PostFromVK> postFromVKs = new List<PostFromVK>();
+        public List<PostOnTheWall> postToTelegramm = new List<PostOnTheWall>();
+
+        public class PostFromVK
         {
+            public string providerLink = "error";
+            //public DateTime providerLastPostDate;
+            public List<PostOnTheWall> postOnTheWalls = new List<PostOnTheWall>();
+        }
+
+        public class PostOnTheWall
+        {
+            public bool sendingOnTelegramm = false;
+            public DateTime datetime = DateTime.Now;
+            public string text = "empty";
+            public List<string> pictureURL = new List<string>();
+        }
+
+
+        public Thread Thread_Telegramm_Bot_Processing;
+        public Thread Thread_Vk_Collect_Processing;
+
+
+        private void btnTelegramBotProcessStart_Click(object sender, EventArgs e)
+        {
+            btnTelegramBotProcessStart.Enabled = false;
+            btnTelegramBotProcessStop.Enabled = true;
+            //=======================================================================================================
+            //Загружаем товары из базы данных
+            //=======================================================================================================
+
+            FileInfo f = new FileInfo(@"g:\Job\Education\VKSMM_VK_TEST\Providers\ID.txt");
+            FileStream fileStream = new FileStream(f.FullName, FileMode.Open);
+            StreamReader sr = new StreamReader(fileStream, Encoding.UTF8);
+
+            string Line = "";
+
+
+            int _it = 2666625;
+
+            while ((!sr.EndOfStream) && (_it > 0))
+            {
+                Line = sr.ReadLine();
+
+                PostFromVK postFrom = new PostFromVK();
+                postFrom.providerLink = Line;
+                postFromVKs.Add(postFrom);
+
+
+                Line = Line.Replace("https://vk.com/club", "");
+                Line = Line.Replace("https://vk.com/id", "");
+                Line = Line.Replace("https://vk.com/public", "");
+                providerVKIDs.Add(Line);
+
+                _it--;
+            }
+
+            sr.Close();
+            fileStream.Close();
+
+            //=======================================================================================================
+
+
+            //Запускаем процесс конвертации XML файлов с товарами
+            Thread_Telegramm_Bot_Processing = new Thread(ThredsTelegramAPI.threadBotCode);
+            Thread_Telegramm_Bot_Processing.Start(this);
+
+            //Запускаем процесс конвертации XML файлов с товарами
+            Thread_Vk_Collect_Processing = new Thread(ThredsVKAPI.threadVKCollectCode);
+            Thread_Vk_Collect_Processing.Start(this);
 
         }
+
+        //Останавливаем потоки работы ТЕЛЕГРАМ БОТа
+        private void btnTelegramBotProcessStop_Click(object sender, EventArgs e)
+        {
+            btnTelegramBotProcessStart.Enabled =true ;
+            btnTelegramBotProcessStop.Enabled = false;
+
+            Stuff.stopTelegramBotProcess(this);
+        }
+
+
+
+
+
     }
 }
 
