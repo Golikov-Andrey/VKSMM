@@ -65,11 +65,12 @@ namespace VKSMM.StuffClasses
 
         public static void readReplaceKeyFromConfigFile(MainForm mainForm, XmlNodeList nodeList, XmlNode root)
         {
-            try
+
+            nodeList = root.SelectNodes("REPLACE_KEYS");//Считываем настройки ключей замены
+                                                        //Пробегаем по всем ключам замены
+            foreach (XmlNode PL in nodeList[0].ChildNodes)
             {
-                nodeList = root.SelectNodes("REPLACE_KEYS");//Считываем настройки ключей замены
-                                                            //Пробегаем по всем ключам замены
-                foreach (XmlNode PL in nodeList[0].ChildNodes)
+                try
                 {
                     //=========== Конструктор для добавления в датагрид =============
                     //Строка для добавления на грид
@@ -116,15 +117,37 @@ namespace VKSMM.StuffClasses
                     }
                     catch { }
 
-                    mainForm.AddGroup(r);
 
-                    //Добавляем ключ в пул замен
-                    mainForm.Replace_Keys.Add(r);
+
+
+                    bool reg = true;
+
+                    foreach(ReplaceKeys rr in mainForm.Replace_Keys)
+                    {
+                        if(rr.RegKey.Value== r.RegKey.Value)
+                        {
+                            reg = false;
+                        }
+                    }
+
+
+                    if (reg)
+                    {
+                        mainForm.AddGroup(r);
+
+                        //Добавляем ключ в пул замен
+                        mainForm.Replace_Keys.Add(r);
+                    }
+                    
+
                     //================================================================
+
+                }
+                catch (Exception e)
+                {
+                    string s = e.ToString();
                 }
             }
-            catch { }
-
         }
 
         public static void readColorKeyFromConfigFile(MainForm mainForm, XmlNodeList nodeList, XmlNode root)

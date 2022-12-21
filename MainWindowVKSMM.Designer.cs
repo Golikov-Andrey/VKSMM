@@ -30,8 +30,8 @@ namespace VKSMM
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.imageListProduct = new System.Windows.Forms.ImageList(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -167,6 +167,11 @@ namespace VKSMM
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.txtTelegramResultALLIteration = new System.Windows.Forms.TextBox();
+            this.txtTelegramResultOneIteration = new System.Windows.Forms.TextBox();
+            this.btnTelegramBotProcessStop = new System.Windows.Forms.Button();
             this.btnTelegramBotProcessStart = new System.Windows.Forms.Button();
             this.lblTelegramIterationInfo = new System.Windows.Forms.Label();
             this.prgBrVKID = new System.Windows.Forms.ProgressBar();
@@ -180,11 +185,6 @@ namespace VKSMM
             this.удалитьToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.eventLog1 = new System.Diagnostics.EventLog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.btnTelegramBotProcessStop = new System.Windows.Forms.Button();
-            this.txtTelegramResultOneIteration = new System.Windows.Forms.TextBox();
-            this.txtTelegramResultALLIteration = new System.Windows.Forms.TextBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBoxLoadProduct.SuspendLayout();
@@ -511,10 +511,10 @@ namespace VKSMM
             // 
             // Column9
             // 
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.Black;
-            this.Column9.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
+            this.Column9.DefaultCellStyle = dataGridViewCellStyle1;
             this.Column9.FillWeight = 1000F;
             this.Column9.HeaderText = "Column9";
             this.Column9.Name = "Column9";
@@ -1122,8 +1122,8 @@ namespace VKSMM
             // Column6
             // 
             this.Column6.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.Column6.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.Column6.DefaultCellStyle = dataGridViewCellStyle2;
             this.Column6.HeaderText = "Ключ";
             this.Column6.Name = "Column6";
             this.Column6.ReadOnly = true;
@@ -1210,7 +1210,6 @@ namespace VKSMM
             this.comboBox2.Size = new System.Drawing.Size(136, 21);
             this.comboBox2.TabIndex = 1;
             this.comboBox2.Text = "ВСЕ";
-            this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             this.comboBox2.SelectionChangeCommitted += new System.EventHandler(this.comboBox2_SelectionChangeCommitted);
             // 
             // comboBox3
@@ -1760,6 +1759,53 @@ namespace VKSMM
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Сборка товара от поставщиков";
             // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(22, 395);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(85, 13);
+            this.label18.TabIndex = 4;
+            this.label18.Text = "Отчет за сутки:";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(22, 130);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(149, 13);
+            this.label17.TabIndex = 4;
+            this.label17.Text = "Отчет за последний проход:";
+            // 
+            // txtTelegramResultALLIteration
+            // 
+            this.txtTelegramResultALLIteration.Location = new System.Drawing.Point(18, 411);
+            this.txtTelegramResultALLIteration.Multiline = true;
+            this.txtTelegramResultALLIteration.Name = "txtTelegramResultALLIteration";
+            this.txtTelegramResultALLIteration.Size = new System.Drawing.Size(569, 235);
+            this.txtTelegramResultALLIteration.TabIndex = 3;
+            this.txtTelegramResultALLIteration.Text = resources.GetString("txtTelegramResultALLIteration.Text");
+            // 
+            // txtTelegramResultOneIteration
+            // 
+            this.txtTelegramResultOneIteration.Location = new System.Drawing.Point(18, 146);
+            this.txtTelegramResultOneIteration.Multiline = true;
+            this.txtTelegramResultOneIteration.Name = "txtTelegramResultOneIteration";
+            this.txtTelegramResultOneIteration.Size = new System.Drawing.Size(569, 235);
+            this.txtTelegramResultOneIteration.TabIndex = 3;
+            this.txtTelegramResultOneIteration.Text = "\r\nВремя обхода поставщиков: \r\n\r\nВсего собрано новых товаров:\r\n\r\n";
+            // 
+            // btnTelegramBotProcessStop
+            // 
+            this.btnTelegramBotProcessStop.Enabled = false;
+            this.btnTelegramBotProcessStop.Location = new System.Drawing.Point(512, 19);
+            this.btnTelegramBotProcessStop.Name = "btnTelegramBotProcessStop";
+            this.btnTelegramBotProcessStop.Size = new System.Drawing.Size(75, 23);
+            this.btnTelegramBotProcessStop.TabIndex = 2;
+            this.btnTelegramBotProcessStop.Text = "Стоп";
+            this.btnTelegramBotProcessStop.UseVisualStyleBackColor = true;
+            this.btnTelegramBotProcessStop.Click += new System.EventHandler(this.btnTelegramBotProcessStop_Click);
+            // 
             // btnTelegramBotProcessStart
             // 
             this.btnTelegramBotProcessStart.Location = new System.Drawing.Point(406, 19);
@@ -1848,53 +1894,6 @@ namespace VKSMM
             // 
             this.eventLog1.SynchronizingObject = this;
             // 
-            // btnTelegramBotProcessStop
-            // 
-            this.btnTelegramBotProcessStop.Enabled = false;
-            this.btnTelegramBotProcessStop.Location = new System.Drawing.Point(512, 19);
-            this.btnTelegramBotProcessStop.Name = "btnTelegramBotProcessStop";
-            this.btnTelegramBotProcessStop.Size = new System.Drawing.Size(75, 23);
-            this.btnTelegramBotProcessStop.TabIndex = 2;
-            this.btnTelegramBotProcessStop.Text = "Стоп";
-            this.btnTelegramBotProcessStop.UseVisualStyleBackColor = true;
-            this.btnTelegramBotProcessStop.Click += new System.EventHandler(this.btnTelegramBotProcessStop_Click);
-            // 
-            // txtTelegramResultOneIteration
-            // 
-            this.txtTelegramResultOneIteration.Location = new System.Drawing.Point(18, 146);
-            this.txtTelegramResultOneIteration.Multiline = true;
-            this.txtTelegramResultOneIteration.Name = "txtTelegramResultOneIteration";
-            this.txtTelegramResultOneIteration.Size = new System.Drawing.Size(569, 235);
-            this.txtTelegramResultOneIteration.TabIndex = 3;
-            this.txtTelegramResultOneIteration.Text = "\r\nВремя обхода поставщиков: \r\n\r\nВсего собрано новых товаров:\r\n\r\n";
-            // 
-            // txtTelegramResultALLIteration
-            // 
-            this.txtTelegramResultALLIteration.Location = new System.Drawing.Point(18, 411);
-            this.txtTelegramResultALLIteration.Multiline = true;
-            this.txtTelegramResultALLIteration.Name = "txtTelegramResultALLIteration";
-            this.txtTelegramResultALLIteration.Size = new System.Drawing.Size(569, 235);
-            this.txtTelegramResultALLIteration.TabIndex = 3;
-            this.txtTelegramResultALLIteration.Text = resources.GetString("txtTelegramResultALLIteration.Text");
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(22, 130);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(149, 13);
-            this.label17.TabIndex = 4;
-            this.label17.Text = "Отчет за последний проход:";
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(22, 395);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(85, 13);
-            this.label18.TabIndex = 4;
-            this.label18.Text = "Отчет за сутки:";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1904,7 +1903,7 @@ namespace VKSMM
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "VK ТК Садовод Версия: 0.29 от 25.05.2022";
+            this.Text = "VK ТК Садовод Версия: 0.31 от 21.12.2022";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.Shown += new System.EventHandler(this.MainForm_Shown);

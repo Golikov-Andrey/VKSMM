@@ -25,13 +25,24 @@ namespace VKSMM
         public MainForm()
         {
             InitializeComponent();
-            //Отображаем окно ввода пароля
-            EnterPassForm passForm = new EnterPassForm();
-            //Ссылка на основную форму
-            passForm.mainForm = this;
-            //Отображаем форму
-            passForm.ShowDialog();
+            ////Отображаем окно ввода пароля
+            //EnterPassForm passForm = new EnterPassForm();
+            ////Ссылка на основную форму
+            //passForm.mainForm = this;
+            ////Отображаем форму
+            //passForm.ShowDialog();
 
+            //=========================================================
+            //Поднимаем флаг административного режима
+            this.administrativPassEnter = true;
+
+            //Включаем отключенные элементы управления 
+            this.groupBoxLoadProduct.Visible = true;
+            this.groupBoxKeyManager.Visible = true;
+            this.groupBoxMainCategory.Visible = true;
+            this.groupBoxSubCategory.Visible = true;
+            this.providerDataGrid.Visible = true;
+            //=========================================================
         }
 
         //====================================================================================================================================================================
@@ -150,12 +161,12 @@ namespace VKSMM
         private void MainForm_Load(object sender, EventArgs e)
         {
 
-            //Триггер блокератор блокирующий работу программы после 22 года
-            if (DateTime.Now.Year > 2021 && DateTime.Now.Month > 11)
-            {
-                MessageBox.Show("Ошибка! Обратитесь к разработчику!");
-                this.Close();
-            }
+            ////Триггер блокератор блокирующий работу программы после 22 года
+            //if (DateTime.Now.Year > 2021 && DateTime.Now.Month > 11)
+            //{
+            //    MessageBox.Show("Ошибка! Обратитесь к разработчику!");
+            //    this.Close();
+            //}
 
             //XML документ с настройками программы
             XmlDocument conf_supp = new XmlDocument();
@@ -2135,11 +2146,7 @@ namespace VKSMM
 
 
 
-        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-          
 
-        }
 
         private void button8_Click(object sender, EventArgs e)
         {
@@ -2367,6 +2374,7 @@ namespace VKSMM
         private void comboBox2_SelectionChangeCommitted(object sender, EventArgs e)
         {
             dataGridView2.Rows.Clear();
+            GUIDReplaceKey = 0;
 
             if ("ВСЕ" == comboBox2.SelectedItem.ToString())
             {
@@ -2375,7 +2383,7 @@ namespace VKSMM
                     {
                         //=========== Конструктор для добавления в датагрид =============
                         //Строка для добавления на грид
-                        string[] Filtr = new string[4];
+                        string[] Filtr = new string[5];
                         //Ключ замены регулярное выражение
                         Filtr[0] = RK.RegKey.Value;
                         //Filtr[0] = PL.ChildNodes[0].InnerText;
@@ -2385,6 +2393,8 @@ namespace VKSMM
                         Filtr[2] = Stuff.ActionCoder(RK.Action);
 
                         Filtr[3] = GUIDReplaceKey.ToString();
+
+                        Filtr[4] = RK.GroupValue;
                         GUIDReplaceKey++;
 
                         //Добавляем правило в ГРИД
@@ -2412,7 +2422,7 @@ namespace VKSMM
                 {
                     //=========== Конструктор для добавления в датагрид =============
                     //Строка для добавления на грид
-                    string[] Filtr = new string[4];
+                    string[] Filtr = new string[5];
                     //Ключ замены регулярное выражение
                     Filtr[0] = RK.RegKey.Value;
                     //Filtr[0] = PL.ChildNodes[0].InnerText;
@@ -2422,6 +2432,9 @@ namespace VKSMM
                     Filtr[2] = Stuff.ActionCoder(RK.Action);
 
                     Filtr[3] = GUIDReplaceKey.ToString();
+
+                    Filtr[4] = RK.GroupValue;
+
                     GUIDReplaceKey++;
 
                     //Добавляем правило в ГРИД
